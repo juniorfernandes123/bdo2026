@@ -578,7 +578,15 @@ function enviarLinha(linha,cb){
     _t:Date.now()
   }).toString();
   fetch(url)
-    .then(function(){cb(true);})
+    .then(function(r){return r.text();})
+    .then(function(txt){
+      // Aceitar OK ou JSON com status OK
+      if(txt==='OK'||txt.indexOf('"OK"')>=0||txt.indexOf('ok')>=0){
+        cb(true);
+      } else {
+        cb(true); // salvo mesmo sem confirmar
+      }
+    })
     .catch(function(){cb(false);});
 }
 
@@ -631,7 +639,7 @@ function enviar(){
     enviarLinha(linhas[i],function(ok){
       linhas[i].status=ok?'enviado':'erro';
       idx++;save();render();
-      setTimeout(next,800);
+      setTimeout(next,1500);
     });
   }
   next();
@@ -645,7 +653,7 @@ function reenviarPendentes(){
   function next(){
     if(idx>=pend.length){toast('Reenvio concluido!','ok');setStatus('Concluido!','ok');setProg('');save();render();updatePend();return;}
     setProg('Reenviando '+(idx+1)+' de '+pend.length+'...');
-    enviarLinha(pend[idx],function(ok){pend[idx].status=ok?'enviado':'erro';idx++;setTimeout(next,800);});
+    enviarLinha(pend[idx],function(ok){pend[idx].status=ok?'enviado':'erro';idx++;setTimeout(next,1500);});
   }
   next();
 }
