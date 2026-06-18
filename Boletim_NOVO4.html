@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boletim Diário — Costa Rica</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f5f5f0;color:#1a1a1a;padding:16px;max-width:980px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:3px}
+.subtitle{font-size:13px;color:#666;margin-bottom:4px}
+.hdr{padding-bottom:12px;border-bottom:2px solid #ddd;margin-bottom:16px}
+.save-info{font-size:12px;color:#1565c0;background:#e3f2fd;border:1px solid #bbdefb;border-radius:6px;padding:6px 12px;margin-bottom:16px;display:inline-block}
+.section{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:16px;margin-bottom:12px}
+.section-title{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;padding-bottom:5px;border-bottom:1px solid #eee}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:12px;color:#555;font-weight:700}
+.field input,.field select{width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;background:#fff;color:#1a1a1a;outline:none}
+.field input:focus,.field select:focus{border-color:#333}
+.field input[readonly]{background:#f0f0ea;color:#2e7d32;font-weight:700}
+.field input.auto-filled{background:#fff9e6;border-color:#f0ad00;color:#856404;font-weight:700}
+.hint{font-size:11px;color:#856404;margin-top:3px}
+.hint-ok{font-size:11px;color:#2e7d32;margin-top:3px}
+.oc-item{background:#f0f7ff;border:1px solid #bbdefb;border-radius:8px;padding:14px;margin-bottom:10px;position:relative}
+.oc-num{font-size:12px;font-weight:700;color:#1565c0;margin-bottom:10px}
+.oc-remove{position:absolute;top:10px;right:10px;background:#fff;color:#c0392b;border:1px solid #e8b4b0;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer}
+.oc-divider{border:none;border-top:1px dashed #bbdefb;margin:10px 0}
+.btn-add-oc{background:#e3f2fd;color:#1565c0;border:1.5px dashed #1565c0;padding:10px 16px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:700;width:100%;margin-top:8px}
+.btn-add-oc:hover{background:#bbdefb}
+.actions{display:flex;gap:8px;margin:14px 0 10px;flex-wrap:wrap}
+.btn-p{background:#1565c0;color:#fff;border:none;padding:11px 22px;border-radius:7px;font-size:14px;cursor:pointer;font-weight:700}
+.btn-p:hover{background:#0d47a1}
+.btn-p:disabled{background:#90caf9;cursor:not-allowed}
+.btn-s{background:#fff;color:#1a1a1a;border:1px solid #ccc;padding:10px 18px;border-radius:7px;font-size:13px;cursor:pointer}
+.btn-s:hover{background:#f5f5f0}
+.btn-s-green{background:#fff;color:#2e7d32;border:1px solid #c8e6c9;padding:10px 18px;border-radius:7px;font-size:13px;cursor:pointer}
+.btn-s-green:hover{background:#e8f5e9}
+.btn-s-purple{background:#fff;color:#6a1b9a;border:1px solid #ce93d8;padding:10px 18px;border-radius:7px;font-size:13px;cursor:pointer}
+.btn-s-purple:hover{background:#f3e5f5}
+.btn-danger{background:#fff;color:#c0392b;border:1px solid #e8b4b0;padding:10px 18px;border-radius:7px;font-size:13px;cursor:pointer}
+.tbl-wrap{overflow-x:auto;border:1px solid #e0e0e0;border-radius:10px;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:800px}
+thead th{background:#1565c0;color:#fff;padding:9px 10px;text-align:left;font-weight:700;white-space:nowrap}
+tbody tr{border-bottom:1px solid #f0f0ea}
+tbody td{padding:8px 10px;color:#1a1a1a}
+tbody tr:hover td{background:#fafaf7}
+.empty{text-align:center;padding:2rem;color:#aaa;font-size:13px}
+.badge{display:inline-block;font-size:11px;padding:2px 9px;border-radius:100px;font-weight:700}
+.badge-t{background:#e8f5e9;color:#2e7d32}
+.badge-m{background:#fff8e1;color:#e65100}
+.badge-o{background:#e3f2fd;color:#1565c0}
+.badge-a{background:#f3e5f5;color:#6a1b9a}
+.st-env{background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:100px;font-weight:700}
+.st-pend{background:#fff8e1;color:#e65100;font-size:11px;padding:2px 8px;border-radius:100px;font-weight:700}
+.st-err{background:#fdecea;color:#c62828;font-size:11px;padding:2px 8px;border-radius:100px;font-weight:700}
+.count-b{font-size:12px;background:#f0f0ea;border:1px solid #ddd;border-radius:100px;padding:2px 10px;color:#666;margin-left:8px}
+.row-label{display:flex;align-items:center;margin-bottom:8px}
+.status-bar{font-size:12px;color:#555;margin-bottom:6px;padding:8px 12px;background:#fff;border:1px solid #e0e0e0;border-radius:7px;display:flex;align-items:center;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dot-ok{background:#2e7d32}
+.dot-pend{background:#e65100;animation:pulse 1s infinite}
+.dot-err{background:#c62828}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top:2px solid transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+.spinner-sm{display:inline-block;width:10px;height:10px;border:2px solid #1565c0;border-top:2px solid transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:1.2rem;right:1.2rem;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;max-width:320px}
+.toast.show{opacity:1}
+.toast-ok{background:#2e7d32}
+.toast-err{background:#c62828}
+.toast-info{background:#1a1a1a}
+.prog-box{font-size:12px;color:#1565c0;font-weight:700;margin-bottom:8px;min-height:18px}
+/* MODAIS */
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:1000;overflow-y:auto;padding:20px}
+.modal-box{background:#fff;border-radius:12px;padding:24px;width:100%;max-width:900px;margin:20px auto}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.modal-title{font-size:16px;font-weight:700;color:#1a1a1a}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:#888;line-height:1}
+.modal-close:hover{color:#333}
+.resumo-cards{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.resumo-card{flex:1;min-width:120px;border-radius:8px;padding:12px 16px;text-align:center}
+.resumo-card .rc-label{font-size:11px;font-weight:700;margin-bottom:3px}
+.resumo-card .rc-val{font-size:22px;font-weight:700}
+.rc-blue{background:#e3f2fd;color:#1565c0}
+.rc-green{background:#e8f5e9;color:#2e7d32}
+.rc-purple{background:#f3e5f5;color:#6a1b9a}
+.eq-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee;font-size:13px}
+.eq-row:last-child{border-bottom:none}
+@media(max-width:620px){
+  .grid2,.grid3,.grid4{grid-template-columns:1fr 1fr}
+  .actions{flex-direction:column}
+  .btn-p,.btn-s,.btn-danger{width:100%}
+  .resumo-cards{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>&#128203; Boletim Diário de Equipamento</h1>
+  <p class="subtitle">Costa Rica &mdash; Lançamento de apontamentos por equipamento</p>
+  <div class="save-info">&#9729; Dados enviados automaticamente para o Google Sheets</div>
+</div>
+
+<!-- IDENTIFICAÇÃO -->
+<div class="section">
+  <div class="section-title">Identificação do dia</div>
+  <div class="grid3">
+    <div class="field"><label>Data *</label><input type="date" id="f-data"></div>
+    <div class="field"><label>Operador *</label><select id="f-op"><option value="">Carregando...</option></select></div>
+    <div class="field"><label>Fazenda *</label><select id="f-faz" onchange="atualizarTalhoes()"><option value="">Carregando...</option></select></div>
+  </div>
+  <div class="grid3" style="margin-top:10px">
+    <div class="field"><label>Equipamento *</label><select id="f-eq" onchange="onEqChange()"><option value="">Carregando...</option></select></div>
+    <div class="field"><label>Atividade</label><select id="f-atv"><option value="">Selecione...</option></select></div>
+    <div class="field"><label>Talhão</label><select id="f-tal"><option value="">Selecione a fazenda...</option></select></div>
+  </div>
+  <div class="grid2" style="margin-top:10px">
+    <div class="field"><label>Árvores/hora</label><input type="number" id="f-arvh" step="1" min="0" placeholder="Ex: 200"></div>
+    <div class="field"><label>m³/árv.</label><input type="number" id="f-m3" step="0.01" min="0" placeholder="Ex: 0.1"></div>
+  </div>
+  <div class="field" style="margin-top:10px"><label>Observação</label><input type="text" id="f-obs" placeholder="Opcional..."></div>
+</div>
+
+<!-- OCORRÊNCIAS -->
+<div class="section">
+  <div class="section-title">Ocorrências do dia — cada uma é uma linha na planilha</div>
+  <div id="oc-list"></div>
+  <button class="btn-add-oc" onclick="addOc()">+ Adicionar ocorrência</button>
+</div>
+
+<!-- AÇÕES -->
+<div class="actions">
+  <button class="btn-p" id="btn-env" onclick="enviar()">&#9650; Enviar para Google Sheets</button>
+  <button class="btn-s" onclick="reenviarPendentes()" id="btn-reenv" style="display:none">&#8635; Reenviar (<span id="pend-cnt">0</span>)</button>
+</div>
+<div class="actions" style="margin-top:0">
+  <button class="btn-s-green" onclick="abrirHorim()">&#128200; Meu Horímetro</button>
+  <button class="btn-s-purple" onclick="abrirHistorico()">&#128336; Meu Histórico</button>
+  <button class="btn-s" onclick="exportXL()">&#8595; Exportar Excel</button>
+  <button class="btn-danger" onclick="clearAll()" style="margin-left:auto">&#128465; Apagar tudo</button>
+</div>
+
+<div class="status-bar">
+  <div class="dot dot-ok" id="sdot"></div>
+  <span id="stxt">Pronto para enviar</span>
+</div>
+<div class="prog-box" id="prog"></div>
+
+<div class="row-label">
+  <span style="font-size:14px;font-weight:700">Linhas salvas</span>
+  <span class="count-b" id="cnt">0</span>
+</div>
+
+<div class="tbl-wrap">
+  <table>
+    <thead>
+      <tr><th>Status</th><th>Data</th><th>Operador</th><th>Equip.</th><th>Atividade</th><th>Código</th><th>Descrição</th><th>Tipo</th><th>H.Ini</th><th>H.Fin</th><th>Horas</th><th>Hor.Ini</th><th>Hor.Fin</th><th>Hor.Tot</th><th>Fazenda</th><th>Talhão</th></tr>
+    </thead>
+    <tbody id="tbody"><tr><td colspan="16" class="empty">Nenhum registro ainda.</td></tr></tbody>
+  </table>
+</div>
+
+<!-- MODAL HORÍMETRO -->
+<div class="modal-overlay" id="modal-horim">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-header">
+      <span class="modal-title">&#128200; Meu Horímetro Total</span>
+      <button class="modal-close" onclick="fecharModal('modal-horim')">&#10005;</button>
+    </div>
+    <div class="field" style="margin-bottom:12px">
+      <label>Selecione seu nome</label>
+      <select id="horim-op"><option value="">Selecione...</option></select>
+    </div>
+    <button onclick="buscarHorim()" style="width:100%;background:#2e7d32;color:#fff;border:none;padding:10px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:700;margin-bottom:14px">Buscar na planilha</button>
+    <div id="horim-loading" style="display:none;text-align:center;padding:16px;color:#2e7d32;font-size:13px"><span class="spinner-sm" style="border-color:#2e7d32;border-top-color:transparent"></span> Buscando...</div>
+    <div id="horim-erro" style="display:none;background:#fdecea;border:1px solid #ffcdd2;border-radius:8px;padding:12px;font-size:13px;color:#c62828;text-align:center"></div>
+    <div id="horim-result" style="display:none">
+      <div style="background:#e8f5e9;border:1px solid #c8e6c9;border-radius:8px;padding:16px;text-align:center;margin-bottom:12px">
+        <div style="font-size:11px;color:#2e7d32;font-weight:700;margin-bottom:4px">TOTAL DE HORAS DE HORÍMETRO</div>
+        <div style="font-size:36px;font-weight:700;color:#1b5e20" id="horim-total">0h</div>
+        <div style="font-size:12px;color:#388e3c;margin-top:4px" id="horim-nome"></div>
+      </div>
+      <div id="horim-equip"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL HISTÓRICO -->
+<div class="modal-overlay" id="modal-hist">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">&#128336; Meu Histórico de Lançamentos</span>
+      <button class="modal-close" onclick="fecharModal('modal-hist')">&#10005;</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <div style="flex:1;min-width:180px">
+        <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:4px">Selecione seu nome</label>
+        <select id="hist-op"><option value="">Selecione...</option></select>
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <button onclick="buscarHist()" style="background:#6a1b9a;color:#fff;border:none;padding:10px 20px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:700;white-space:nowrap">Buscar histórico</button>
+      </div>
+    </div>
+    <div id="hist-loading" style="display:none;text-align:center;padding:24px;color:#6a1b9a;font-size:13px"><span class="spinner-sm" style="border-color:#6a1b9a;border-top-color:transparent"></span> Buscando na planilha...</div>
+    <div id="hist-erro" style="display:none;background:#fdecea;border:1px solid #ffcdd2;border-radius:8px;padding:12px;font-size:13px;color:#c62828;text-align:center;margin-bottom:12px"></div>
+    <div id="hist-resumo" style="display:none;margin-bottom:12px"></div>
+    <div id="hist-vazio" style="display:none;text-align:center;padding:2rem;color:#aaa;font-size:13px">Nenhum lançamento encontrado.</div>
+    <div id="hist-result" style="display:none;overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:700px">
+        <thead><tr style="background:#6a1b9a;color:#fff">
+          <th style="padding:8px 10px;text-align:left">Data</th>
+          <th style="padding:8px 10px;text-align:left">Equipamento</th>
+          <th style="padding:8px 10px;text-align:left">Atividade</th>
+          <th style="padding:8px 10px;text-align:left">Código</th>
+          <th style="padding:8px 10px;text-align:left">Tipo</th>
+          <th style="padding:8px 10px;text-align:left">H.Ini</th>
+          <th style="padding:8px 10px;text-align:left">H.Fin</th>
+          <th style="padding:8px 10px;text-align:left">Horas</th>
+          <th style="padding:8px 10px;text-align:left">Hor.Ini</th>
+          <th style="padding:8px 10px;text-align:left">Hor.Fin</th>
+          <th style="padding:8px 10px;text-align:left">Fazenda</th>
+        </tr></thead>
+        <tbody id="hist-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIGURAÇÃO
+// ═══════════════════════════════════════════════════════
+var URL_GS = 'https://script.google.com/macros/s/AKfycbwDRI5B1Qt7KK2G7ZPZymGFyN4yRGLioCOON4K2bQCWKiFty50oBsYrR9be38e82w5X-w/exec';
+var SKEY = 'boletim_cr_v19';
+var linhas = [];
+var ocId = 0;
+var talhoesPorFazenda = {};
+
+// ═══════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════
+function load(){try{var s=localStorage.getItem(SKEY);if(s)linhas=JSON.parse(s);}catch(e){linhas=[];}render();updatePend();}
+function save(){try{localStorage.setItem(SKEY,JSON.stringify(linhas));}catch(e){}}
+
+// ═══════════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════════
+function toast(m,t){var el=document.getElementById('toast');el.textContent=m;el.className='toast show toast-'+(t||'info');setTimeout(function(){el.classList.remove('show');},4000);}
+function setStatus(txt,e){document.getElementById('stxt').textContent=txt;document.getElementById('sdot').className='dot dot-'+(e||'ok');}
+function setProg(txt){document.getElementById('prog').textContent=txt||'';}
+function fmtDate(v){if(!v)return'';var p=v.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
+function getMes(v){if(!v)return'';var m=['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];return m[parseInt(v.split('-')[1])-1];}
+function timeToMin(t){if(!t)return 0;var p=t.split(':');return parseInt(p[0])*60+parseInt(p[1]);}
+
+// ═══════════════════════════════════════════════════════
+// MODAIS
+// ═══════════════════════════════════════════════════════
+function abrirModal(id){document.getElementById(id).style.display='block';}
+function fecharModal(id){document.getElementById(id).style.display='none';}
+
+function abrirHorim(){
+  abrirModal('modal-horim');
+  document.getElementById('horim-result').style.display='none';
+  document.getElementById('horim-loading').style.display='none';
+  document.getElementById('horim-erro').style.display='none';
+  var op=document.getElementById('f-op').value;
+  if(op)document.getElementById('horim-op').value=op;
+}
+
+function abrirHistorico(){
+  abrirModal('modal-hist');
+  document.getElementById('hist-result').style.display='none';
+  document.getElementById('hist-loading').style.display='none';
+  document.getElementById('hist-erro').style.display='none';
+  document.getElementById('hist-resumo').style.display='none';
+  document.getElementById('hist-vazio').style.display='none';
+  var op=document.getElementById('f-op').value;
+  if(op)document.getElementById('hist-op').value=op;
+}
+
+// Fechar modal clicando fora
+window.addEventListener('click',function(e){
+  ['modal-horim','modal-hist'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el&&e.target===el)fecharModal(id);
+  });
+});
+
+// ═══════════════════════════════════════════════════════
+// CARREGAR CADASTROS
+// ═══════════════════════════════════════════════════════
+function carregarCadastros(){
+  fetch(URL_GS+'?acao=cadastros&_t='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(resp){
+      talhoesPorFazenda=resp.talhoesPorFazenda||{};
+
+      // Operadores
+      var ops=resp.operadores||[];
+      ['f-op','horim-op','hist-op'].forEach(function(sid){
+        var sel=document.getElementById(sid);
+        if(!sel)return;
+        sel.innerHTML='<option value="">Selecione...</option>';
+        ops.forEach(function(o){var opt=document.createElement('option');opt.value=o;opt.textContent=o;sel.appendChild(opt);});
+      });
+
+      // Fazendas
+      var fazs=resp.fazendas||[];
+      var selFaz=document.getElementById('f-faz');
+      selFaz.innerHTML='<option value="">Selecione...</option>';
+      fazs.forEach(function(f){var opt=document.createElement('option');opt.value=f;opt.textContent=f;selFaz.appendChild(opt);});
+
+      // Equipamentos
+      var eqs=resp.equipamentos||[];
+      var selEq=document.getElementById('f-eq');
+      selEq.innerHTML='<option value="">Selecione...</option>';
+      eqs.forEach(function(eq){
+        var parts=eq.split('|');
+        var code=parts[0]?parts[0].trim():'';
+        var desc=parts[1]?parts[1].trim():'';
+        var opt=document.createElement('option');
+        opt.value=eq;opt.textContent=code+(desc?' — '+desc:'');
+        selEq.appendChild(opt);
+      });
+
+      // Atividades únicas
+      var atvSet={};
+      eqs.forEach(function(eq){var p=eq.split('|');var a=p[2]?p[2].trim():'';if(a)atvSet[a]=1;});
+      var selAtv=document.getElementById('f-atv');
+      selAtv.innerHTML='<option value="">Selecione...</option>';
+      Object.keys(atvSet).forEach(function(a){var opt=document.createElement('option');opt.value=a;opt.textContent=a;selAtv.appendChild(opt);});
+
+      atualizarTalhoes();
+    })
+    .catch(function(){
+      ['f-op','f-faz','f-eq'].forEach(function(sid){
+        var sel=document.getElementById(sid);
+        if(sel)sel.innerHTML='<option value="">Erro — verifique a internet</option>';
+      });
+    });
+}
+
+function atualizarTalhoes(){
+  var faz=document.getElementById('f-faz').value;
+  var sel=document.getElementById('f-tal');
+  sel.innerHTML='';
+  if(!faz){sel.innerHTML='<option value="">Selecione a fazenda...</option>';return;}
+  var tals=talhoesPorFazenda[faz]||[];
+  if(!tals.length){sel.innerHTML='<option value="">Nenhum talhão</option>';return;}
+  sel.innerHTML='<option value="">Selecione...</option>';
+  tals.forEach(function(t){var opt=document.createElement('option');opt.value=t;opt.textContent='Talhão '+t;sel.appendChild(opt);});
+}
+
+function onEqChange(){
+  var v=document.getElementById('f-eq').value;
+  if(!v)return;
+  var p=v.split('|');
+  var atv=p[2]?p[2].trim():'';
+  if(atv){
+    var selAtv=document.getElementById('f-atv');
+    selAtv.value=atv;
+    if(!selAtv.value){
+      var opt=document.createElement('option');opt.value=atv;opt.textContent=atv;
+      selAtv.appendChild(opt);selAtv.value=atv;
+    }
+    selAtv.style.background='#fff9e6';selAtv.style.borderColor='#f0ad00';
+    setTimeout(function(){selAtv.style.background='';selAtv.style.borderColor='';},2000);
+  }
+  // Buscar horímetro da primeira ocorrência
+  var eqCode=p[0].trim();
+  var items=document.getElementById('oc-list').querySelectorAll('.oc-item');
+  if(items.length>0){
+    var firstId=items[0].id.replace('oc-','');
+    buscarUltimoHorim(eqCode,firstId);
+  }
+}
+
+function buscarUltimoHorim(eqCode,ocItemId){
+  var hint=document.getElementById('oc-hint-'+ocItemId);
+  var inp=document.getElementById('oc-hi2-'+ocItemId);
+  if(!hint||!inp)return;
+  hint.className='hint';hint.style.display='block';
+  hint.innerHTML='<span class="spinner-sm"></span>Buscando horímetro...';
+  fetch(URL_GS+'?acao=buscarHorim&eqCode='+encodeURIComponent(eqCode)+'&_t='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(resp){
+      if(resp.horim&&parseFloat(resp.horim)>0){
+        inp.value=resp.horim;inp.classList.add('auto-filled');
+        hint.className='hint-ok';
+        hint.innerHTML='&#10003; Último horímetro: <b>'+resp.horim+'h</b>';
+        calcHorimOc(ocItemId);
+      } else {
+        inp.classList.remove('auto-filled');
+        hint.className='hint';
+        hint.innerHTML='Nenhum registro anterior.';
+      }
+    })
+    .catch(function(){hint.style.display='none';});
+}
+
+// ═══════════════════════════════════════════════════════
+// OCORRÊNCIAS
+// ═══════════════════════════════════════════════════════
+function updateCodOc(id){
+  var v=document.getElementById('oc-cod-'+id).value;
+  document.getElementById('oc-tipo-'+id).value=v?v.split('|')[2]:'';
+}
+function calcHorasOc(id){
+  var hi=document.getElementById('oc-hi-'+id).value;
+  var hf=document.getElementById('oc-hf-'+id).value;
+  if(!hi||!hf){document.getElementById('oc-ht-'+id).value='';return;}
+  var d=(timeToMin(hf)-timeToMin(hi))/60;if(d<0)d+=24;
+  document.getElementById('oc-ht-'+id).value=d.toFixed(2)+' h';
+}
+function calcHorimOc(id){
+  var hi=parseFloat(document.getElementById('oc-hi2-'+id).value);
+  var hf=parseFloat(document.getElementById('oc-hf2-'+id).value);
+  document.getElementById('oc-htot-'+id).value=(!isNaN(hi)&&!isNaN(hf))?(hf-hi).toFixed(1):'';
+}
+function onHorimFinalChange(id){
+  calcHorimOc(id);
+  var val=document.getElementById('oc-hf2-'+id).value;
+  if(!val)return;
+  var items=Array.from(document.getElementById('oc-list').querySelectorAll('.oc-item'));
+  var ids=items.map(function(el){return el.id.replace('oc-','');});
+  var idx=ids.indexOf(String(id));
+  if(idx>=0&&idx<ids.length-1){
+    var nextId=ids[idx+1];
+    var nextInp=document.getElementById('oc-hi2-'+nextId);
+    var nextHint=document.getElementById('oc-hint-'+nextId);
+    if(nextInp){
+      nextInp.value=val;nextInp.classList.add('auto-filled');
+      nextHint.className='hint-ok';nextHint.style.display='block';
+      nextHint.innerHTML='&#10003; Da ocorrência anterior: <b>'+val+'h</b>';
+      calcHorimOc(nextId);
+    }
+  }
+}
+
+function addOc(){
+  ocId++;var id=ocId;
+  var hfAnterior='',hf2Anterior='';
+  var items=document.getElementById('oc-list').querySelectorAll('.oc-item');
+  if(items.length>0){
+    var lastId=items[items.length-1].id.replace('oc-','');
+    hfAnterior=document.getElementById('oc-hf-'+lastId)?document.getElementById('oc-hf-'+lastId).value||'':'';
+    hf2Anterior=document.getElementById('oc-hf2-'+lastId)?document.getElementById('oc-hf2-'+lastId).value||'':'';
+  }
+  var div=document.createElement('div');
+  div.className='oc-item';div.id='oc-'+id;
+  div.innerHTML=
+    '<div class="oc-num">&#9679; Ocorrência '+id+'</div>'+
+    '<button class="oc-remove" onclick="rmOc('+id+')">&#10005; Remover</button>'+
+    '<div class="grid4" style="margin-bottom:8px">'+
+      '<div class="field" style="grid-column:span 2"><label>Código *</label>'+
+        '<select id="oc-cod-'+id+'" onchange="updateCodOc('+id+')">'+
+          '<option value="">Selecione...</option>'+
+          '<option value="1|Operacao|Trabalho">1 — Operação</option>'+
+          '<option value="2|Inspecao Check List|Operacional">2 — Inspeção/Check List</option>'+
+          '<option value="3|Deslocamento na area|Operacional">3 — Deslocamento na área</option>'+
+          '<option value="4|Em transito prancha|Operacional">4 — Em trânsito (prancha)</option>'+
+          '<option value="5|Limpeza Lavagem|Operacional">5 — Limpeza/Lavagem</option>'+
+          '<option value="6|Atraso transporte|Operacional">6 — Atraso de transporte</option>'+
+          '<option value="7|Reuniao Treinamento|Operacional">7 — Reunião/Treinamento</option>'+
+          '<option value="8|Refeicao|Operacional">8 — Refeição</option>'+
+          '<option value="9|Troca facas videas|Operacional">9 — Troca de facas/vídeas</option>'+
+          '<option value="95|Troca Concha Ancinho|Operacional">95 — Troca da Concha/Ancinho</option>'+
+          '<option value="100|Abastecimento Lubrificacao|Manutencao">100 — Abastecimento/Lubrificação</option>'+
+          '<option value="200|Aguardando Peca|Manutencao">200 — Aguardando Peça</option>'+
+          '<option value="300|Aguardando Mecanico|Manutencao">300 — Aguardando Mecânico</option>'+
+          '<option value="400|Manutencao Corretiva|Manutencao">400 — Manutenção Corretiva</option>'+
+          '<option value="500|Manutencao Preventiva|Manutencao">500 — Manutenção Preventiva</option>'+
+          '<option value="10|Hibernado A disposicao|Administrativo">10 — Hibernado/A disposição</option>'+
+          '<option value="600|Horimetro Nao Funciona|Operacional">600 — Horímetro Não Funciona</option>'+
+        '</select></div>'+
+      '<div class="field"><label>Tipo</label><input type="text" id="oc-tipo-'+id+'" readonly placeholder="Auto"></div>'+
+      '<div class="field"><label>Horas totais</label><input type="text" id="oc-ht-'+id+'" readonly placeholder="—"></div>'+
+    '</div>'+
+    '<div class="grid2" style="margin-bottom:8px">'+
+      '<div class="field"><label>Hora inicial *</label><input type="time" id="oc-hi-'+id+'" onchange="calcHorasOc('+id+')"></div>'+
+      '<div class="field"><label>Hora final *</label><input type="time" id="oc-hf-'+id+'" onchange="calcHorasOc('+id+')"></div>'+
+    '</div>'+
+    '<hr class="oc-divider">'+
+    '<div class="grid3">'+
+      '<div class="field"><label>Horímetro inicial</label><input type="number" id="oc-hi2-'+id+'" step="0.1" min="0" placeholder="Ex: 904.5" oninput="calcHorimOc('+id+')"><span id="oc-hint-'+id+'" style="display:none"></span></div>'+
+      '<div class="field"><label>Horímetro final</label><input type="number" id="oc-hf2-'+id+'" step="0.1" min="0" placeholder="Ex: 914.5" oninput="onHorimFinalChange('+id+')"></div>'+
+      '<div class="field"><label>Horímetro total</label><input type="text" id="oc-htot-'+id+'" readonly placeholder="—"></div>'+
+    '</div>';
+  document.getElementById('oc-list').appendChild(div);
+  if(hfAnterior){document.getElementById('oc-hi-'+id).value=hfAnterior;calcHorasOc(id);}
+  if(hf2Anterior){
+    var inp=document.getElementById('oc-hi2-'+id);
+    var hint=document.getElementById('oc-hint-'+id);
+    inp.value=hf2Anterior;inp.classList.add('auto-filled');
+    hint.className='hint-ok';hint.style.display='block';
+    hint.innerHTML='&#10003; Da ocorrência anterior: <b>'+hf2Anterior+'h</b>';
+    calcHorimOc(id);
+  }
+}
+
+function rmOc(id){var el=document.getElementById('oc-'+id);if(el)el.remove();}
+
+function coletarOcs(){
+  var items=document.getElementById('oc-list').querySelectorAll('.oc-item');
+  var ocs=[];
+  for(var i=0;i<items.length;i++){
+    var id=items[i].id.replace('oc-','');
+    var codv=document.getElementById('oc-cod-'+id).value;
+    var hi=document.getElementById('oc-hi-'+id).value;
+    var hf=document.getElementById('oc-hf-'+id).value;
+    if(!codv||!hi||!hf)continue;
+    var p=codv.split('|');
+    var diff=(timeToMin(hf)-timeToMin(hi))/60;if(diff<0)diff+=24;
+    ocs.push({
+      codNum:p[0],codDesc:p[1],tipo:p[2],hi:hi,hf:hf,
+      horas:parseFloat(diff.toFixed(2)),
+      horimIni:document.getElementById('oc-hi2-'+id).value||'',
+      horimFin:document.getElementById('oc-hf2-'+id).value||'',
+      horimTot:document.getElementById('oc-htot-'+id).value||''
+    });
+  }
+  return ocs;
+}
+
+// ═══════════════════════════════════════════════════════
+// TABELA
+// ═══════════════════════════════════════════════════════
+function updatePend(){
+  var n=linhas.filter(function(l){return l.status!=='enviado';}).length;
+  document.getElementById('pend-cnt').textContent=n;
+  document.getElementById('btn-reenv').style.display=n>0?'':'none';
+}
+function getBadge(t){
+  if(t==='Trabalho')return'<span class="badge badge-t">Trabalho</span>';
+  if(t==='Manutencao')return'<span class="badge badge-m">Manut.</span>';
+  if(t==='Administrativo')return'<span class="badge badge-a">Admin.</span>';
+  return'<span class="badge badge-o">'+t+'</span>';
+}
+function stBadge(s){
+  if(s==='enviado')return'<span class="st-env">&#10003; Enviado</span>';
+  if(s==='erro')return'<span class="st-err">&#10007; Erro</span>';
+  return'<span class="st-pend">&#8635; Pendente</span>';
+}
+function render(){
+  document.getElementById('cnt').textContent=linhas.length;
+  var tb=document.getElementById('tbody');
+  if(!linhas.length){tb.innerHTML='<tr><td colspan="16" class="empty">Nenhum registro ainda.</td></tr>';return;}
+  tb.innerHTML=linhas.map(function(l){
+    return'<tr>'+
+      '<td>'+stBadge(l.status)+'</td><td>'+fmtDate(l.data)+'</td><td>'+l.op+'</td>'+
+      '<td style="white-space:nowrap">'+l.eqCode+'</td><td>'+l.atv+'</td>'+
+      '<td>'+l.codNum+'</td><td>'+l.codDesc+'</td><td>'+getBadge(l.tipo)+'</td>'+
+      '<td>'+l.hi+'</td><td>'+l.hf+'</td><td><b>'+parseFloat(l.horas||0).toFixed(2)+'h</b></td>'+
+      '<td>'+l.horimIni+'</td><td>'+l.horimFin+'</td><td>'+l.horimTot+'</td>'+
+      '<td>'+l.faz+'</td><td>'+l.tal+'</td>'+
+    '</tr>';
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// ENVIAR
+// ═══════════════════════════════════════════════════════
+function enviarLinha(linha,cb){
+  var url=URL_GS+'?'+new URLSearchParams({
+    data:linha.data,mes:linha.mes,op:linha.op,
+    eqCode:linha.eqCode,eqDesc:linha.eqDesc,atv:linha.atv,
+    codNum:linha.codNum,codDesc:linha.codDesc,tipo:linha.tipo,
+    hi:linha.hi,hf:linha.hf,horas:linha.horas,
+    horimIni:linha.horimIni,horimFin:linha.horimFin,horimTot:linha.horimTot,
+    faz:linha.faz,tal:linha.tal,arvh:linha.arvh,m3:linha.m3,obs:linha.obs,
+    _t:Date.now()
+  }).toString();
+  fetch(url)
+    .then(function(){cb(true);})
+    .catch(function(){cb(false);});
+}
+
+function enviar(){
+  var data=document.getElementById('f-data').value;
+  var op=document.getElementById('f-op').value;
+  var eqv=document.getElementById('f-eq').value;
+  var faz=document.getElementById('f-faz').value;
+  if(!data||!op||!eqv||!faz){toast('Preencha os campos obrigatorios (*)!','err');return;}
+  var ocs=coletarOcs();
+  if(!ocs.length){toast('Adicione pelo menos uma ocorrencia com codigo e horario!','err');return;}
+  var eqP=eqv.split('|');
+  var novas=ocs.map(function(oc){
+    return{
+      data:fmtDate(data),mes:getMes(data),op:op,
+      eqCode:eqP[0].trim(),eqDesc:eqP[1]||'',
+      atv:document.getElementById('f-atv').value||'',
+      codNum:oc.codNum,codDesc:oc.codDesc,tipo:oc.tipo,
+      hi:oc.hi,hf:oc.hf,horas:oc.horas,
+      horimIni:oc.horimIni,horimFin:oc.horimFin,horimTot:oc.horimTot,
+      faz:faz,tal:document.getElementById('f-tal').value||'',
+      arvh:document.getElementById('f-arvh').value||'',
+      m3:document.getElementById('f-m3').value||'',
+      obs:document.getElementById('f-obs').value.trim(),
+      status:'pendente'
+    };
+  });
+  var inicio=linhas.length;
+  novas.forEach(function(l){linhas.push(l);});
+  save();render();updatePend();
+  document.getElementById('oc-list').innerHTML='';ocId=0;
+  document.getElementById('f-eq').value='';document.getElementById('f-atv').value='';
+  ['f-tal','f-arvh','f-m3','f-obs'].forEach(function(id){document.getElementById(id).value='';});
+  addOc();
+  var btn=document.getElementById('btn-env');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Enviando...';
+  setStatus('Enviando '+novas.length+' linha(s)...','pend');
+  var idx=0;
+  function next(){
+    if(idx>=novas.length){
+      btn.disabled=false;btn.innerHTML='&#9650; Enviar para Google Sheets';
+      var erros=linhas.slice(inicio).filter(function(l){return l.status==='erro';}).length;
+      setProg('');save();render();updatePend();
+      if(erros===0){toast(novas.length+' linha(s) salva(s) na planilha!','ok');setStatus('Enviado com sucesso!','ok');}
+      else{toast(erros+' erro(s). Clique em Reenviar.','err');setStatus('Erro em '+erros+' linha(s)','err');}
+      return;
+    }
+    setProg('Enviando ocorrencia '+(idx+1)+' de '+novas.length+'...');
+    var i=inicio+idx;
+    enviarLinha(linhas[i],function(ok){
+      linhas[i].status=ok?'enviado':'erro';
+      idx++;save();render();
+      setTimeout(next,800);
+    });
+  }
+  next();
+}
+
+function reenviarPendentes(){
+  var pend=linhas.filter(function(l){return l.status!=='enviado';});
+  if(!pend.length){toast('Nenhum pendente!','info');return;}
+  setStatus('Reenviando '+pend.length+'...','pend');
+  var idx=0;
+  function next(){
+    if(idx>=pend.length){toast('Reenvio concluido!','ok');setStatus('Concluido!','ok');setProg('');save();render();updatePend();return;}
+    setProg('Reenviando '+(idx+1)+' de '+pend.length+'...');
+    enviarLinha(pend[idx],function(ok){pend[idx].status=ok?'enviado':'erro';idx++;setTimeout(next,800);});
+  }
+  next();
+}
+
+function clearAll(){
+  if(!linhas.length)return;
+  if(!confirm('Apagar todos os registros?'))return;
+  linhas=[];save();render();updatePend();toast('Apagado.','info');
+}
+
+function exportXL(){
+  if(!linhas.length){toast('Nenhum registro.','info');return;}
+  var rows=[['Data','Mes','Operador','Eqpto','Descricao','Atividade','Codigo','Desc.Codigo','Tipo','H.Ini','H.Fin','Horas','Hor.Ini','Hor.Fin','Hor.Tot','Fazenda','Talhao','Arv/h','m3/arv','Obs']];
+  linhas.forEach(function(l){rows.push([fmtDate(l.data),l.mes,l.op,l.eqCode,l.eqDesc,l.atv,l.codNum,l.codDesc,l.tipo,l.hi,l.hf,l.horas,l.horimIni,l.horimFin,l.horimTot,l.faz,l.tal,l.arvh,l.m3,l.obs]);});
+  var ws=XLSX.utils.aoa_to_sheet(rows);
+  var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'BD');
+  XLSX.writeFile(wb,'BoletimDiario_'+new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')+'.xlsx');
+  toast('Excel exportado!','ok');
+}
+
+// ═══════════════════════════════════════════════════════
+// HORÍMETRO POR OPERADOR
+// ═══════════════════════════════════════════════════════
+function buscarHorim(){
+  var op=document.getElementById('horim-op').value;
+  if(!op){alert('Selecione seu nome!');return;}
+  document.getElementById('horim-result').style.display='none';
+  document.getElementById('horim-erro').style.display='none';
+  document.getElementById('horim-loading').style.display='block';
+  fetch(URL_GS+'?acao=horimOperador&op='+encodeURIComponent(op)+'&_t='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(resp){
+      document.getElementById('horim-loading').style.display='none';
+      document.getElementById('horim-total').textContent=resp.total+'h';
+      document.getElementById('horim-nome').textContent=op;
+      var pe=resp.porEquip||{};
+      var html='<div style="font-weight:700;color:#555;margin-bottom:6px;font-size:11px;text-transform:uppercase">Por equipamento:</div>';
+      var keys=Object.keys(pe);
+      if(keys.length){
+        keys.forEach(function(k){
+          html+='<div class="eq-row"><span>'+k+'</span><span style="font-weight:700;color:#1565c0">'+parseFloat(pe[k]).toFixed(1)+'h</span></div>';
+        });
+      } else {
+        html+='<div style="color:#aaa;font-size:13px">Nenhum registro encontrado.</div>';
+      }
+      document.getElementById('horim-equip').innerHTML=html;
+      document.getElementById('horim-result').style.display='block';
+    })
+    .catch(function(){
+      document.getElementById('horim-loading').style.display='none';
+      document.getElementById('horim-erro').style.display='block';
+      document.getElementById('horim-erro').textContent='Erro de conexao. Verifique a internet.';
+    });
+}
+
+// ═══════════════════════════════════════════════════════
+// HISTÓRICO POR OPERADOR
+// ═══════════════════════════════════════════════════════
+function buscarHist(){
+  var op=document.getElementById('hist-op').value;
+  if(!op){alert('Selecione seu nome!');return;}
+  document.getElementById('hist-result').style.display='none';
+  document.getElementById('hist-resumo').style.display='none';
+  document.getElementById('hist-vazio').style.display='none';
+  document.getElementById('hist-erro').style.display='none';
+  document.getElementById('hist-loading').style.display='block';
+  fetch(URL_GS+'?acao=historico&op='+encodeURIComponent(op)+'&_t='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(resp){
+      document.getElementById('hist-loading').style.display='none';
+      var regs=resp.registros||[];
+      if(!regs.length){document.getElementById('hist-vazio').style.display='block';return;}
+      var totalH=0,totalHor=0;
+      regs.forEach(function(r){totalH+=parseFloat(r.horas)||0;totalHor+=parseFloat(r.horimTot)||0;});
+      document.getElementById('hist-resumo').innerHTML=
+        '<div class="resumo-cards">'+
+          '<div class="resumo-card rc-blue"><div class="rc-label">LANÇAMENTOS</div><div class="rc-val">'+regs.length+'</div></div>'+
+          '<div class="resumo-card rc-green"><div class="rc-label">TOTAL HORAS</div><div class="rc-val">'+totalH.toFixed(2)+'h</div></div>'+
+          '<div class="resumo-card rc-purple"><div class="rc-label">TOTAL HORÍMETRO</div><div class="rc-val">'+totalHor.toFixed(1)+'h</div></div>'+
+        '</div>'+
+        '<div style="font-size:11px;color:#888">Últimos '+regs.length+' lançamentos de '+op+'</div>';
+      document.getElementById('hist-resumo').style.display='block';
+      document.getElementById('hist-tbody').innerHTML=regs.map(function(r,i){
+        var bg=i%2===0?'#fff':'#fafaf7';
+        var tipoBadge='<span style="font-size:10px;padding:2px 7px;border-radius:100px;font-weight:700;background:'+(r.tipo==='Trabalho'?'#e8f5e9;color:#2e7d32':r.tipo==='Manutencao'?'#fff8e1;color:#e65100':'#f3e5f5;color:#6a1b9a')+'">'+r.tipo+'</span>';
+        return'<tr style="background:'+bg+';border-bottom:1px solid #f0f0ea">'+
+          '<td style="padding:7px 10px;white-space:nowrap">'+r.data+'</td>'+
+          '<td style="padding:7px 10px;font-weight:700;white-space:nowrap">'+r.eqCode+'</td>'+
+          '<td style="padding:7px 10px">'+r.atv+'</td>'+
+          '<td style="padding:7px 10px">'+r.codNum+'</td>'+
+          '<td style="padding:7px 10px">'+tipoBadge+'</td>'+
+          '<td style="padding:7px 10px">'+r.hi+'</td>'+
+          '<td style="padding:7px 10px">'+r.hf+'</td>'+
+          '<td style="padding:7px 10px;font-weight:700;color:#1565c0">'+(r.horas?parseFloat(r.horas).toFixed(2)+'h':'')+'</td>'+
+          '<td style="padding:7px 10px">'+r.horimIni+'</td>'+
+          '<td style="padding:7px 10px">'+r.horimFin+'</td>'+
+          '<td style="padding:7px 10px">'+r.faz+'</td>'+
+        '</tr>';
+      }).join('');
+      document.getElementById('hist-result').style.display='block';
+    })
+    .catch(function(){
+      document.getElementById('hist-loading').style.display='none';
+      document.getElementById('hist-erro').style.display='block';
+      document.getElementById('hist-erro').textContent='Erro de conexao. Verifique a internet e tente novamente.';
+    });
+}
+
+// ═══════════════════════════════════════════════════════
+// INICIALIZAR
+// ═══════════════════════════════════════════════════════
+document.getElementById('f-data').value=new Date().toISOString().split('T')[0];
+addOc();
+load();
+carregarCadastros();
+</script>
+</body>
+</html>
