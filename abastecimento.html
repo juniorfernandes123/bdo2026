@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- saved from url=(0053)file:///C:/Users/mauri/Downloads/abastecimento_2.html -->
-<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Abastecimento — Costa Rica</title>
-<script src="./Abastecimento_files/xlsx.full.min.js.download"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f5f5f0;color:#1a1a1a;padding:16px;max-width:720px;margin:0 auto}
@@ -96,27 +96,38 @@ tbody tr:hover td{background:#fff3e0}
   .btn-p{width:100%}
   .estoque-card .litros{font-size:32px}
 }
+.links-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.link-btn{background:#fff;border:1px solid #ddd;color:#555;padding:8px 16px;border-radius:7px;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.link-btn:hover{background:#f5f5f0;color:#1a1a1a}
 </style>
 </head>
 <body>
 
 <div class="hdr">
   <h1>⛽ Abastecimento de Equipamentos</h1>
-  <p class="subtitle">Costa Rica — Controle de abastecimento e estoque</p>
-  <div class="save-info">☁ Dados enviados automaticamente para o Google Sheets</div>
+  <p class="subtitle">Costa Rica &mdash; Controle de abastecimento e estoque</p>
+  <div class="save-info">&#9729; Dados enviados automaticamente para o Google Sheets</div>
 </div>
 
 <!-- ESTOQUE -->
-<div id="estoque-card" class="estoque-card estoque-baixo">
+<div id="estoque-card" class="estoque-card estoque-ok">
   <div>
     <div class="label">⛽ ESTOQUE DE DIESEL S10</div>
-    <div class="litros" id="saldo-litros">-425 L</div>
-    <div class="sub" id="saldo-sub">🚨 Estoque baixo — abastecer urgente!</div>
+    <div class="litros" id="saldo-litros">—</div>
+    <div class="sub" id="saldo-sub">Carregando...</div>
   </div>
   <button class="btn-add-est" onclick="abrirAddEstoque()">+ Adicionar estoque</button>
 </div>
 
 <!-- IDENTIFICAÇÃO -->
+<div class="links-bar">
+  <a href="home.html" class="link-btn">🏠 Início</a>
+  <a href="index.html" class="link-btn">📋 Boletim</a>
+  <a href="abastecimento.html" class="link-btn" style="background:#e65100;color:#fff;border-color:#e65100">⛽ Abastecimento</a>
+  <a href="dashboard.html" class="link-btn">📊 Dashboard Op.</a>
+  <a href="dashboard_abast.html" class="link-btn">📈 Dashboard Abast.</a>
+</div>
+
 <div class="section">
   <div class="section-title">Identificação</div>
   <div class="grid3">
@@ -124,17 +135,17 @@ tbody tr:hover td{background:#fff3e0}
     <div class="field"><label>Hora *</label><input type="time" id="f-hora"></div>
     <div class="field">
       <label>Operador *</label>
-      <select id="f-op"><option value="">Selecione...</option><option value="Marcelo Cunha">Marcelo Cunha</option><option value="Samuel Marcondes">Samuel Marcondes</option><option value="José Wellington">José Wellington</option><option value="Vander Pereira">Vander Pereira</option></select>
+      <select id="f-op"><option value="">Carregando...</option></select>
     </div>
   </div>
   <div class="grid2" style="margin-top:10px">
     <div class="field">
       <label>Equipamento *</label>
-      <select id="f-eq" onchange="onEqChange()"><option value="">Selecione...</option><option value="PIC - 008   PLANALTO FOREST FOX 600X800">PIC - 008   PLANALTO FOREST FOX 600X800</option><option value="PAC - 004   HYNDAI 745 - 9">PAC - 004   HYNDAI 745 - 9</option><option value="PAC - 014   HYUNDAI 757 - 9">PAC - 014   HYUNDAI 757 - 9</option><option value="GRU - 000   CX130C">GRU - 000   CX130C</option></select>
+      <select id="f-eq" onchange="onEqChange()"><option value="">Carregando...</option></select>
     </div>
     <div class="field">
       <label>Fazenda *</label>
-      <select id="f-faz"><option value="">Selecione...</option><option value="Faz.Europa">Faz.Europa</option></select>
+      <select id="f-faz"><option value="">Carregando...</option></select>
     </div>
   </div>
 </div>
@@ -152,7 +163,7 @@ tbody tr:hover td{background:#fff3e0}
     </div>
     <div class="field">
       <label>Combustível</label>
-      <input type="text" value="Diesel S10" readonly="">
+      <input type="text" value="Diesel S10" readonly>
     </div>
   </div>
   <div class="grid3" style="margin-top:10px">
@@ -165,13 +176,13 @@ tbody tr:hover td{background:#fff3e0}
       <label>Horímetro bomba atual *</label>
       <div style="display:flex;gap:8px;align-items:center">
         <input type="number" id="f-horim-bomb-fin" step="0.1" min="0" placeholder="Ex: 15420.5" oninput="calcLitros()" style="flex:1">
-        <button type="button" onclick="abrirCamera()" style="background:#e65100;color:#fff;border:none;padding:9px 14px;border-radius:6px;font-size:18px;cursor:pointer;flex-shrink:0" title="Fotografar horímetro">📷</button>
+        <button type="button" onclick="abrirCamera()" style="background:#e65100;color:#fff;border:none;padding:9px 14px;border-radius:6px;font-size:18px;cursor:pointer;flex-shrink:0" title="Fotografar horímetro">&#128247;</button>
       </div>
       <span class="hint" id="hint-ocr" style="display:none"></span>
     </div>
     <div class="field">
       <label>Litros abastecidos</label>
-      <input type="text" id="f-litros-calc" readonly="" placeholder="—">
+      <input type="text" id="f-litros-calc" readonly placeholder="—">
     </div>
   </div>
   <div class="litros-calc" id="litros-display">— L</div>
@@ -227,7 +238,7 @@ tbody tr:hover td{background:#fff3e0}
 
 <div class="row-label" style="margin-top:12px">
   <span style="font-size:14px;font-weight:700">Histórico local</span>
-  <span class="count-b" id="cnt">16</span>
+  <span class="count-b" id="cnt">0</span>
 </div>
 
 <div class="tbl-wrap">
@@ -239,7 +250,9 @@ tbody tr:hover td{background:#fff3e0}
         <th>Litros</th><th>Hor.Eq</th><th>Consumo L/h</th><th>Fazenda</th>
       </tr>
     </thead>
-    <tbody id="tbody"><tr><td><span class="st-env">✓ Enviado</span></td><td>18/06/2026</td><td>18:22</td><td>José Wellington</td><td style="font-weight:700;white-space:nowrap">PIC - 008   PLANALTO FOREST FOX 600X800</td><td>Bomba 1</td><td>323026.3</td><td>323216.3</td><td style="font-weight:700;color:#e65100">190.0 L</td><td>2677.9</td><td style="color:#1565c0;font-weight:700">2.50 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>18/06/2026</td><td>18:22</td><td>Marcelo Cunha</td><td style="font-weight:700;white-space:nowrap">PAC - 014   HYUNDAI 757 - 9</td><td>Bomba 1</td><td>322791.2</td><td>323026.3</td><td style="font-weight:700;color:#e65100">235.1 L</td><td>1111</td><td style="color:#1565c0;font-weight:700">12.64 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>18/06/2026</td><td>18:18</td><td>Vander Pereira</td><td style="font-weight:700;white-space:nowrap">PAC - 004   HYNDAI 745 - 9</td><td>Bomba 1</td><td>322576.1</td><td>322791.2</td><td style="font-weight:700;color:#e65100">215.1 L</td><td>7364.7</td><td style="color:#1565c0;font-weight:700">10.19 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:49</td><td>José Wellington</td><td style="font-weight:700;white-space:nowrap">PIC - 008   PLANALTO FOREST FOX 600X800</td><td>Bomba 1</td><td>322214</td><td>322576.1</td><td style="font-weight:700;color:#e65100">362.1 L</td><td>2602</td><td style="color:#1565c0;font-weight:700">362.10 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:48</td><td>Vander</td><td style="font-weight:700;white-space:nowrap">PAC - 004   HYNDAI 745 - 9</td><td>Bomba 1</td><td>322008.9</td><td>322214.0</td><td style="font-weight:700;color:#e65100">205.1 L</td><td>7343.6</td><td style="color:#1565c0;font-weight:700">6.79 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>16/06/2026</td><td>22:47</td><td>Samuel Marcondes</td><td style="font-weight:700;white-space:nowrap">GRU - 000   CX130</td><td>Bomba 1</td><td>321899.7</td><td>322008.9</td><td style="font-weight:700;color:#e65100">109.2 L</td><td>10045.6</td><td style="color:#1565c0;font-weight:700">2.56 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>16/06/2026</td><td>22:44</td><td>Marcelo Cunha</td><td style="font-weight:700;white-space:nowrap">PAC - 014   HYUNDAI 757 - 9</td><td>Bomba 1</td><td>321627.2</td><td>321899.7</td><td style="font-weight:700;color:#e65100">272.5 L</td><td>1092.4</td><td style="color:#1565c0;font-weight:700">27.81 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:42</td><td>Marcelo Cunha</td><td style="font-weight:700;white-space:nowrap">PAC - 014   HYUNDAI 757 - 9</td><td>Bomba 1</td><td>321516.2</td><td>321627.2</td><td style="font-weight:700;color:#e65100">111.0 L</td><td>1082.6</td><td style="color:#1565c0;font-weight:700">7.60 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:40</td><td>Vander</td><td style="font-weight:700;white-space:nowrap">PAC - 004   HYNDAI 745 - 9</td><td>Bomba 1</td><td>321371.1</td><td>321516.2</td><td style="font-weight:700;color:#e65100">145.1 L</td><td>7313.4</td><td style="color:#1565c0;font-weight:700">—</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:39</td><td>Marcelo Cunha</td><td style="font-weight:700;white-space:nowrap">PAC - 014   HYUNDAI 757 - 9</td><td>Bomba 1</td><td>321213.5</td><td>321371.1</td><td style="font-weight:700;color:#e65100">157.6 L</td><td>1068</td><td style="color:#1565c0;font-weight:700">—</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:37</td><td>Samuel Marcondes</td><td style="font-weight:700;white-space:nowrap">GRU - 000   CX130</td><td>Bomba 1</td><td>321116.4</td><td>321213.5</td><td style="font-weight:700;color:#e65100">97.1 L</td><td>10002.9</td><td style="color:#1565c0;font-weight:700">33.48 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:36</td><td>Samuel Marcondes</td><td style="font-weight:700;white-space:nowrap">PIC - 008   PLANALTO FOREST FOX 600X800</td><td>Bomba 1</td><td>320747</td><td>321116.4</td><td style="font-weight:700;color:#e65100">369.4 L</td><td>2601</td><td style="color:#1565c0;font-weight:700">369.40 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-pend">↻ Pendente</span></td><td>17/06/2026</td><td>22:35</td><td>Vander</td><td style="font-weight:700;white-space:nowrap">PAC - 014   HYUNDAI 757 - 9</td><td>Bomba 1</td><td>320605</td><td>320747</td><td style="font-weight:700;color:#e65100">142.0 L</td><td>7298.3</td><td style="color:#1565c0;font-weight:700">—</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:27</td><td>Vander</td><td style="font-weight:700;white-space:nowrap">PIC - 008   PLANALTO FOREST FOX 600X800</td><td>Bomba 1</td><td>320272.6</td><td>320605</td><td style="font-weight:700;color:#e65100">332.4 L</td><td>2600</td><td style="color:#1565c0;font-weight:700">—</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:13</td><td>Samuel Marcondes</td><td style="font-weight:700;white-space:nowrap">GRU - 000   CX130</td><td>Bomba 1</td><td>320140.6</td><td>320272.6</td><td style="font-weight:700;color:#e65100">132.0 L</td><td>10000</td><td style="color:#1565c0;font-weight:700">—</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:13</td><td>Marcelo Cunha</td><td style="font-weight:700;white-space:nowrap">PAC - 014   HYUNDAI 757 - 9</td><td>Bomba 1</td><td>319950.5</td><td>320140.6</td><td style="font-weight:700;color:#e65100">190.1 L</td><td>1049.4</td><td style="color:#1565c0;font-weight:700">—</td><td>Faz.Europa</td></tr></tbody>
+    <tbody id="tbody">
+      <tr><td colspan="12" class="empty">Nenhum registro ainda.</td></tr>
+    </tbody>
   </table>
 </div>
 
@@ -641,8 +654,8 @@ buscarEstoque();
 <div id="modal-ocr" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:2000;align-items:center;justify-content:center;padding:20px">
   <div style="background:#fff;border-radius:12px;padding:20px;width:100%;max-width:420px;margin:auto">
     <div style="font-size:15px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
-      📷 Foto do Horímetro
-      <button onclick="fecharOCR()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#888">✕</button>
+      &#128247; Foto do Horímetro
+      <button onclick="fecharOCR()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#888">&#10005;</button>
     </div>
     <img id="ocr-preview" style="width:100%;border-radius:8px;margin-bottom:12px;display:none">
     <div id="ocr-status" style="text-align:center;padding:12px;font-size:13px;color:#666;display:none"></div>
@@ -652,8 +665,8 @@ buscarEstoque();
         <div style="font-size:32px;font-weight:700;color:#1b5e20" id="ocr-valor">—</div>
       </div>
       <div style="display:flex;gap:8px">
-        <button onclick="confirmarOCR()" style="flex:1;background:#e65100;color:#fff;border:none;padding:11px;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer">✓ Usar este valor</button>
-        <button onclick="abrirCamera()" style="background:#fff;color:#555;border:1px solid #ccc;padding:11px 14px;border-radius:7px;font-size:13px;cursor:pointer">📷 Nova foto</button>
+        <button onclick="confirmarOCR()" style="flex:1;background:#e65100;color:#fff;border:none;padding:11px;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer">&#10003; Usar este valor</button>
+        <button onclick="abrirCamera()" style="background:#fff;color:#555;border:1px solid #ccc;padding:11px 14px;border-radius:7px;font-size:13px;cursor:pointer">&#128247; Nova foto</button>
       </div>
     </div>
     <div id="ocr-erro" style="display:none;background:#fdecea;border:1px solid #ffcdd2;border-radius:8px;padding:12px;font-size:13px;color:#c62828;text-align:center;margin-bottom:12px"></div>
@@ -771,6 +784,5 @@ document.getElementById('modal-ocr').addEventListener('click',function(e){
 });
 </script>
 
-
-
-</body></html>
+</body>
+</html>

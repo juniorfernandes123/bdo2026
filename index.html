@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- saved from url=(0045)file:///C:/Users/mauri/Downloads/index_2.html -->
-<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Boletim Diário — Costa Rica</title>
-<script src="./index_files/xlsx.full.min.js.download"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f5f5f0;color:#1a1a1a;padding:16px;max-width:980px;margin:0 auto}
@@ -96,14 +96,25 @@ tbody tr:hover td{background:#fafaf7}
   .btn-p,.btn-s,.btn-danger{width:100%}
   .resumo-cards{flex-direction:column}
 }
+.links-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.link-btn{background:#fff;border:1px solid #ddd;color:#555;padding:8px 16px;border-radius:7px;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.link-btn:hover{background:#f5f5f0;color:#1a1a1a}
 </style>
 </head>
 <body>
 
 <div class="hdr">
-  <h1>📋 Boletim Diário de Equipamento</h1>
-  <p class="subtitle">Costa Rica — Lançamento de apontamentos por equipamento</p>
-  <div class="save-info">☁ Dados enviados automaticamente para o Google Sheets</div>
+  <h1>&#128203; Boletim Diário de Equipamento</h1>
+  <p class="subtitle">Costa Rica &mdash; Lançamento de apontamentos por equipamento</p>
+  <div class="save-info">&#9729; Dados enviados automaticamente para o Google Sheets</div>
+</div>
+
+<div class="links-bar">
+  <a href="home.html" class="link-btn">🏠 Início</a>
+  <a href="index.html" class="link-btn" style="background:#1565c0;color:#fff;border-color:#1565c0" style="background:#1565c0;color:#fff;border-color:#1565c0">📋 Boletim</a>
+  <a href="abastecimento.html" class="link-btn">⛽ Abastecimento</a>
+  <a href="dashboard.html" class="link-btn">📊 Dashboard Op.</a>
+  <a href="dashboard_abast.html" class="link-btn">📈 Dashboard Abast.</a>
 </div>
 
 <!-- IDENTIFICAÇÃO -->
@@ -111,13 +122,13 @@ tbody tr:hover td{background:#fafaf7}
   <div class="section-title">Identificação do dia</div>
   <div class="grid3">
     <div class="field"><label>Data *</label><input type="date" id="f-data"></div>
-    <div class="field"><label>Operador *</label><select id="f-op"><option value="">Selecione...</option><option value="Marcelo Cunha">Marcelo Cunha</option><option value="Samuel Marcondes">Samuel Marcondes</option><option value="José Wellington">José Wellington</option><option value="Vander Pereira">Vander Pereira</option></select></div>
-    <div class="field"><label>Fazenda *</label><select id="f-faz" onchange="atualizarTalhoes()"><option value="">Selecione...</option><option value="Faz.Europa">Faz.Europa</option></select></div>
+    <div class="field"><label>Operador *</label><select id="f-op"><option value="">Carregando...</option></select></div>
+    <div class="field"><label>Fazenda *</label><select id="f-faz" onchange="atualizarTalhoes()"><option value="">Carregando...</option></select></div>
   </div>
   <div class="grid3" style="margin-top:10px">
-    <div class="field"><label>Equipamento *</label><select id="f-eq" onchange="onEqChange()"><option value="">Selecione...</option><option value="PIC - 008   PLANALTO FOREST FOX 600X800|Picagem">PIC - 008   PLANALTO FOREST FOX 600X800 — Picagem</option><option value="PAC - 004   HYNDAI 745 - 9|Arraste">PAC - 004   HYNDAI 745 - 9 — Arraste</option><option value="PAC - 014   HYUNDAI 757 - 9|Arraste">PAC - 014   HYUNDAI 757 - 9 — Arraste</option><option value="GRU - 000   CX130|Grua">GRU - 000   CX130 — Grua</option></select></div>
-    <div class="field"><label>Atividade</label><select id="f-atv" onchange="atualizarTalhoes()" style=""><option value="">Selecione...</option><option value="Picagem">Picagem</option><option value="Arraste">Arraste</option><option value="Grua">Grua</option></select></div>
-    <div class="field"><label>Talhão</label><select id="f-tal"><option value="">Selecione...</option><option value="44">Talhão 44</option><option value="58">Talhão 58</option><option value="47">Talhão 47</option><option value="71">Talhão 71</option><option value="17">Talhão 17</option></select></div>
+    <div class="field"><label>Equipamento *</label><select id="f-eq" onchange="onEqChange()"><option value="">Carregando...</option></select></div>
+    <div class="field"><label>Atividade</label><select id="f-atv" onchange="atualizarTalhoes()"><option value="">Selecione...</option></select></div>
+    <div class="field"><label>Talhão</label><select id="f-tal"><option value="">Selecione a fazenda...</option></select></div>
   </div>
   <div class="grid2" style="margin-top:10px">
     <div class="field"><label>Árvores/hora</label><input type="number" id="f-arvh" step="1" min="0" placeholder="Ex: 200"></div>
@@ -129,20 +140,20 @@ tbody tr:hover td{background:#fafaf7}
 <!-- OCORRÊNCIAS -->
 <div class="section">
   <div class="section-title">Ocorrências do dia — cada uma é uma linha na planilha</div>
-  <div id="oc-list"><div class="oc-item" id="oc-1"><div class="oc-num">● Ocorrência 1</div><button class="oc-remove" onclick="rmOc(1)">✕ Remover</button><div class="grid4" style="margin-bottom:8px"><div class="field" style="grid-column:span 2"><label>Código *</label><select id="oc-cod-1" onchange="updateCodOc(1)"><option value="">Selecione...</option><option value="1|Operacao|Trabalho">1 — Operação</option><option value="2|Inspecao Check List|Operacional">2 — Inspeção/Check List</option><option value="3|Deslocamento na area|Operacional">3 — Deslocamento na área</option><option value="4|Em transito prancha|Operacional">4 — Em trânsito (prancha)</option><option value="5|Limpeza Lavagem|Operacional">5 — Limpeza/Lavagem</option><option value="6|Atraso transporte|Operacional">6 — Atraso de transporte</option><option value="7|Reuniao Treinamento|Operacional">7 — Reunião/Treinamento</option><option value="8|Refeicao|Operacional">8 — Refeição</option><option value="9|Troca facas videas|Operacional">9 — Troca de facas/vídeas</option><option value="95|Troca Concha Ancinho|Operacional">95 — Troca da Concha/Ancinho</option><option value="100|Abastecimento Lubrificacao|Manutencao">100 — Abastecimento/Lubrificação</option><option value="200|Aguardando Peca|Manutencao">200 — Aguardando Peça</option><option value="300|Aguardando Mecanico|Manutencao">300 — Aguardando Mecânico</option><option value="400|Manutencao Corretiva|Manutencao">400 — Manutenção Corretiva</option><option value="500|Manutencao Preventiva|Manutencao">500 — Manutenção Preventiva</option><option value="10|Hibernado A disposicao|Administrativo">10 — Hibernado/A disposição</option><option value="600|Horimetro Nao Funciona|Operacional">600 — Horímetro Não Funciona</option></select></div><div class="field"><label>Tipo</label><input type="text" id="oc-tipo-1" readonly="" placeholder="Auto"></div><div class="field"><label>Horas totais</label><input type="text" id="oc-ht-1" readonly="" placeholder="—"></div></div><div class="grid2" style="margin-bottom:8px"><div class="field"><label>Hora inicial *</label><input type="time" id="oc-hi-1" onchange="calcHorasOc(1)"></div><div class="field"><label>Hora final *</label><input type="time" id="oc-hf-1" onchange="calcHorasOc(1)"></div></div><hr class="oc-divider"><div class="grid3"><div class="field"><label>Horímetro inicial</label><input type="number" id="oc-hi2-1" step="0.1" min="0" placeholder="Ex: 904.5" oninput="calcHorimOc(1)" class="auto-filled"><span id="oc-hint-1" style="display: block;" class="hint-ok">✓ Último horímetro: <b>1101.1h</b></span></div><div class="field"><label>Horímetro final</label><input type="number" id="oc-hf2-1" step="0.1" min="0" placeholder="Ex: 914.5" oninput="onHorimFinalChange(1)"></div><div class="field"><label>Horímetro total</label><input type="text" id="oc-htot-1" readonly="" placeholder="—"></div></div></div></div>
+  <div id="oc-list"></div>
   <button class="btn-add-oc" onclick="addOc()">+ Adicionar ocorrência</button>
 </div>
 
 <!-- AÇÕES -->
 <div class="actions">
-  <button class="btn-p" id="btn-env" onclick="enviar()">▲ Enviar para Google Sheets</button>
-  <button class="btn-s" onclick="reenviarPendentes()" id="btn-reenv" style="display:none">↻ Reenviar (<span id="pend-cnt">0</span>)</button>
+  <button class="btn-p" id="btn-env" onclick="enviar()">&#9650; Enviar para Google Sheets</button>
+  <button class="btn-s" onclick="reenviarPendentes()" id="btn-reenv" style="display:none">&#8635; Reenviar (<span id="pend-cnt">0</span>)</button>
 </div>
 <div class="actions" style="margin-top:0">
-  <button class="btn-s-green" onclick="abrirHorim()">📈 Meu Horímetro</button>
-  <button class="btn-s-purple" onclick="abrirHistorico()">🕐 Meu Histórico</button>
-  <button class="btn-s" onclick="exportXL()">↓ Exportar Excel</button>
-  <button class="btn-danger" onclick="clearAll()" style="margin-left:auto">🗑 Apagar tudo</button>
+  <button class="btn-s-green" onclick="abrirHorim()">&#128200; Meu Horímetro</button>
+  <button class="btn-s-purple" onclick="abrirHistorico()">&#128336; Meu Histórico</button>
+  <button class="btn-s" onclick="exportXL()">&#8595; Exportar Excel</button>
+  <button class="btn-danger" onclick="clearAll()" style="margin-left:auto">&#128465; Apagar tudo</button>
 </div>
 
 <div class="status-bar">
@@ -169,12 +180,12 @@ tbody tr:hover td{background:#fafaf7}
 <div class="modal-overlay" id="modal-horim">
   <div class="modal-box" style="max-width:480px">
     <div class="modal-header">
-      <span class="modal-title">📈 Meu Horímetro Total</span>
-      <button class="modal-close" onclick="fecharModal(&#39;modal-horim&#39;)">✕</button>
+      <span class="modal-title">&#128200; Meu Horímetro Total</span>
+      <button class="modal-close" onclick="fecharModal('modal-horim')">&#10005;</button>
     </div>
     <div class="field" style="margin-bottom:12px">
       <label>Selecione seu nome</label>
-      <select id="horim-op"><option value="">Selecione...</option><option value="Marcelo Cunha">Marcelo Cunha</option><option value="Samuel Marcondes">Samuel Marcondes</option><option value="José Wellington">José Wellington</option><option value="Vander Pereira">Vander Pereira</option></select>
+      <select id="horim-op"><option value="">Selecione...</option></select>
     </div>
     <button onclick="buscarHorim()" style="width:100%;background:#2e7d32;color:#fff;border:none;padding:10px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:700;margin-bottom:14px">Buscar na planilha</button>
     <div id="horim-loading" style="display:none;text-align:center;padding:16px;color:#2e7d32;font-size:13px"><span class="spinner-sm" style="border-color:#2e7d32;border-top-color:transparent"></span> Buscando...</div>
@@ -194,13 +205,13 @@ tbody tr:hover td{background:#fafaf7}
 <div class="modal-overlay" id="modal-hist">
   <div class="modal-box">
     <div class="modal-header">
-      <span class="modal-title">🕐 Meu Histórico de Lançamentos</span>
-      <button class="modal-close" onclick="fecharModal(&#39;modal-hist&#39;)">✕</button>
+      <span class="modal-title">&#128336; Meu Histórico de Lançamentos</span>
+      <button class="modal-close" onclick="fecharModal('modal-hist')">&#10005;</button>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
       <div style="flex:1;min-width:180px">
         <label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:4px">Selecione seu nome</label>
-        <select id="hist-op"><option value="">Selecione...</option><option value="Marcelo Cunha">Marcelo Cunha</option><option value="Samuel Marcondes">Samuel Marcondes</option><option value="José Wellington">José Wellington</option><option value="Vander Pereira">Vander Pereira</option></select>
+        <select id="hist-op"><option value="">Selecione...</option></select>
       </div>
       <div style="display:flex;align-items:flex-end">
         <button onclick="buscarHist()" style="background:#6a1b9a;color:#fff;border:none;padding:10px 20px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:700;white-space:nowrap">Buscar histórico</button>
@@ -785,6 +796,5 @@ addOc();
 load();
 carregarCadastros();
 </script>
-
-
-</body></html>
+</body>
+</html>

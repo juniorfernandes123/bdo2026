@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- saved from url=(0049)file:///C:/Users/mauri/Downloads/dashboard_3.html -->
-<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — Costa Rica</title>
-<script src="./dashboard_files/chart.umd.min.js.download"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f0f2f5;color:#1a1a1a;padding:16px;max-width:1100px;margin:0 auto}
@@ -87,22 +87,27 @@ body{font-family:Arial,sans-serif;background:#f0f2f5;color:#1a1a1a;padding:16px;
 
 <div class="hdr">
   <div>
-    <h1>📊 Dashboard Operacional</h1>
-    <p>Costa Rica — Disponibilidade Mecânica e Eficiência Operacional</p>
+    <h1>&#128202; Dashboard Operacional</h1>
+    <p>Costa Rica &mdash; Disponibilidade Mecânica e Eficiência Operacional</p>
   </div>
   <div class="hdr-right">
     <input type="date" id="sel-data" class="data-sel">
-    <button class="btn-buscar" onclick="buscarDados()">🔍 Buscar</button>
+    <button class="btn-buscar" onclick="buscarDados()">&#128269; Buscar</button>
   </div>
 </div>
 
 <div class="links-bar">
-  <a href="file:///C:/Users/mauri/Downloads/index.html" class="link-btn">📋 Boletim</a>
-  <a href="file:///C:/Users/mauri/Downloads/abastecimento.html" class="link-btn">⛽ Abastecimento</a>
-  <a href="file:///C:/Users/mauri/Downloads/dashboard.html" class="link-btn active">📊 Dashboard</a>
+  <a href="index.html" class="link-btn">&#128203; Boletim</a>
+  <a href="abastecimento.html" class="link-btn">&#9981; Abastecimento</a>
+  <a href="dashboard.html" class="link-btn active">&#128202; Dashboard</a>
 </div>
 
-<div id="conteudo"><div class="cards-row"><div class="card card-blue"><div class="card-label">Horas Totais</div><div class="card-val">26.6h</div><div class="card-sub">3 operador(es)</div></div><div class="card card-green"><div class="card-label">DM Geral</div><div class="card-val" style="color:#2e7d32">97.1%</div><div class="card-sub">Meta: ≥ 85%</div></div><div class="card card-orange"><div class="card-label">EO Geral</div><div class="card-val" style="color:#1565c0">95.5%</div><div class="card-sub">Meta: ≥ 80%</div></div><div class="card card-purple"><div class="card-label">Horas Manutenção</div><div class="card-val">0.8h</div><div class="card-sub">2.9% do total</div></div></div><div class="grid2"><div class="panel"><div class="panel-title">📈 Disponibilidade Mecânica por Operador</div><div style="margin-bottom:8px;font-size:11px;color:#888">Meta: ≥ 85% <span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:100px;margin-left:4px">Verde</span> ≥ 70% <span style="background:#fff8e1;color:#e65100;padding:2px 8px;border-radius:100px;margin-left:4px">Amarelo</span> &lt; 70% <span style="background:#fdecea;color:#c62828;padding:2px 8px;border-radius:100px;margin-left:4px">Vermelho</span></div><div class="bar-row"><div class="bar-name" title="José Wellington">José</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#2e7d32">100%</div></div><div class="bar-pct" style="color:#2e7d32">100%</div></div><div class="bar-row"><div class="bar-name" title="Marcelo Cunha">Marcelo</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#2e7d32">100%</div></div><div class="bar-pct" style="color:#2e7d32">100%</div></div><div class="bar-row"><div class="bar-name" title="Vander Pereira">Vander</div><div class="bar-track"><div class="bar-fill" style="width:91.9%;background:#2e7d32">91.9%</div></div><div class="bar-pct" style="color:#2e7d32">91.9%</div></div></div><div class="panel"><div class="panel-title">⚙ Eficiência Operacional por Operador</div><div style="margin-bottom:8px;font-size:11px;color:#888">Meta: ≥ 80% <span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:100px;margin-left:4px">Verde</span> ≥ 60% <span style="background:#fff8e1;color:#e65100;padding:2px 8px;border-radius:100px;margin-left:4px">Amarelo</span> &lt; 60% <span style="background:#fdecea;color:#c62828;padding:2px 8px;border-radius:100px;margin-left:4px">Vermelho</span></div><div class="bar-row"><div class="bar-name" title="José Wellington">José</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#1565c0">100%</div></div><div class="bar-pct" style="color:#1565c0">100%</div></div><div class="bar-row"><div class="bar-name" title="Marcelo Cunha">Marcelo</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#1565c0">100%</div></div><div class="bar-pct" style="color:#1565c0">100%</div></div><div class="bar-row"><div class="bar-name" title="Vander Pereira">Vander</div><div class="bar-track"><div class="bar-fill" style="width:86.7%;background:#1565c0">86.7%</div></div><div class="bar-pct" style="color:#1565c0">86.7%</div></div></div></div><div class="grid2"><div class="panel"><div class="panel-title">📈 Distribuição de Horas</div><canvas id="chart-pizza" height="574" style="display: block; box-sizing: border-box; height: 459px; width: 459px;" width="574"></canvas></div><div class="panel"><div class="panel-title">📋 Detalhamento por Operador</div><table class="op-table"><thead><tr><th>Operador</th><th>H.Total</th><th>H.Disp</th><th>H.Manut</th><th>H.Op</th><th>DM%</th><th>EO%</th></tr></thead><tbody><tr><td><span class="status-dot dot-green"></span>José Wellington</td><td>7.57h</td><td>7.57h</td><td style="color:#c62828">0.00h</td><td style="color:#1565c0">7.57h</td><td><span class="meta-badge mb-green">100.0%</span></td><td><span class="meta-badge mb-green">100.0%</span></td></tr><tr><td><span class="status-dot dot-green"></span>Marcelo Cunha</td><td>9.48h</td><td>9.48h</td><td style="color:#c62828">0.00h</td><td style="color:#1565c0">9.48h</td><td><span class="meta-badge mb-green">100.0%</span></td><td><span class="meta-badge mb-green">100.0%</span></td></tr><tr><td><span class="status-dot dot-green"></span>Vander Pereira</td><td>9.50h</td><td>8.73h</td><td style="color:#c62828">0.77h</td><td style="color:#1565c0">7.57h</td><td><span class="meta-badge mb-green">91.9%</span></td><td><span class="meta-badge mb-green">86.7%</span></td></tr></tbody></table></div></div><div class="panel" style="margin-top:16px"><div class="panel-title">🎯 Status das Metas — 18/06/2026</div><div><div class="meta-line"><span style="font-weight:700">José Wellington</span><div style="display:flex;gap:8px"><span class="meta-badge mb-green">DM: 100.0% ✓</span><span class="meta-badge mb-green">EO: 100.0% ✓</span></div></div><div class="meta-line"><span style="font-weight:700">Marcelo Cunha</span><div style="display:flex;gap:8px"><span class="meta-badge mb-green">DM: 100.0% ✓</span><span class="meta-badge mb-green">EO: 100.0% ✓</span></div></div><div class="meta-line"><span style="font-weight:700">Vander Pereira</span><div style="display:flex;gap:8px"><span class="meta-badge mb-green">DM: 91.9% ✓</span><span class="meta-badge mb-green">EO: 86.7% ✓</span></div></div></div></div></div>
+<div id="conteudo">
+  <div class="loading">
+    <div class="spinner"></div>
+    <div>Selecione uma data e clique em Buscar</div>
+  </div>
+</div>
 
 <script>
 var URL_GS = 'https://script.google.com/macros/s/AKfycbwDRI5B1Qt7KK2G7ZPZymGFyN4yRGLioCOON4K2bQCWKiFty50oBsYrR9be38e82w5X-w/exec';
@@ -317,6 +322,5 @@ function renderDashboard(resp, dataFmt){
 // Buscar automaticamente com a data de hoje
 buscarDados();
 </script>
-
-
-</body></html>
+</body>
+</html>
