@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Abastecimento — Costa Rica</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f0f2f5;color:#1a1a1a;padding:16px;max-width:1100px;margin:0 auto}
+.hdr{background:linear-gradient(135deg,#e65100,#bf360c);color:#fff;border-radius:12px;padding:20px 24px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.hdr h1{font-size:20px;font-weight:700;margin-bottom:3px}
+.hdr p{font-size:13px;opacity:.85}
+.hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sel{padding:8px 14px;border-radius:7px;border:none;font-size:13px;font-weight:700;cursor:pointer;background:rgba(255,255,255,0.2);color:#fff;border:1.5px solid rgba(255,255,255,0.4)}
+.btn-buscar{background:#fff;color:#e65100;border:none;padding:8px 18px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer}
+.links-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.link-btn{background:#fff;border:1px solid #ddd;color:#555;padding:8px 16px;border-radius:7px;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.link-btn:hover{background:#f5f5f0}
+.link-btn.active{background:#e65100;color:#fff;border-color:#e65100}
+.cards-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.card{background:#fff;border-radius:10px;padding:16px;border-left:4px solid #ddd;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.card-label{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
+.card-val{font-size:26px;font-weight:700;line-height:1}
+.card-sub{font-size:12px;color:#888;margin-top:4px}
+.card-orange{border-left-color:#e65100}.card-orange .card-val{color:#e65100}
+.card-green{border-left-color:#2e7d32}.card-green .card-val{color:#2e7d32}
+.card-blue{border-left-color:#1565c0}.card-blue .card-val{color:#1565c0}
+.card-red{border-left-color:#c62828}.card-red .card-val{color:#c62828}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.panel{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.panel-title{font-size:13px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px}
+.panel-full{grid-column:span 2}
+.estoque-bar{height:28px;background:#f0f0ea;border-radius:100px;overflow:hidden;margin:12px 0}
+.estoque-fill{height:100%;border-radius:100px;display:flex;align-items:center;padding-left:12px;font-size:12px;font-weight:700;color:#fff;transition:width .8s ease}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{background:#f5f5f0;padding:9px 10px;text-align:left;font-weight:700;color:#555;font-size:11px;text-transform:uppercase;border-bottom:2px solid #eee}
+.tbl td{padding:9px 10px;border-bottom:1px solid #f0f0ea}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#fff3e0}
+.badge{display:inline-block;font-size:11px;padding:2px 9px;border-radius:100px;font-weight:700}
+.badge-ok{background:#e8f5e9;color:#2e7d32}
+.badge-med{background:#fff8e1;color:#e65100}
+.badge-low{background:#fdecea;color:#c62828}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bar-name{font-size:12px;color:#555;width:150px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;background:#f0f0ea;border-radius:100px;height:18px;overflow:hidden}
+.bar-fill{height:100%;border-radius:100px;background:#e65100;display:flex;align-items:center;padding-left:8px;font-size:10px;font-weight:700;color:#fff}
+.bar-val{font-size:12px;font-weight:700;color:#e65100;width:60px;text-align:right;flex-shrink:0}
+.loading{text-align:center;padding:3rem;color:#888;font-size:14px}
+.spinner{display:inline-block;width:32px;height:32px;border:3px solid #ffe0b2;border-top:3px solid #e65100;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:3rem;color:#aaa;font-size:14px}
+@media(max-width:700px){
+  .cards-row{grid-template-columns:1fr 1fr}
+  .grid2{grid-template-columns:1fr}
+  .panel-full{grid-column:span 1}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>📈 Dashboard Abastecimento</h1>
+    <p>Costa Rica &mdash; Consumo de Combustível e Estoque</p>
+  </div>
+  <div class="hdr-right">
+    <input type="month" id="sel-mes" class="sel">
+    <button class="btn-buscar" onclick="buscarDados()">🔍 Buscar</button>
+  </div>
+</div>
+
+<div class="links-bar">
+  <a href="home.html" class="link-btn">🏠 Início</a>
+  <a href="index.html" class="link-btn">📋 Boletim</a>
+  <a href="abastecimento.html" class="link-btn">⛽ Abastecimento</a>
+  <a href="dashboard.html" class="link-btn">📊 Dashboard Op.</a>
+  <a href="dashboard_abast.html" class="link-btn active">📈 Dashboard Abast.</a>
+</div>
+
+<div id="conteudo">
+  <div class="loading">
+    <div class="spinner"></div>
+    <div>Selecione o mês e clique em Buscar</div>
+  </div>
+</div>
+
+<script>
+var URL_ABAST = 'https://script.google.com/macros/s/AKfycbyBlIxhe2icuQcICFFUabK8gyRyfnbMvWP4Y1FH2sHVFo0P2Qd5FI3r7c5_KzCciS-8VQ/exec';
+var chartConsumo = null;
+
+// Mês atual como padrão
+var hoje = new Date();
+document.getElementById('sel-mes').value = hoje.getFullYear()+'-'+('0'+(hoje.getMonth()+1)).slice(-2);
+
+function buscarDados(){
+  var mes = document.getElementById('sel-mes').value;
+  if(!mes){alert('Selecione o mês!');return;}
+
+  document.getElementById('conteudo').innerHTML =
+    '<div class="loading"><div class="spinner"></div><div>Buscando dados...</div></div>';
+
+  if(chartConsumo){chartConsumo.destroy();chartConsumo=null;}
+
+  // Buscar estoque e histórico em paralelo
+  Promise.all([
+    fetch(URL_ABAST+'?acao=estoque&_t='+Date.now()).then(function(r){return r.json();}),
+    fetch(URL_ABAST+'?acao=dashAbast&mes='+encodeURIComponent(mes)+'&_t='+Date.now()).then(function(r){return r.json();})
+  ]).then(function(results){
+    renderDashboard(results[0], results[1], mes);
+  }).catch(function(){
+    document.getElementById('conteudo').innerHTML =
+      '<div class="empty">Erro ao buscar dados. Verifique a internet.</div>';
+  });
+}
+
+function renderDashboard(estoque, dados, mes){
+  var saldo = parseFloat(estoque.saldo) || 0;
+  var registros = dados.registros || [];
+  var porEquip = dados.porEquip || {};
+  var totalLitros = dados.totalLitros || 0;
+  var totalAbast = dados.totalAbast || 0;
+
+  var mesLabel = mes.split('-');
+  var meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var mesNome = meses[parseInt(mesLabel[1])-1]+'/'+mesLabel[0];
+
+  var html = '';
+
+  // CARDS
+  var corEstoque = saldo > 2000 ? '#2e7d32' : saldo > 500 ? '#e65100' : '#c62828';
+  var pctEstoque = Math.min((saldo/5000)*100, 100);
+  html += '<div class="cards-row">';
+  html += '<div class="card card-orange"><div class="card-label">Total Abastecido</div><div class="card-val">'+parseFloat(totalLitros).toFixed(0)+' L</div><div class="card-sub">'+mesNome+'</div></div>';
+  html += '<div class="card card-blue"><div class="card-label">Abastecimentos</div><div class="card-val">'+totalAbast+'</div><div class="card-sub">registros no mês</div></div>';
+  html += '<div class="card" style="border-left-color:'+corEstoque+'"><div class="card-label">Estoque Atual</div><div class="card-val" style="color:'+corEstoque+'">'+saldo.toFixed(0)+' L</div><div class="card-sub">'+(saldo>2000?'Normal':saldo>500?'Médio':'⚠️ Baixo')+'</div></div>';
+  html += '<div class="card card-blue"><div class="card-label">Média por Abast.</div><div class="card-val">'+(totalAbast>0?(totalLitros/totalAbast).toFixed(0):0)+' L</div><div class="card-sub">litros por abastecimento</div></div>';
+  html += '</div>';
+
+  // ESTOQUE VISUAL
+  html += '<div class="panel" style="margin-bottom:16px">';
+  html += '<div class="panel-title">⛽ Nível do Estoque de Diesel S10</div>';
+  html += '<div style="display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:6px"><span>0 L</span><span>Capacidade estimada: 5.000 L</span></div>';
+  html += '<div class="estoque-bar"><div class="estoque-fill" style="width:'+pctEstoque+'%;background:'+corEstoque+'">'+saldo.toFixed(0)+' L</div></div>';
+  html += '<div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap">';
+  html += '<span style="font-size:12px;color:#888">🟢 Normal: &gt; 2.000L</span>';
+  html += '<span style="font-size:12px;color:#888">🟡 Médio: 500-2.000L</span>';
+  html += '<span style="font-size:12px;color:#888">🔴 Baixo: &lt; 500L</span>';
+  html += '</div></div>';
+
+  // GRID
+  html += '<div class="grid2">';
+
+  // Consumo por equipamento - barras
+  var eqs = Object.keys(porEquip);
+  var maxLitros = 0;
+  eqs.forEach(function(eq){maxLitros=Math.max(maxLitros,parseFloat(porEquip[eq].litros)||0);});
+
+  html += '<div class="panel"><div class="panel-title">🚜 Consumo por Equipamento ('+mesNome+')</div>';
+  if(eqs.length){
+    eqs.sort(function(a,b){return (parseFloat(porEquip[b].litros)||0)-(parseFloat(porEquip[a].litros)||0);});
+    eqs.forEach(function(eq){
+      var litros=parseFloat(porEquip[eq].litros)||0;
+      var pct=maxLitros>0?(litros/maxLitros*100):0;
+      var consumo=porEquip[eq].consumoMedio||'—';
+      html+='<div class="bar-row">';
+      html+='<div class="bar-name" title="'+eq+'">'+eq.trim().split(' ')[0]+' '+eq.trim().split(' ')[1]+'</div>';
+      html+='<div class="bar-track"><div class="bar-fill" style="width:'+pct+'%">'+litros.toFixed(0)+'L</div></div>';
+      html+='<div class="bar-val">'+litros.toFixed(0)+'L</div>';
+      html+='</div>';
+      if(consumo!=='—') html+='<div style="font-size:11px;color:#888;margin-left:160px;margin-top:-6px;margin-bottom:6px">Consumo médio: '+consumo+' L/h</div>';
+    });
+  } else {
+    html+='<div style="color:#aaa;text-align:center;padding:2rem">Nenhum registro no período</div>';
+  }
+  html+='</div>';
+
+  // Histórico recente
+  html += '<div class="panel"><div class="panel-title">📋 Últimos Abastecimentos</div>';
+  if(registros.length){
+    html += '<table class="tbl"><thead><tr><th>Data</th><th>Operador</th><th>Equip.</th><th>Litros</th><th>Cons.L/h</th></tr></thead><tbody>';
+    registros.slice(0,10).forEach(function(r){
+      var consumoBadge = r.consumo ? '<span class="badge '+(parseFloat(r.consumo)<20?'badge-ok':'badge-med')+'">'+r.consumo+'</span>' : '—';
+      html+='<tr><td>'+r.data+'</td><td>'+r.op+'</td><td style="white-space:nowrap;font-weight:700">'+r.eqCode+'</td><td style="color:#e65100;font-weight:700">'+parseFloat(r.litros||0).toFixed(1)+'L</td><td>'+consumoBadge+'</td></tr>';
+    });
+    html += '</tbody></table>';
+  } else {
+    html += '<div style="color:#aaa;text-align:center;padding:2rem">Nenhum registro</div>';
+  }
+  html += '</div>';
+
+  html += '</div>'; // fim grid2
+
+  document.getElementById('conteudo').innerHTML = html;
+}
+
+buscarDados();
+</script>
+</body>
+</html>
