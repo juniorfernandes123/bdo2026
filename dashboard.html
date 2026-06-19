@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<!-- saved from url=(0049)file:///C:/Users/mauri/Downloads/dashboard_1.html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Costa Rica</title>
+<script src="./dashboard_files/chart.umd.min.js.download"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f0f2f5;color:#1a1a1a;padding:16px;max-width:1100px;margin:0 auto}
+.hdr{background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;border-radius:12px;padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.hdr h1{font-size:20px;font-weight:700;margin-bottom:3px}
+.hdr p{font-size:13px;opacity:.85}
+.hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.data-sel{padding:8px 14px;border-radius:7px;border:none;font-size:13px;font-weight:700;cursor:pointer;background:rgba(255,255,255,0.2);color:#fff;border:1.5px solid rgba(255,255,255,0.4)}
+.btn-buscar{background:#fff;color:#1565c0;border:none;padding:8px 18px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer}
+.btn-buscar:hover{background:#e3f2fd}
+
+/* CARDS RESUMO */
+.cards-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.card{background:#fff;border-radius:10px;padding:16px;border-left:4px solid #ddd;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.card-label{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
+.card-val{font-size:28px;font-weight:700;line-height:1}
+.card-sub{font-size:12px;color:#888;margin-top:4px}
+.card-blue{border-left-color:#1565c0}.card-blue .card-val{color:#1565c0}
+.card-green{border-left-color:#2e7d32}.card-green .card-val{color:#2e7d32}
+.card-orange{border-left-color:#e65100}.card-orange .card-val{color:#e65100}
+.card-purple{border-left-color:#6a1b9a}.card-purple .card-val{color:#6a1b9a}
+
+/* GRID PRINCIPAL */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.panel{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.panel-title{font-size:13px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.panel-full{grid-column:span 2}
+
+/* TABELA OPERADORES */
+.op-table{width:100%;border-collapse:collapse;font-size:13px}
+.op-table th{background:#f5f5f0;padding:10px 12px;text-align:left;font-weight:700;color:#555;font-size:11px;text-transform:uppercase;border-bottom:2px solid #eee}
+.op-table td{padding:10px 12px;border-bottom:1px solid #f0f0ea}
+.op-table tr:last-child td{border-bottom:none}
+.op-table tr:hover td{background:#fafaf7}
+
+/* GAUGE */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;gap:4px}
+.gauge-label{font-size:11px;color:#888;font-weight:700;text-align:center}
+
+/* BARRAS */
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.bar-name{font-size:12px;color:#555;width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;background:#f0f0ea;border-radius:100px;height:20px;overflow:hidden}
+.bar-fill{height:100%;border-radius:100px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:700;color:#fff;transition:width .6s ease}
+.bar-pct{font-size:12px;font-weight:700;width:42px;text-align:right;flex-shrink:0}
+
+/* STATUS */
+.status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px}
+.dot-green{background:#2e7d32}
+.dot-yellow{background:#f9a825}
+.dot-red{background:#c62828}
+
+/* META */
+.meta-line{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0ea;font-size:13px}
+.meta-line:last-child{border-bottom:none}
+.meta-badge{font-size:11px;padding:3px 10px;border-radius:100px;font-weight:700}
+.mb-green{background:#e8f5e9;color:#2e7d32}
+.mb-yellow{background:#fff8e1;color:#e65100}
+.mb-red{background:#fdecea;color:#c62828}
+
+.loading{text-align:center;padding:3rem;color:#888;font-size:14px}
+.spinner{display:inline-block;width:32px;height:32px;border:3px solid #e0e0e0;border-top:3px solid #1565c0;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:3rem;color:#aaa;font-size:14px}
+
+.links-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.link-btn{background:#fff;border:1px solid #ddd;color:#555;padding:8px 16px;border-radius:7px;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.link-btn:hover{background:#f5f5f0;color:#1a1a1a}
+.link-btn.active{background:#1565c0;color:#fff;border-color:#1565c0}
+
+@media(max-width:700px){
+  .cards-row{grid-template-columns:1fr 1fr}
+  .grid2{grid-template-columns:1fr}
+  .panel-full{grid-column:span 1}
+  .hdr{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>📊 Dashboard Operacional</h1>
+    <p>Costa Rica — Disponibilidade Mecânica e Eficiência Operacional</p>
+  </div>
+  <div class="hdr-right">
+    <input type="date" id="sel-data" class="data-sel">
+    <button class="btn-buscar" onclick="buscarDados()">🔍 Buscar</button>
+  </div>
+</div>
+
+<div class="links-bar">
+  <a href="file:///C:/Users/mauri/Downloads/index.html" class="link-btn">📋 Boletim</a>
+  <a href="file:///C:/Users/mauri/Downloads/abastecimento.html" class="link-btn">⛽ Abastecimento</a>
+  <a href="file:///C:/Users/mauri/Downloads/dashboard.html" class="link-btn active">📊 Dashboard</a>
+</div>
+
+<div id="conteudo"><div class="cards-row"><div class="card card-blue"><div class="card-label">Horas Totais</div><div class="card-val">40.1h</div><div class="card-sub">4 operador(es)</div></div><div class="card card-green"><div class="card-label">DM Geral</div><div class="card-val" style="color:#2e7d32">100.0%</div><div class="card-sub">Meta: ≥ 85%</div></div><div class="card card-orange"><div class="card-label">EO Geral</div><div class="card-val" style="color:#f9a825">72.2%</div><div class="card-sub">Meta: ≥ 80%</div></div><div class="card card-purple"><div class="card-label">Horas Manutenção</div><div class="card-val">0.0h</div><div class="card-sub">0.0% do total</div></div></div><div class="grid2"><div class="panel"><div class="panel-title">📈 Disponibilidade Mecânica por Operador</div><div style="margin-bottom:8px;font-size:11px;color:#888">Meta: ≥ 85% <span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:100px;margin-left:4px">Verde</span> ≥ 70% <span style="background:#fff8e1;color:#e65100;padding:2px 8px;border-radius:100px;margin-left:4px">Amarelo</span> &lt; 70% <span style="background:#fdecea;color:#c62828;padding:2px 8px;border-radius:100px;margin-left:4px">Vermelho</span></div><div class="bar-row"><div class="bar-name" title="Marcelo Cunha">Marcelo</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#2e7d32">100%</div></div><div class="bar-pct" style="color:#2e7d32">100%</div></div><div class="bar-row"><div class="bar-name" title="Samuel Marcondes">Samuel</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#2e7d32">100%</div></div><div class="bar-pct" style="color:#2e7d32">100%</div></div><div class="bar-row"><div class="bar-name" title="José Wellington">José</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#2e7d32">100%</div></div><div class="bar-pct" style="color:#2e7d32">100%</div></div><div class="bar-row"><div class="bar-name" title="Vander Pereira">Vander</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#2e7d32">100%</div></div><div class="bar-pct" style="color:#2e7d32">100%</div></div></div><div class="panel"><div class="panel-title">⚙ Eficiência Operacional por Operador</div><div style="margin-bottom:8px;font-size:11px;color:#888">Meta: ≥ 80% <span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:100px;margin-left:4px">Verde</span> ≥ 60% <span style="background:#fff8e1;color:#e65100;padding:2px 8px;border-radius:100px;margin-left:4px">Amarelo</span> &lt; 60% <span style="background:#fdecea;color:#c62828;padding:2px 8px;border-radius:100px;margin-left:4px">Vermelho</span></div><div class="bar-row"><div class="bar-name" title="Marcelo Cunha">Marcelo</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#1565c0">100%</div></div><div class="bar-pct" style="color:#1565c0">100%</div></div><div class="bar-row"><div class="bar-name" title="Samuel Marcondes">Samuel</div><div class="bar-track"><div class="bar-fill" style="width:0%;background:#c62828">0%</div></div><div class="bar-pct" style="color:#c62828">0%</div></div><div class="bar-row"><div class="bar-name" title="José Wellington">José</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#1565c0">100%</div></div><div class="bar-pct" style="color:#1565c0">100%</div></div><div class="bar-row"><div class="bar-name" title="Vander Pereira">Vander</div><div class="bar-track"><div class="bar-fill" style="width:0%;background:#c62828">0%</div></div><div class="bar-pct" style="color:#c62828">0%</div></div></div></div><div class="grid2"><div class="panel"><div class="panel-title">📈 Distribuição de Horas</div><canvas id="chart-pizza" height="560" style="display: block; box-sizing: border-box; height: 448px; width: 448px;" width="560"></canvas></div><div class="panel"><div class="panel-title">📋 Detalhamento por Operador</div><table class="op-table"><thead><tr><th>Operador</th><th>H.Total</th><th>H.Disp</th><th>H.Manut</th><th>H.Op</th><th>DM%</th><th>EO%</th></tr></thead><tbody><tr><td><span class="status-dot dot-green"></span>Marcelo Cunha</td><td>8.37h</td><td>8.37h</td><td style="color:#c62828">0.00h</td><td style="color:#1565c0">8.37h</td><td><span class="meta-badge mb-green">100.0%</span></td><td><span class="meta-badge mb-green">100.0%</span></td></tr><tr><td><span class="status-dot dot-green"></span>Samuel Marcondes</td><td>11.00h</td><td>11.00h</td><td style="color:#c62828">0.00h</td><td style="color:#1565c0">0.00h</td><td><span class="meta-badge mb-green">100.0%</span></td><td><span class="meta-badge mb-red">0.0%</span></td></tr><tr><td><span class="status-dot dot-green"></span>José Wellington</td><td>20.60h</td><td>20.60h</td><td style="color:#c62828">0.00h</td><td style="color:#1565c0">20.60h</td><td><span class="meta-badge mb-green">100.0%</span></td><td><span class="meta-badge mb-green">100.0%</span></td></tr><tr><td><span class="status-dot dot-green"></span>Vander Pereira</td><td>0.17h</td><td>0.17h</td><td style="color:#c62828">0.00h</td><td style="color:#1565c0">0.00h</td><td><span class="meta-badge mb-green">100.0%</span></td><td><span class="meta-badge mb-red">0.0%</span></td></tr></tbody></table></div></div><div class="panel" style="margin-top:16px"><div class="panel-title">🎯 Status das Metas — 17/06/2026</div><div><div class="meta-line"><span style="font-weight:700">Marcelo Cunha</span><div style="display:flex;gap:8px"><span class="meta-badge mb-green">DM: 100.0% ✓</span><span class="meta-badge mb-green">EO: 100.0% ✓</span></div></div><div class="meta-line"><span style="font-weight:700">Samuel Marcondes</span><div style="display:flex;gap:8px"><span class="meta-badge mb-green">DM: 100.0% ✓</span><span class="meta-badge mb-red">EO: 0.0% ✗</span></div></div><div class="meta-line"><span style="font-weight:700">José Wellington</span><div style="display:flex;gap:8px"><span class="meta-badge mb-green">DM: 100.0% ✓</span><span class="meta-badge mb-green">EO: 100.0% ✓</span></div></div><div class="meta-line"><span style="font-weight:700">Vander Pereira</span><div style="display:flex;gap:8px"><span class="meta-badge mb-green">DM: 100.0% ✓</span><span class="meta-badge mb-red">EO: 0.0% ✗</span></div></div></div></div></div>
+
+<script>
+var URL_GS = 'https://script.google.com/macros/s/AKfycbwDRI5B1Qt7KK2G7ZPZymGFyN4yRGLioCOON4K2bQCWKiFty50oBsYrR9be38e82w5X-w/exec';
+var chartDM = null, chartEO = null;
+
+// Data atual como padrão
+var hoje = new Date();
+document.getElementById('sel-data').value = hoje.toISOString().split('T')[0];
+
+function fmtDate(v){if(!v)return'';var p=v.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
+
+function getCorDM(v){
+  var n=parseFloat(v);
+  if(n>=85)return'#2e7d32';
+  if(n>=70)return'#f9a825';
+  return'#c62828';
+}
+function getCorEO(v){
+  var n=parseFloat(v);
+  if(n>=80)return'#1565c0';
+  if(n>=60)return'#f9a825';
+  return'#c62828';
+}
+function getClassDM(v){
+  var n=parseFloat(v);
+  if(n>=85)return'mb-green';
+  if(n>=70)return'mb-yellow';
+  return'mb-red';
+}
+function getClassEO(v){
+  var n=parseFloat(v);
+  if(n>=80)return'mb-green';
+  if(n>=60)return'mb-yellow';
+  return'mb-red';
+}
+function getDotDM(v){
+  var n=parseFloat(v);
+  if(n>=85)return'dot-green';
+  if(n>=70)return'dot-yellow';
+  return'dot-red';
+}
+
+function buscarDados(){
+  var data=document.getElementById('sel-data').value;
+  if(!data){alert('Selecione uma data!');return;}
+  var dataFmt=fmtDate(data);
+
+  document.getElementById('conteudo').innerHTML=
+    '<div class="loading"><div class="spinner"></div><div>Buscando dados de '+dataFmt+'...</div></div>';
+
+  // Destruir charts anteriores
+  if(chartDM){chartDM.destroy();chartDM=null;}
+  if(chartEO){chartEO.destroy();chartEO=null;}
+
+  fetch(URL_GS+'?acao=dashboard&data='+encodeURIComponent(dataFmt)+'&_t='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(resp){
+      renderDashboard(resp, dataFmt);
+    })
+    .catch(function(){
+      document.getElementById('conteudo').innerHTML=
+        '<div class="empty">Erro ao buscar dados. Verifique a internet.</div>';
+    });
+}
+
+function renderDashboard(resp, dataFmt){
+  var ops = resp.operadores || [];
+  if(!ops.length){
+    document.getElementById('conteudo').innerHTML=
+      '<div class="empty">Nenhum registro encontrado para '+dataFmt+'</div>';
+    return;
+  }
+
+  // Totais gerais
+  var totalHoras=0, totalManut=0, totalOp=0, totalDisp=0;
+  ops.forEach(function(o){
+    totalHoras+=parseFloat(o.horasTotal)||0;
+    totalManut+=parseFloat(o.horasManut)||0;
+    totalOp+=parseFloat(o.horasOp)||0;
+    totalDisp+=parseFloat(o.horasDisp)||0;
+  });
+  var dmGeral = totalHoras>0?(totalDisp/totalHoras*100):0;
+  var eoGeral = totalDisp>0?(totalOp/totalDisp*100):0;
+
+  var html = '';
+
+  // CARDS RESUMO
+  html += '<div class="cards-row">';
+  html += '<div class="card card-blue"><div class="card-label">Horas Totais</div><div class="card-val">'+totalHoras.toFixed(1)+'h</div><div class="card-sub">'+ops.length+' operador(es)</div></div>';
+  html += '<div class="card card-green"><div class="card-label">DM Geral</div><div class="card-val" style="color:'+getCorDM(dmGeral)+'">'+dmGeral.toFixed(1)+'%</div><div class="card-sub">Meta: ≥ 85%</div></div>';
+  html += '<div class="card card-orange"><div class="card-label">EO Geral</div><div class="card-val" style="color:'+getCorEO(eoGeral)+'">'+eoGeral.toFixed(1)+'%</div><div class="card-sub">Meta: ≥ 80%</div></div>';
+  html += '<div class="card card-purple"><div class="card-label">Horas Manutenção</div><div class="card-val">'+totalManut.toFixed(1)+'h</div><div class="card-sub">'+(totalHoras>0?(totalManut/totalHoras*100).toFixed(1):0)+'% do total</div></div>';
+  html += '</div>';
+
+  // GRÁFICOS
+  html += '<div class="grid2">';
+
+  // DM por operador - barras
+  html += '<div class="panel"><div class="panel-title">&#128200; Disponibilidade Mecânica por Operador</div>';
+  html += '<div style="margin-bottom:8px;font-size:11px;color:#888">Meta: ≥ 85% <span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:100px;margin-left:4px">Verde</span> ≥ 70% <span style="background:#fff8e1;color:#e65100;padding:2px 8px;border-radius:100px;margin-left:4px">Amarelo</span> &lt; 70% <span style="background:#fdecea;color:#c62828;padding:2px 8px;border-radius:100px;margin-left:4px">Vermelho</span></div>';
+  ops.forEach(function(o){
+    var dm=parseFloat(o.dm)||0;
+    var cor=getCorDM(dm);
+    html += '<div class="bar-row">';
+    html += '<div class="bar-name" title="'+o.op+'">'+o.op.split(' ')[0]+'</div>';
+    html += '<div class="bar-track"><div class="bar-fill" style="width:'+Math.min(dm,100)+'%;background:'+cor+'">'+dm+'%</div></div>';
+    html += '<div class="bar-pct" style="color:'+cor+'">'+dm+'%</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // EO por operador - barras
+  html += '<div class="panel"><div class="panel-title">&#9881; Eficiência Operacional por Operador</div>';
+  html += '<div style="margin-bottom:8px;font-size:11px;color:#888">Meta: ≥ 80% <span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:100px;margin-left:4px">Verde</span> ≥ 60% <span style="background:#fff8e1;color:#e65100;padding:2px 8px;border-radius:100px;margin-left:4px">Amarelo</span> &lt; 60% <span style="background:#fdecea;color:#c62828;padding:2px 8px;border-radius:100px;margin-left:4px">Vermelho</span></div>';
+  ops.forEach(function(o){
+    var eo=parseFloat(o.eo)||0;
+    var cor=getCorEO(eo);
+    html += '<div class="bar-row">';
+    html += '<div class="bar-name" title="'+o.op+'">'+o.op.split(' ')[0]+'</div>';
+    html += '<div class="bar-track"><div class="bar-fill" style="width:'+Math.min(eo,100)+'%;background:'+cor+'">'+eo+'%</div></div>';
+    html += '<div class="bar-pct" style="color:'+cor+'">'+eo+'%</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  html += '</div>'; // fim grid2
+
+  // GRÁFICO DE PIZZA - distribuição de horas
+  html += '<div class="grid2">';
+  html += '<div class="panel"><div class="panel-title">&#128200; Distribuição de Horas</div>';
+  html += '<canvas id="chart-pizza" height="220"></canvas></div>';
+
+  // TABELA DETALHADA
+  html += '<div class="panel"><div class="panel-title">&#128203; Detalhamento por Operador</div>';
+  html += '<table class="op-table"><thead><tr>';
+  html += '<th>Operador</th><th>H.Total</th><th>H.Disp</th><th>H.Manut</th><th>H.Op</th><th>DM%</th><th>EO%</th>';
+  html += '</tr></thead><tbody>';
+  ops.forEach(function(o){
+    html += '<tr>';
+    html += '<td><span class="status-dot '+getDotDM(o.dm)+'"></span>'+o.op+'</td>';
+    html += '<td>'+o.horasTotal+'h</td>';
+    html += '<td>'+o.horasDisp+'h</td>';
+    html += '<td style="color:#c62828">'+o.horasManut+'h</td>';
+    html += '<td style="color:#1565c0">'+o.horasOp+'h</td>';
+    html += '<td><span class="meta-badge '+getClassDM(o.dm)+'">'+o.dm+'%</span></td>';
+    html += '<td><span class="meta-badge '+getClassEO(o.eo)+'">'+o.eo+'%</span></td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  html += '</div>'; // fim grid2
+
+  // METAS
+  html += '<div class="panel" style="margin-top:16px"><div class="panel-title">&#127919; Status das Metas — '+dataFmt+'</div>';
+  html += '<div>';
+  ops.forEach(function(o){
+    var dmOk=parseFloat(o.dm)>=85;
+    var eoOk=parseFloat(o.eo)>=80;
+    html += '<div class="meta-line">';
+    html += '<span style="font-weight:700">'+o.op+'</span>';
+    html += '<div style="display:flex;gap:8px">';
+    html += '<span class="meta-badge '+(dmOk?'mb-green':'mb-red')+'">DM: '+o.dm+'% '+(dmOk?'✓':'✗')+'</span>';
+    html += '<span class="meta-badge '+(eoOk?'mb-green':'mb-red')+'">EO: '+o.eo+'% '+(eoOk?'✓':'✗')+'</span>';
+    html += '</div></div>';
+  });
+  html += '</div></div>';
+
+  document.getElementById('conteudo').innerHTML = html;
+
+  // Renderizar gráfico de pizza
+  var horasOp = totalOp;
+  var horasOpercional = totalHoras - totalOp - totalManut;
+  var ctx = document.getElementById('chart-pizza').getContext('2d');
+  chartDM = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Operação', 'Operacional', 'Manutenção'],
+      datasets: [{
+        data: [horasOp.toFixed(1), horasOpercional.toFixed(1), totalManut.toFixed(1)],
+        backgroundColor: ['#1565c0','#43a047','#c62828'],
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 12 } } },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              return ctx.label + ': ' + ctx.parsed + 'h';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// Buscar automaticamente com a data de hoje
+buscarDados();
+</script>
+
+
+</body></html>
