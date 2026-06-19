@@ -96,10 +96,14 @@ body{font-family:Arial,sans-serif;background:#f0f2f5;color:#1a1a1a;padding:16px;
   </div>
 </div>
 
+
+
 <div class="links-bar">
-  <a href="index.html" class="link-btn">&#128203; Boletim</a>
-  <a href="abastecimento.html" class="link-btn">&#9981; Abastecimento</a>
-  <a href="dashboard.html" class="link-btn active">&#128202; Dashboard</a>
+  <a href="home.html" class="link-btn">🏠 Início</a>
+  <a href="index.html" class="link-btn">📋 Boletim</a>
+  <a href="abastecimento.html" class="link-btn">⛽ Abastecimento</a>
+  <a href="dashboard.html" class="link-btn" style="background:#6a1b9a;color:#fff;border-color:#6a1b9a">📊 Dashboard Op.</a>
+  <a href="dashboard_abast.html" class="link-btn">📈 Dashboard Abast.</a>
 </div>
 
 <div id="conteudo">
@@ -162,26 +166,14 @@ function buscarDados(){
   if(chartDM){chartDM.destroy();chartDM=null;}
   if(chartEO){chartEO.destroy();chartEO=null;}
 
-  var url=URL_GS+'?acao=dashboard&data='+encodeURIComponent(dataFmt)+'&_t='+Date.now();
-  fetch(url)
-    .then(function(r){return r.text();})
-    .then(function(txt){
-      var resp=JSON.parse(txt);
+  fetch(URL_GS+'?acao=dashboard&data='+encodeURIComponent(dataFmt)+'&_t='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(resp){
       renderDashboard(resp, dataFmt);
     })
     .catch(function(){
-      // Fallback: tentar via script tag JSONP
-      var script=document.createElement('script');
-      script.src=url+'&callback=__dashCallback';
-      window.__dashCallback=function(resp){
-        script.remove();
-        renderDashboard(resp, dataFmt);
-      };
-      script.onerror=function(){
-        document.getElementById('conteudo').innerHTML=
-          '<div class="empty">Erro ao buscar dados. Verifique a internet.</div>';
-      };
-      document.head.appendChild(script);
+      document.getElementById('conteudo').innerHTML=
+        '<div class="empty">Erro ao buscar dados. Verifique a internet.</div>';
     });
 }
 
