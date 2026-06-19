@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<!-- saved from url=(0053)file:///C:/Users/mauri/Downloads/abastecimento_1.html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abastecimento — Costa Rica</title>
+<script src="./Abastecimento_files/xlsx.full.min.js.download"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f5f5f0;color:#1a1a1a;padding:16px;max-width:720px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:3px}
+.subtitle{font-size:13px;color:#666;margin-bottom:4px}
+.hdr{padding-bottom:12px;border-bottom:2px solid #ddd;margin-bottom:16px}
+.save-info{font-size:12px;color:#e65100;background:#fff3e0;border:1px solid #ffe0b2;border-radius:6px;padding:6px 12px;margin-bottom:16px;display:inline-block}
+.section{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:16px;margin-bottom:12px}
+.section-title{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;padding-bottom:5px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:12px;color:#555;font-weight:700}
+.field input,.field select{width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;background:#fff;color:#1a1a1a;outline:none}
+.field input:focus,.field select:focus{border-color:#e65100}
+.field input[readonly]{background:#f0f0ea;color:#2e7d32;font-weight:700}
+.field input.auto-filled{background:#fff9e6;border-color:#f0ad00;color:#856404;font-weight:700}
+.hint{font-size:11px;color:#856404;margin-top:3px}
+.hint-ok{font-size:11px;color:#2e7d32;margin-top:3px}
+.hint-err{font-size:11px;color:#c62828;margin-top:3px}
+
+/* Estoque card */
+.estoque-card{border-radius:12px;padding:18px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.estoque-ok{background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff}
+.estoque-medio{background:linear-gradient(135deg,#e65100,#f57c00);color:#fff}
+.estoque-baixo{background:linear-gradient(135deg,#b71c1c,#c62828);color:#fff}
+.estoque-card .litros{font-size:42px;font-weight:700;line-height:1}
+.estoque-card .label{font-size:12px;opacity:.85;margin-bottom:4px}
+.estoque-card .sub{font-size:12px;opacity:.75;margin-top:4px}
+.btn-add-est{background:rgba(255,255,255,0.2);border:1.5px solid rgba(255,255,255,0.5);color:#fff;padding:8px 16px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:700}
+.btn-add-est:hover{background:rgba(255,255,255,0.35)}
+
+/* Litros destaque */
+.litros-calc{font-size:32px;font-weight:700;color:#e65100;text-align:center;padding:14px;background:#fff3e0;border:2px solid #ffe0b2;border-radius:10px;margin:8px 0;min-height:64px}
+
+/* Consumo */
+.consumo-box{background:#e3f2fd;border:1px solid #bbdefb;border-radius:8px;padding:12px;margin-top:10px;display:none}
+.consumo-box .consumo-val{font-size:24px;font-weight:700;color:#1565c0}
+.consumo-box .consumo-label{font-size:12px;color:#1565c0}
+
+.actions{display:flex;gap:8px;margin:14px 0 10px;flex-wrap:wrap}
+.btn-p{background:#e65100;color:#fff;border:none;padding:12px 22px;border-radius:7px;font-size:15px;cursor:pointer;font-weight:700;width:100%}
+.btn-p:hover{background:#bf360c}
+.btn-p:disabled{background:#ffcc80;cursor:not-allowed}
+.btn-s{background:#fff;color:#1a1a1a;border:1px solid #ccc;padding:10px 18px;border-radius:7px;font-size:13px;cursor:pointer}
+.btn-s:hover{background:#f5f5f0}
+.btn-danger{background:#fff;color:#c0392b;border:1px solid #e8b4b0;padding:10px 18px;border-radius:7px;font-size:13px;cursor:pointer}
+.btn-green{background:#1b5e20;color:#fff;border:none;padding:10px 18px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:700}
+.btn-green:hover{background:#2e7d32}
+
+.tbl-wrap{overflow-x:auto;border:1px solid #e0e0e0;border-radius:10px;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:700px}
+thead th{background:#e65100;color:#fff;padding:9px 10px;text-align:left;font-weight:700;white-space:nowrap}
+tbody tr{border-bottom:1px solid #f0f0ea}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:8px 10px;color:#1a1a1a}
+tbody tr:hover td{background:#fff3e0}
+.empty{text-align:center;padding:2rem;color:#aaa;font-size:13px}
+.st-env{background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:100px;font-weight:700}
+.st-pend{background:#fff8e1;color:#e65100;font-size:11px;padding:2px 8px;border-radius:100px;font-weight:700}
+.st-err{background:#fdecea;color:#c62828;font-size:11px;padding:2px 8px;border-radius:100px;font-weight:700}
+.count-b{font-size:12px;background:#f0f0ea;border:1px solid #ddd;border-radius:100px;padding:2px 10px;color:#666;margin-left:8px}
+.row-label{display:flex;align-items:center;margin-bottom:8px}
+.status-bar{font-size:12px;color:#555;margin-bottom:6px;padding:8px 12px;background:#fff;border:1px solid #e0e0e0;border-radius:7px;display:flex;align-items:center;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dot-ok{background:#2e7d32}
+.dot-pend{background:#e65100;animation:pulse 1s infinite}
+.dot-err{background:#c62828}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top:2px solid transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+.spinner-sm{display:inline-block;width:10px;height:10px;border:2px solid #e65100;border-top:2px solid transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:1.2rem;right:1.2rem;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;max-width:320px}
+.toast.show{opacity:1}
+.toast-ok{background:#2e7d32}
+.toast-err{background:#c62828}
+.toast-info{background:#1a1a1a}
+
+/* Modal estoque */
+.modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center}
+.modal-box{background:#fff;border-radius:12px;padding:24px;width:90%;max-width:400px;margin:auto}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:#888}
+
+@media(max-width:500px){
+  .grid2,.grid3,.grid4{grid-template-columns:1fr 1fr}
+  .actions{flex-direction:column}
+  .btn-p{width:100%}
+  .estoque-card .litros{font-size:32px}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>⛽ Abastecimento de Equipamentos</h1>
+  <p class="subtitle">Costa Rica — Controle de abastecimento e estoque</p>
+  <div class="save-info">☁ Dados enviados automaticamente para o Google Sheets</div>
+</div>
+
+<!-- ESTOQUE -->
+<div id="estoque-card" class="estoque-card estoque-medio">
+  <div>
+    <div class="label">⛽ ESTOQUE DE DIESEL S10</div>
+    <div class="litros" id="saldo-litros">2000 L</div>
+    <div class="sub" id="saldo-sub">⚠️ Estoque médio — providenciar reabastecimento</div>
+  </div>
+  <button class="btn-add-est" onclick="abrirAddEstoque()">+ Adicionar estoque</button>
+</div>
+
+<!-- IDENTIFICAÇÃO -->
+<div class="section">
+  <div class="section-title">Identificação</div>
+  <div class="grid3">
+    <div class="field"><label>Data *</label><input type="date" id="f-data"></div>
+    <div class="field"><label>Hora *</label><input type="time" id="f-hora"></div>
+    <div class="field">
+      <label>Operador *</label>
+      <select id="f-op"><option value="">Selecione...</option><option value="Marcelo Cunha">Marcelo Cunha</option><option value="Samuel Marcondes">Samuel Marcondes</option><option value="José Wellington">José Wellington</option><option value="Vander Pereira">Vander Pereira</option></select>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:10px">
+    <div class="field">
+      <label>Equipamento *</label>
+      <select id="f-eq" onchange="onEqChange()"><option value="">Selecione...</option><option value="PIC - 008   PLANALTO FOREST FOX 600X800">PIC - 008   PLANALTO FOREST FOX 600X800</option><option value="PAC - 004   HYNDAI 745 - 9">PAC - 004   HYNDAI 745 - 9</option><option value="PAC - 014   HYUNDAI 757 - 9">PAC - 014   HYUNDAI 757 - 9</option><option value="GRU - 000   CX130">GRU - 000   CX130</option></select>
+    </div>
+    <div class="field">
+      <label>Fazenda *</label>
+      <select id="f-faz"><option value="">Selecione...</option><option value="Faz.Europa">Faz.Europa</option></select>
+    </div>
+  </div>
+</div>
+
+<!-- BOMBA -->
+<div class="section">
+  <div class="section-title">Dados da bomba</div>
+  <div class="grid2">
+    <div class="field">
+      <label>Bomba *</label>
+      <select id="f-bomba" onchange="onBombaChange()">
+        <option value="">Selecione...</option>
+        <option value="Bomba 1">Bomba 1</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Combustível</label>
+      <input type="text" value="Diesel S10" readonly="">
+    </div>
+  </div>
+  <div class="grid3" style="margin-top:10px">
+    <div class="field">
+      <label>Horímetro bomba anterior</label>
+      <input type="number" id="f-horim-bomb-ini" step="0.1" min="0" placeholder="Digite ou aguarde busca..." oninput="calcLitros()" style="color: rgb(21, 101, 192); font-weight: 700; background: rgb(240, 240, 234);">
+      <span id="hint-bomb-ini" style="display: block;" class="hint-ok">✓ Último horímetro da bomba: <b>322576.1</b> — edite se necessário</span>
+    </div>
+    <div class="field">
+      <label>Horímetro bomba atual *</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="number" id="f-horim-bomb-fin" step="0.1" min="0" placeholder="Ex: 15420.5" oninput="calcLitros()" style="flex:1">
+        <button type="button" onclick="abrirCamera()" style="background:#e65100;color:#fff;border:none;padding:9px 14px;border-radius:6px;font-size:18px;cursor:pointer;flex-shrink:0" title="Fotografar horímetro">📷</button>
+      </div>
+      <span class="hint" id="hint-ocr" style="display:none"></span>
+    </div>
+    <div class="field">
+      <label>Litros abastecidos</label>
+      <input type="text" id="f-litros-calc" readonly="" placeholder="—">
+    </div>
+  </div>
+  <div class="litros-calc" id="litros-display" style="color: rgb(230, 81, 0); font-size: 32px;">— L</div>
+</div>
+
+<!-- HORÍMETRO EQUIPAMENTO -->
+<div class="section">
+  <div class="section-title">Horímetro do equipamento</div>
+  <div class="grid2">
+    <div class="field">
+      <label>Horímetro atual do equipamento *</label>
+      <input type="number" id="f-horim-eq" step="0.1" min="0" placeholder="Ex: 1254.5" oninput="calcConsumo()">
+      <span id="hint-horim-eq" style="display: block;" class="hint-ok">✓ Horímetro anterior: <b>7343.6h</b> — edite se necessário</span>
+    </div>
+    <div class="field">
+      <label>Horímetro anterior (último abast.)</label>
+      <input type="number" id="f-horim-eq-ant" step="0.1" min="0" placeholder="Aguardando busca..." oninput="calcConsumo()" style="color: rgb(21, 101, 192); font-weight: 700; background: rgb(240, 240, 234);">
+      <span id="hint-horim-eq-ant" style="display:none;font-size:11px;color:#888;margin-top:2px"></span>
+    </div>
+  </div>
+  <!-- Consumo calculado -->
+  <div class="consumo-box" id="consumo-box" style="display: none;">
+    <div class="consumo-label">Consumo estimado</div>
+    <div style="display:flex;align-items:baseline;gap:6px">
+      <div class="consumo-val" id="consumo-val">—</div>
+      <div style="font-size:13px;color:#1565c0">L/h</div>
+    </div>
+    <div style="font-size:11px;color:#888;margin-top:4px" id="consumo-detalhe"></div>
+  </div>
+</div>
+
+<!-- OBSERVAÇÃO -->
+<div class="section">
+  <div class="section-title">Observação</div>
+  <div class="field">
+    <input type="text" id="f-obs" placeholder="Opcional...">
+  </div>
+</div>
+
+<div class="actions">
+  <button class="btn-p" id="btn-env" onclick="enviar()">⛽ Registrar Abastecimento</button>
+</div>
+<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+  <button class="btn-s" onclick="buscarEstoque()">🔄 Atualizar estoque</button>
+  <button class="btn-s" onclick="exportXL()">⬇ Exportar Excel</button>
+  <button class="btn-danger" onclick="clearAll()" style="margin-left:auto">🗑 Apagar tudo</button>
+</div>
+
+<div class="status-bar">
+  <div class="dot dot-ok" id="sdot"></div>
+  <span id="stxt">Pronto para registrar</span>
+</div>
+
+<div class="row-label" style="margin-top:12px">
+  <span style="font-size:14px;font-weight:700">Histórico local</span>
+  <span class="count-b" id="cnt">13</span>
+</div>
+
+<div class="tbl-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Status</th><th>Data</th><th>Hora</th><th>Operador</th><th>Equip.</th>
+        <th>Bomba</th><th>Hor.Bomb.Ini</th><th>Hor.Bomb.Fin</th>
+        <th>Litros</th><th>Hor.Eq</th><th>Consumo L/h</th><th>Fazenda</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:49</td><td>José Wellington</td><td style="font-weight:700;white-space:nowrap">PIC - 008   PLANALTO FOREST FOX 600X800</td><td>Bomba 1</td><td>322214</td><td>322576.1</td><td style="font-weight:700;color:#e65100">362.1 L</td><td>2602</td><td style="color:#1565c0;font-weight:700">362.10 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:48</td><td>Vander</td><td style="font-weight:700;white-space:nowrap">PAC - 004   HYNDAI 745 - 9</td><td>Bomba 1</td><td>322008.9</td><td>322214.0</td><td style="font-weight:700;color:#e65100">205.1 L</td><td>7343.6</td><td style="color:#1565c0;font-weight:700">6.79 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>16/06/2026</td><td>22:47</td><td>Samuel Marcondes</td><td style="font-weight:700;white-space:nowrap">GRU - 000   CX130</td><td>Bomba 1</td><td>321899.7</td><td>322008.9</td><td style="font-weight:700;color:#e65100">109.2 L</td><td>10045.6</td><td style="color:#1565c0;font-weight:700">2.56 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>16/06/2026</td><td>22:44</td><td>Marcelo Cunha</td><td style="font-weight:700;white-space:nowrap">PAC - 014   HYUNDAI 757 - 9</td><td>Bomba 1</td><td>321627.2</td><td>321899.7</td><td style="font-weight:700;color:#e65100">272.5 L</td><td>1092.4</td><td style="color:#1565c0;font-weight:700">27.81 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:42</td><td>Marcelo Cunha</td><td style="font-weight:700;white-space:nowrap">PAC - 014   HYUNDAI 757 - 9</td><td>Bomba 1</td><td>321516.2</td><td>321627.2</td><td style="font-weight:700;color:#e65100">111.0 L</td><td>1082.6</td><td style="color:#1565c0;font-weight:700">7.60 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:40</td><td>Vander</td><td style="font-weight:700;white-space:nowrap">PAC - 004   HYNDAI 745 - 9</td><td>Bomba 1</td><td>321371.1</td><td>321516.2</td><td style="font-weight:700;color:#e65100">145.1 L</td><td>7313.4</td><td style="color:#1565c0;font-weight:700">—</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:39</td><td>Marcelo Cunha</td><td style="font-weight:700;white-space:nowrap">PAC - 014   HYUNDAI 757 - 9</td><td>Bomba 1</td><td>321213.5</td><td>321371.1</td><td style="font-weight:700;color:#e65100">157.6 L</td><td>1068</td><td style="color:#1565c0;font-weight:700">—</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:37</td><td>Samuel Marcondes</td><td style="font-weight:700;white-space:nowrap">GRU - 000   CX130</td><td>Bomba 1</td><td>321116.4</td><td>321213.5</td><td style="font-weight:700;color:#e65100">97.1 L</td><td>10002.9</td><td style="color:#1565c0;font-weight:700">33.48 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:36</td><td>Samuel Marcondes</td><td style="font-weight:700;white-space:nowrap">PIC - 008   PLANALTO FOREST FOX 600X800</td><td>Bomba 1</td><td>320747</td><td>321116.4</td><td style="font-weight:700;color:#e65100">369.4 L</td><td>2601</td><td style="color:#1565c0;font-weight:700">369.40 L/h</td><td>Faz.Europa</td></tr><tr><td><span class="st-pend">↻ Pendente</span></td><td>17/06/2026</td><td>22:35</td><td>Vander</td><td style="font-weight:700;white-space:nowrap">PAC - 014   HYUNDAI 757 - 9</td><td>Bomba 1</td><td>320605</td><td>320747</td><td style="font-weight:700;color:#e65100">142.0 L</td><td>7298.3</td><td style="color:#1565c0;font-weight:700">—</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:27</td><td>Vander</td><td style="font-weight:700;white-space:nowrap">PIC - 008   PLANALTO FOREST FOX 600X800</td><td>Bomba 1</td><td>320272.6</td><td>320605</td><td style="font-weight:700;color:#e65100">332.4 L</td><td>2600</td><td style="color:#1565c0;font-weight:700">—</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:13</td><td>Samuel Marcondes</td><td style="font-weight:700;white-space:nowrap">GRU - 000   CX130</td><td>Bomba 1</td><td>320140.6</td><td>320272.6</td><td style="font-weight:700;color:#e65100">132.0 L</td><td>10000</td><td style="color:#1565c0;font-weight:700">—</td><td>Faz.Europa</td></tr><tr><td><span class="st-env">✓ Enviado</span></td><td>17/06/2026</td><td>22:13</td><td>Marcelo Cunha</td><td style="font-weight:700;white-space:nowrap">PAC - 014   HYUNDAI 757 - 9</td><td>Bomba 1</td><td>319950.5</td><td>320140.6</td><td style="font-weight:700;color:#e65100">190.1 L</td><td>1049.4</td><td style="color:#1565c0;font-weight:700">—</td><td>Faz.Europa</td></tr></tbody>
+  </table>
+</div>
+
+<!-- MODAL ADICIONAR ESTOQUE -->
+<div class="modal-bg" id="modal-est">
+  <div class="modal-box">
+    <div class="modal-title">
+      ➕ Adicionar Estoque
+      <button class="modal-close" onclick="fecharAddEstoque()">✕</button>
+    </div>
+    <div class="field" style="margin-bottom:10px">
+      <label>Data</label>
+      <input type="date" id="est-data">
+    </div>
+    <div class="field" style="margin-bottom:10px">
+      <label>Hora</label>
+      <input type="time" id="est-hora">
+    </div>
+    <div class="field" style="margin-bottom:10px">
+      <label>Litros recebidos *</label>
+      <input type="number" id="est-litros" step="0.1" min="0" placeholder="Ex: 5000" style="font-size:18px;font-weight:700;color:#1b5e20">
+    </div>
+    <div class="field" style="margin-bottom:16px">
+      <label>Observação (fornecedor, NF, etc.)</label>
+      <input type="text" id="est-obs" placeholder="Ex: Petrobras NF 12345">
+    </div>
+    <button class="btn-green" style="width:100%" onclick="salvarEstoque()">✓ Confirmar entrada de estoque</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var URL_GS='https://script.google.com/macros/s/AKfycbyBlIxhe2icuQcICFFUabK8gyRyfnbMvWP4Y1FH2sHVFo0P2Qd5FI3r7c5_KzCciS-8VQ/exec';
+var SKEY='abast_cr_v2';
+var regs=[];
+var saldoAtual=0;
+
+function load(){
+  try{var s=localStorage.getItem(SKEY);if(s)regs=JSON.parse(s);}catch(e){regs=[];}
+  render();
+}
+function save(){try{localStorage.setItem(SKEY,JSON.stringify(regs));}catch(e){}}
+
+function toast(m,t){var el=document.getElementById('toast');el.textContent=m;el.className='toast show toast-'+(t||'info');setTimeout(function(){el.classList.remove('show');},4000);}
+function setStatus(txt,e){document.getElementById('stxt').textContent=txt;document.getElementById('sdot').className='dot dot-'+(e||'ok');}
+
+function fmtDate(v){if(!v)return'';var p=v.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
+
+// Atualizar card de estoque
+function atualizarCardEstoque(saldo){
+  saldoAtual=parseFloat(saldo)||0;
+  document.getElementById('saldo-litros').textContent=saldoAtual.toFixed(0)+' L';
+  var card=document.getElementById('estoque-card');
+  if(saldoAtual>2000){
+    card.className='estoque-card estoque-ok';
+    document.getElementById('saldo-sub').textContent='Estoque normal';
+  } else if(saldoAtual>500){
+    card.className='estoque-card estoque-medio';
+    document.getElementById('saldo-sub').textContent='⚠️ Estoque médio — providenciar reabastecimento';
+  } else {
+    card.className='estoque-card estoque-baixo';
+    document.getElementById('saldo-sub').textContent='🚨 Estoque baixo — abastecer urgente!';
+  }
+}
+
+function buscarEstoque(){
+  var url=URL_GS+'?acao=estoque&_t='+Date.now();
+  fetch(url)
+    .then(function(r){return r.json();})
+    .then(function(resp){atualizarCardEstoque(resp.saldo);})
+    .catch(function(){document.getElementById('saldo-sub').textContent='Sem conexão — verifique a internet';});
+}
+
+// Calcular litros pela diferença dos horímetros da bomba
+function calcLitros(){
+  var ini=parseFloat(document.getElementById('f-horim-bomb-ini').value)||0;
+  var fin=parseFloat(document.getElementById('f-horim-bomb-fin').value)||0;
+  var litros=fin-ini;
+  var inp=document.getElementById('f-litros-calc');
+  var disp=document.getElementById('litros-display');
+  if(fin>0&&ini>0&&litros>0){
+    inp.value=litros.toFixed(1);
+    disp.textContent=litros.toFixed(1)+' L';
+    disp.style.color='#e65100';
+  } else if(fin>0&&ini===0){
+    inp.value='';
+    disp.textContent='Informe o horímetro anterior da bomba';
+    disp.style.color='#888';
+    disp.style.fontSize='14px';
+  } else if(litros<=0&&fin>0&&ini>0){
+    inp.value='';
+    disp.textContent='⚠️ Horímetro atual menor que o anterior!';
+    disp.style.color='#c62828';
+  } else {
+    inp.value='';
+    disp.textContent='— L';
+    disp.style.color='#e65100';
+    disp.style.fontSize='32px';
+  }
+  calcConsumo();
+}
+
+function calcConsumo(){
+  var litros=parseFloat(document.getElementById('f-litros-calc').value)||0;
+  var horimEq=parseFloat(document.getElementById('f-horim-eq').value)||0;
+  var horimEqAnt=parseFloat(document.getElementById('f-horim-eq-ant').value)||0;
+  var box=document.getElementById('consumo-box');
+  if(litros>0&&horimEq>0&&horimEqAnt>0&&horimEq>horimEqAnt){
+    var horas=horimEq-horimEqAnt;
+    var consumo=litros/horas;
+    document.getElementById('consumo-val').textContent=consumo.toFixed(2);
+    document.getElementById('consumo-detalhe').textContent=
+      litros.toFixed(1)+'L ÷ '+horas.toFixed(1)+'h (horímetro '+horimEqAnt+' → '+horimEq+')';
+    box.style.display='block';
+  } else {
+    box.style.display='none';
+  }
+}
+
+// Buscar dados ao selecionar bomba
+function onBombaChange(){
+  var bomba=document.getElementById('f-bomba').value;
+  if(!bomba)return;
+  var hint=document.getElementById('hint-bomb-ini');
+  hint.className='hint';
+  hint.style.display='block';
+  hint.innerHTML='<span class="spinner-sm"></span>Buscando último horímetro da bomba...';
+  var url=URL_GS+'?acao=ultimoBomba&bomba='+encodeURIComponent(bomba)+'&_t='+Date.now();
+  fetch(url)
+    .then(function(r){return r.json();})
+    .then(function(resp){
+      if(resp.horimBomba&&parseFloat(resp.horimBomba)>0){
+        document.getElementById('f-horim-bomb-ini').value=resp.horimBomba;
+        document.getElementById('f-horim-bomb-ini').style.background='#f0f0ea';
+        hint.className='hint-ok';
+        hint.innerHTML='&#10003; Último horímetro da bomba: <b>'+resp.horimBomba+'</b> — edite se necessário';
+      } else {
+        document.getElementById('f-horim-bomb-ini').value='';
+        document.getElementById('f-horim-bomb-ini').style.background='#fff';
+        document.getElementById('f-horim-bomb-ini').placeholder='Nenhum registro — digite o valor';
+        hint.className='hint';
+        hint.innerHTML='&#9999; Nenhum registro anterior — <b>digite o horímetro inicial da bomba</b>';
+      }
+      calcLitros();
+    })
+    .catch(function(){hint.style.display='none';});
+}
+
+// Buscar horímetro anterior do equipamento
+function onEqChange(){
+  var v=document.getElementById('f-eq').value;
+  if(!v)return;
+  var p=v.split('|');
+  var eqCode=p[0].trim();
+  var hint=document.getElementById('hint-horim-eq');
+  hint.className='hint';
+  hint.style.display='block';
+  hint.innerHTML='<span class="spinner-sm"></span>Buscando horímetro anterior do equipamento...';
+  var url=URL_GS+'?acao=buscarHorim&eqCode='+encodeURIComponent(eqCode)+'&_t='+Date.now();
+  fetch(url)
+    .then(function(r){return r.json();})
+    .then(function(resp){
+      if(resp.horim&&parseFloat(resp.horim)>0){
+        document.getElementById('f-horim-eq-ant').value=resp.horim;
+        document.getElementById('f-horim-eq-ant').style.background='#f0f0ea';
+        hint.className='hint-ok';
+        hint.innerHTML='&#10003; Horímetro anterior: <b>'+resp.horim+'h</b> — edite se necessário';
+      } else {
+        document.getElementById('f-horim-eq-ant').value='';
+        document.getElementById('f-horim-eq-ant').style.background='#fff';
+        document.getElementById('f-horim-eq-ant').placeholder='Nenhum registro — digite se souber';
+        hint.className='hint';
+        hint.innerHTML='&#9999; Nenhum registro anterior — <b>digite o horímetro do último abastecimento</b> (opcional)';
+      }
+      calcConsumo();
+    })
+    .catch(function(){hint.style.display='none';});
+}
+
+// Carregar cadastros
+function carregarCadastros(){
+  var url=URL_GS+'?acao=cadastros&_t='+Date.now();
+  fetch(url)
+    .then(function(r){return r.json();})
+    .then(function(resp){
+      var ops=resp.operadores||[];
+      var selOp=document.getElementById('f-op');
+      selOp.innerHTML='<option value="">Selecione...</option>';
+      ops.forEach(function(o){var opt=document.createElement('option');opt.value=o;opt.textContent=o;selOp.appendChild(opt);});
+
+      var fazs=resp.fazendas||[];
+      var selFaz=document.getElementById('f-faz');
+      selFaz.innerHTML='<option value="">Selecione...</option>';
+      fazs.forEach(function(f){var opt=document.createElement('option');opt.value=f;opt.textContent=f;selFaz.appendChild(opt);});
+
+      var eqs=resp.equipamentos||[];
+      var selEq=document.getElementById('f-eq');
+      selEq.innerHTML='<option value="">Selecione...</option>';
+      eqs.forEach(function(eq){
+        var parts=eq.split('|');
+        var code=parts[0]?parts[0].trim():'';
+        var desc=parts[1]?parts[1].trim():'';
+        var opt=document.createElement('option');
+        opt.value=eq;opt.textContent=code+(desc?' — '+desc:'');
+        selEq.appendChild(opt);
+      });
+    })
+    .catch(function(){
+      ['f-op','f-faz','f-eq'].forEach(function(sid){
+        var sel=document.getElementById(sid);
+        if(sel)sel.innerHTML='<option value="">Erro ao carregar</option>';
+      });
+    });
+}
+
+function stBadge(s){
+  if(s==='enviado')return'<span class="st-env">&#10003; Enviado</span>';
+  if(s==='erro')return'<span class="st-err">&#10007; Erro</span>';
+  return'<span class="st-pend">&#8635; Pendente</span>';
+}
+
+function render(){
+  document.getElementById('cnt').textContent=regs.length;
+  var tb=document.getElementById('tbody');
+  if(!regs.length){tb.innerHTML='<tr><td colspan="12" class="empty">Nenhum registro ainda.</td></tr>';return;}
+  tb.innerHTML=regs.slice().reverse().map(function(r){
+    return'<tr>'+
+      '<td>'+stBadge(r.status)+'</td>'+
+      '<td>'+fmtDate(r.data)+'</td>'+
+      '<td>'+r.hora+'</td>'+
+      '<td>'+r.op+'</td>'+
+      '<td style="font-weight:700;white-space:nowrap">'+r.eqCode+'</td>'+
+      '<td>'+r.bomba+'</td>'+
+      '<td>'+r.horimBombIni+'</td>'+
+      '<td>'+r.horimBombFin+'</td>'+
+      '<td style="font-weight:700;color:#e65100">'+parseFloat(r.litros||0).toFixed(1)+' L</td>'+
+      '<td>'+r.horimEq+'</td>'+
+      '<td style="color:#1565c0;font-weight:700">'+(r.consumo?r.consumo+' L/h':'—')+'</td>'+
+      '<td>'+r.faz+'</td>'+
+    '</tr>';
+  }).join('');
+}
+
+function enviar(){
+  var data=document.getElementById('f-data').value;
+  var hora=document.getElementById('f-hora').value;
+  var op=document.getElementById('f-op').value;
+  var eqv=document.getElementById('f-eq').value;
+  var faz=document.getElementById('f-faz').value;
+  var bomba=document.getElementById('f-bomba').value;
+  var horimBombIni=document.getElementById('f-horim-bomb-ini').value;
+  var horimBombFin=document.getElementById('f-horim-bomb-fin').value;
+  var litros=document.getElementById('f-litros-calc').value;
+  var horimEq=document.getElementById('f-horim-eq').value;
+
+  if(!data||!hora||!op||!eqv||!faz||!bomba||!horimBombFin||!horimEq){
+    toast('Preencha todos os campos obrigatorios (*)!','err');return;
+  }
+  if(!litros||parseFloat(litros)<=0){
+    toast('Horímetro da bomba inválido — litros não calculados!','err');return;
+  }
+
+  var horimEqAnt=document.getElementById('f-horim-eq-ant').value||'';
+  var consumo='';
+  if(horimEq&&horimEqAnt&&parseFloat(horimEq)>parseFloat(horimEqAnt)){
+    var horas=parseFloat(horimEq)-parseFloat(horimEqAnt);
+    consumo=(parseFloat(litros)/horas).toFixed(2);
+  }
+
+  var eqP=eqv.split('|');
+  var reg={
+    data:data, hora:hora, op:op,
+    eqCode:eqP[0].trim(), eqDesc:eqP[1]||'',
+    faz:faz, bomba:bomba, comb:'Diesel S10',
+    horimBombIni:horimBombIni||'', horimBombFin:horimBombFin,
+    litros:parseFloat(litros).toFixed(1),
+    horimEq:horimEq, horimEqAnt:horimEqAnt,
+    consumo:consumo,
+    obs:document.getElementById('f-obs').value.trim(),
+    status:'pendente'
+  };
+
+  regs.push(reg);save();render();
+
+  // Limpar campos de abastecimento
+  document.getElementById('f-horim-bomb-fin').value='';
+  document.getElementById('f-litros-calc').value='';
+  document.getElementById('litros-display').textContent='— L';
+  document.getElementById('f-horim-eq').value='';
+  document.getElementById('f-obs').value='';
+  document.getElementById('consumo-box').style.display='none';
+
+  var btn=document.getElementById('btn-env');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>Enviando...';
+  setStatus('Enviando para o Google Sheets...','pend');
+
+  var idx=regs.length-1;
+  var params=new URLSearchParams({
+    data:reg.data, hora:reg.hora, op:reg.op,
+    eqCode:reg.eqCode, eqDesc:reg.eqDesc,
+    faz:reg.faz, bomba:reg.bomba, comb:reg.comb,
+    horimBombaIni:reg.horimBombIni, horimBombaFin:reg.horimBombFin,
+    litros:reg.litros,
+    horimEqIni:reg.horimEq, horimEqAnt:reg.horimEqAnt,
+    consumo:reg.consumo, obs:reg.obs,
+    _t:Date.now()
+  }).toString();
+
+  fetch(URL_GS+'?'+params)
+    .then(function(){
+      regs[idx].status='enviado';
+      save();render();
+      btn.disabled=false;btn.innerHTML='⛽ Registrar Abastecimento';
+      toast('Abastecimento registrado na planilha!','ok');
+      setStatus('Enviado com sucesso!','ok');
+      // Atualizar estoque
+      atualizarCardEstoque(saldoAtual-parseFloat(reg.litros));
+      buscarEstoque();
+    })
+    .catch(function(){
+      regs[idx].status='erro';
+      save();render();
+      btn.disabled=false;btn.innerHTML='⛽ Registrar Abastecimento';
+      toast('Sem internet — salvo localmente.','err');
+      setStatus('Salvo localmente — sem conexao','err');
+    });
+}
+
+// Estoque
+function abrirAddEstoque(){
+  document.getElementById('modal-est').style.display='flex';
+  var now=new Date();
+  document.getElementById('est-data').value=now.toISOString().split('T')[0];
+  document.getElementById('est-hora').value=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  document.getElementById('est-litros').value='';
+  document.getElementById('est-obs').value='';
+}
+function fecharAddEstoque(){document.getElementById('modal-est').style.display='none';}
+
+function salvarEstoque(){
+  var litros=document.getElementById('est-litros').value;
+  if(!litros||parseFloat(litros)<=0){toast('Informe a quantidade de litros!','err');return;}
+  var params=new URLSearchParams({
+    acao:'addEstoque',
+    data:document.getElementById('est-data').value,
+    hora:document.getElementById('est-hora').value,
+    litros:parseFloat(litros).toFixed(1),
+    obs:document.getElementById('est-obs').value,
+    _t:Date.now()
+  }).toString();
+  fetch(URL_GS+'?'+params)
+    .then(function(r){return r.json();})
+    .then(function(resp){
+      atualizarCardEstoque(resp.saldo);
+      fecharAddEstoque();
+      toast(parseFloat(litros).toFixed(1)+' L adicionados ao estoque!','ok');
+    })
+    .catch(function(){toast('Erro ao salvar estoque. Verifique a internet.','err');});
+}
+
+document.getElementById('modal-est').addEventListener('click',function(e){if(e.target===this)fecharAddEstoque();});
+
+function clearAll(){
+  if(!regs.length)return;
+  if(!confirm('Apagar todos os registros locais?'))return;
+  regs=[];save();render();toast('Registros apagados.','info');
+}
+
+function exportXL(){
+  if(!regs.length){toast('Nenhum registro para exportar.','info');return;}
+  var rows=[['Data','Hora','Operador','Eqpto','Descricao','Fazenda','Bomba','Combust.',
+    'Hor.Bomb.Ini','Hor.Bomb.Fin','Litros','Hor.Eq','Hor.Eq.Ant','Consumo L/h','Obs','Status']];
+  regs.forEach(function(r){
+    rows.push([fmtDate(r.data),r.hora,r.op,r.eqCode,r.eqDesc,r.faz,r.bomba,r.comb,
+      r.horimBombIni,r.horimBombFin,parseFloat(r.litros),r.horimEq,r.horimEqAnt,r.consumo,r.obs,r.status]);
+  });
+  var ws=XLSX.utils.aoa_to_sheet(rows);
+  var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'ABAST');
+  XLSX.writeFile(wb,'Abastecimento_'+new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')+'.xlsx');
+  toast('Excel exportado!','ok');
+}
+
+// Inicializar
+var now=new Date();
+document.getElementById('f-data').value=now.toISOString().split('T')[0];
+document.getElementById('f-hora').value=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+document.getElementById('est-data').value=now.toISOString().split('T')[0];
+load();
+carregarCadastros();
+buscarEstoque();
+</script>
+
+<!-- Input câmera oculto -->
+<input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none" onchange="processarFoto(event)">
+
+<!-- Modal preview da foto -->
+<div id="modal-ocr" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:2000;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:12px;padding:20px;width:100%;max-width:420px;margin:auto">
+    <div style="font-size:15px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+      📷 Foto do Horímetro
+      <button onclick="fecharOCR()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#888">✕</button>
+    </div>
+    <img id="ocr-preview" style="width:100%;border-radius:8px;margin-bottom:12px;display:none">
+    <div id="ocr-status" style="text-align:center;padding:12px;font-size:13px;color:#666;display:none"></div>
+    <div id="ocr-resultado" style="display:none">
+      <div style="background:#e8f5e9;border:1px solid #c8e6c9;border-radius:8px;padding:14px;text-align:center;margin-bottom:12px">
+        <div style="font-size:11px;font-weight:700;color:#2e7d32;margin-bottom:4px">VALOR LIDO</div>
+        <div style="font-size:32px;font-weight:700;color:#1b5e20" id="ocr-valor">—</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="confirmarOCR()" style="flex:1;background:#e65100;color:#fff;border:none;padding:11px;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer">✓ Usar este valor</button>
+        <button onclick="abrirCamera()" style="background:#fff;color:#555;border:1px solid #ccc;padding:11px 14px;border-radius:7px;font-size:13px;cursor:pointer">📷 Nova foto</button>
+      </div>
+    </div>
+    <div id="ocr-erro" style="display:none;background:#fdecea;border:1px solid #ffcdd2;border-radius:8px;padding:12px;font-size:13px;color:#c62828;text-align:center;margin-bottom:12px"></div>
+  </div>
+</div>
+
+<script>
+function abrirCamera(){
+  document.getElementById('camera-input').click();
+}
+function fecharOCR(){
+  document.getElementById('modal-ocr').style.display='none';
+}
+
+function processarFoto(event){
+  var file=event.target.files[0];
+  if(!file)return;
+
+  // Mostrar modal
+  var modal=document.getElementById('modal-ocr');
+  modal.style.display='flex';
+  document.getElementById('ocr-resultado').style.display='none';
+  document.getElementById('ocr-erro').style.display='none';
+  document.getElementById('ocr-status').style.display='block';
+  document.getElementById('ocr-status').textContent='Processando imagem...';
+
+  // Preview da imagem
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var img=document.getElementById('ocr-preview');
+    img.src=e.target.result;
+    img.style.display='block';
+
+    // Usar canvas para processar a imagem
+    var canvas=document.createElement('canvas');
+    var ctx=canvas.getContext('2d');
+    var image=new Image();
+    image.onload=function(){
+      canvas.width=image.width;
+      canvas.height=image.height;
+      ctx.drawImage(image,0,0);
+
+      // Tentar OCR nativo do navegador (experimental)
+      if('BarcodeDetector' in window){
+        // Tentar detectar números com BarcodeDetector
+        var detector=new BarcodeDetector({formats:['code_39','code_128','itf']});
+        detector.detect(canvas).then(function(results){
+          if(results.length>0){
+            mostrarResultadoOCR(results[0].rawValue);
+          } else {
+            // Fallback: pedir para digitar
+            mostrarDigitacaoManual();
+          }
+        }).catch(function(){
+          mostrarDigitacaoManual();
+        });
+      } else {
+        // Navegador não suporta BarcodeDetector — modo manual
+        mostrarDigitacaoManual();
+      }
+    };
+    image.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+
+  // Limpar input para permitir nova foto
+  event.target.value='';
+}
+
+function mostrarResultadoOCR(valor){
+  // Extrair apenas números e ponto decimal
+  var numeros=valor.replace(/[^0-9.]/g,'');
+  if(numeros){
+    document.getElementById('ocr-valor').textContent=numeros;
+    document.getElementById('ocr-status').style.display='none';
+    document.getElementById('ocr-resultado').style.display='block';
+  } else {
+    mostrarDigitacaoManual();
+  }
+}
+
+function mostrarDigitacaoManual(){
+  document.getElementById('ocr-status').style.display='none';
+  document.getElementById('ocr-erro').style.display='block';
+  document.getElementById('ocr-erro').innerHTML=
+    '&#128247; Foto capturada! Não foi possível ler automaticamente.<br><br>'+
+    '<strong>Digite o valor manualmente:</strong><br>'+
+    '<input type="number" id="ocr-manual" step="0.1" placeholder="Ex: 320272.6" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;font-size:16px;font-weight:700;margin-top:8px;text-align:center">'+
+    '<button onclick="confirmarManual()" style="width:100%;background:#e65100;color:#fff;border:none;padding:10px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px">&#10003; Confirmar</button>';
+}
+
+function confirmarOCR(){
+  var val=document.getElementById('ocr-valor').textContent;
+  if(val&&val!=='—'){
+    document.getElementById('f-horim-bomb-fin').value=val;
+    calcLitros();
+    fecharOCR();
+    toast('Horímetro preenchido: '+val,'ok');
+  }
+}
+
+function confirmarManual(){
+  var val=document.getElementById('ocr-manual').value;
+  if(val){
+    document.getElementById('f-horim-bomb-fin').value=val;
+    calcLitros();
+    fecharOCR();
+    toast('Horímetro preenchido: '+val,'ok');
+  }
+}
+
+// Fechar clicando fora
+document.getElementById('modal-ocr').addEventListener('click',function(e){
+  if(e.target===this)fecharOCR();
+});
+</script>
+
+
+
+</body></html>
