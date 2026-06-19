@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0044)file:///C:/Users/mauri/Downloads/home_1.html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Costa Rica — Sistema Operacional</title>
 <style>
@@ -37,6 +37,10 @@ body{font-family:Arial,sans-serif;background:#f0f2f5;min-height:100vh;display:fl
   .cards{padding:16px;gap:12px}
   .card{padding:20px}
 }
+.links-bar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.link-btn{background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.3);color:#fff;padding:8px 16px;border-radius:7px;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-weight:500}
+.link-btn:hover{background:rgba(255,255,255,0.3)}
+.link-btn.active{background:#fff;color:#1b5e20;border-color:#fff}
 </style>
 </head>
 <body>
@@ -44,11 +48,18 @@ body{font-family:Arial,sans-serif;background:#f0f2f5;min-height:100vh;display:fl
 <div class="hdr">
   <h1>🌿 Costa Rica</h1>
   <p>Sistema de Controle Operacional</p>
-  <div class="data" id="data-hora"></div>
+  <div class="data" id="data-hora">Sexta, 19 de junho de 2026 — 19:28</div>
+  <div class="links-bar">
+    <a href="file:///C:/Users/mauri/Downloads/home.html" class="link-btn active">🏠 Início</a>
+    <a href="file:///C:/Users/mauri/Downloads/index.html" class="link-btn">📋 Boletim</a>
+    <a href="file:///C:/Users/mauri/Downloads/abastecimento.html" class="link-btn">⛽ Abastecimento</a>
+    <a href="file:///C:/Users/mauri/Downloads/dashboard.html" class="link-btn">📊 Dashboard Op.</a>
+    <a href="file:///C:/Users/mauri/Downloads/dashboard_abast.html" class="link-btn">📈 Dashboard Abast.</a>
+  </div>
 </div>
 
 <div class="cards">
-  <a href="index.html" class="card card-blue">
+  <a href="file:///C:/Users/mauri/Downloads/index.html" class="card card-blue">
     <div class="card-icon ic-blue">📋</div>
     <div>
       <div class="card-title">Boletim Diário</div>
@@ -58,7 +69,7 @@ body{font-family:Arial,sans-serif;background:#f0f2f5;min-height:100vh;display:fl
     <div class="card-arrow">→</div>
   </a>
 
-  <a href="abastecimento.html" class="card card-orange">
+  <a href="file:///C:/Users/mauri/Downloads/abastecimento.html" class="card card-orange">
     <div class="card-icon ic-orange">⛽</div>
     <div>
       <div class="card-title">Abastecimento</div>
@@ -68,7 +79,7 @@ body{font-family:Arial,sans-serif;background:#f0f2f5;min-height:100vh;display:fl
     <div class="card-arrow">→</div>
   </a>
 
-  <a href="dashboard.html" class="card card-purple">
+  <a href="file:///C:/Users/mauri/Downloads/dashboard.html" class="card card-purple">
     <div class="card-icon ic-purple">📊</div>
     <div>
       <div class="card-title">Dashboard</div>
@@ -78,7 +89,7 @@ body{font-family:Arial,sans-serif;background:#f0f2f5;min-height:100vh;display:fl
     <div class="card-arrow">→</div>
   </a>
 
-  <a href="dashboard_abast.html" class="card card-green">
+  <a href="file:///C:/Users/mauri/Downloads/dashboard_abast.html" class="card card-green">
     <div class="card-icon ic-green">📈</div>
     <div>
       <div class="card-title">Dashboard Abastecimento</div>
@@ -89,7 +100,7 @@ body{font-family:Arial,sans-serif;background:#f0f2f5;min-height:100vh;display:fl
   </a>
 </div>
 
-<div class="footer">Costa Rica &mdash; Sistema Operacional &mdash; <span id="ano"></span></div>
+<div class="footer">Costa Rica — Sistema Operacional — <span id="ano">2026</span></div>
 
 <script>
 function atualizarHora(){
@@ -104,5 +115,6 @@ function atualizarHora(){
 atualizarHora();
 setInterval(atualizarHora,1000);
 </script>
-</body>
-</html>
+
+
+</body></html>
