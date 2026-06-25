@@ -1,318 +1,338 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0049)file:///C:/Users/mauri/Downloads/dashboard_8.html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard — Costa Rica</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<title>Dashboard Operacional — Costa Rica</title>
+<script src="./dashboard_files/chart.umd.min.js.download"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#f0f2f5;color:#1a1a1a;padding:16px;max-width:1100px;margin:0 auto}
-.hdr{background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;border-radius:12px;padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+body{font-family:Arial,sans-serif;background:#f0f2f5;color:#1a1a1a;padding:16px;max-width:1200px;margin:0 auto}
+.hdr{background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;border-radius:12px;padding:20px 24px;margin-bottom:16px}
 .hdr h1{font-size:20px;font-weight:700;margin-bottom:3px}
-.hdr p{font-size:13px;opacity:.85}
-.hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.data-sel{padding:8px 14px;border-radius:7px;border:none;font-size:13px;font-weight:700;cursor:pointer;background:rgba(255,255,255,0.2);color:#fff;border:1.5px solid rgba(255,255,255,0.4)}
+.hdr p{font-size:13px;opacity:.85;margin-bottom:14px}
+.filtros{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.filtros label{font-size:12px;opacity:.8}
+.filtros input{padding:7px 12px;border-radius:7px;border:none;font-size:13px;font-weight:700;background:rgba(255,255,255,0.2);color:#fff;cursor:pointer}
+.filtros input::-webkit-calendar-picker-indicator{filter:invert(1)}
 .btn-buscar{background:#fff;color:#1565c0;border:none;padding:8px 18px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer}
 .btn-buscar:hover{background:#e3f2fd}
-
-/* CARDS RESUMO */
-.cards-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.card{background:#fff;border-radius:10px;padding:16px;border-left:4px solid #ddd;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
-.card-label{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
-.card-val{font-size:28px;font-weight:700;line-height:1}
-.card-sub{font-size:12px;color:#888;margin-top:4px}
-.card-blue{border-left-color:#1565c0}.card-blue .card-val{color:#1565c0}
-.card-green{border-left-color:#2e7d32}.card-green .card-val{color:#2e7d32}
-.card-orange{border-left-color:#e65100}.card-orange .card-val{color:#e65100}
-.card-purple{border-left-color:#6a1b9a}.card-purple .card-val{color:#6a1b9a}
-
-/* GRID PRINCIPAL */
+.btn-periodo{background:rgba(255,255,255,0.15);color:#fff;border:1.5px solid rgba(255,255,255,0.4);padding:7px 14px;border-radius:7px;font-size:12px;cursor:pointer;font-weight:600}
+.btn-periodo:hover,.btn-periodo.ativo{background:#fff;color:#1565c0}
+.nav{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.nav a{background:#fff;border:1px solid #ddd;color:#555;padding:8px 14px;border-radius:7px;font-size:13px;text-decoration:none}
+.nav a:hover{background:#f0f0f0}
+.nav a.ativo{background:#1565c0;color:#fff;border-color:#1565c0}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.card{background:#fff;border-radius:10px;padding:16px;border-left:4px solid #ccc;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.card .lbl{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:6px}
+.card .val{font-size:26px;font-weight:700}
+.card .sub{font-size:12px;color:#888;margin-top:4px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-.panel{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
-.panel-title{font-size:13px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.panel-full{grid-column:span 2}
-
-/* TABELA OPERADORES */
-.op-table{width:100%;border-collapse:collapse;font-size:13px}
-.op-table th{background:#f5f5f0;padding:10px 12px;text-align:left;font-weight:700;color:#555;font-size:11px;text-transform:uppercase;border-bottom:2px solid #eee}
-.op-table td{padding:10px 12px;border-bottom:1px solid #f0f0ea}
-.op-table tr:last-child td{border-bottom:none}
-.op-table tr:hover td{background:#fafaf7}
-
-/* GAUGE */
-.gauge-wrap{display:flex;flex-direction:column;align-items:center;gap:4px}
-.gauge-label{font-size:11px;color:#888;font-weight:700;text-align:center}
-
-/* BARRAS */
-.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.bar-name{font-size:12px;color:#555;width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.box{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.box-full{grid-column:span 2}
+.box-title{font-size:12px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bar-name{font-size:12px;width:120px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar-track{flex:1;background:#f0f0ea;border-radius:100px;height:20px;overflow:hidden}
-.bar-fill{height:100%;border-radius:100px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:700;color:#fff;transition:width .6s ease}
-.bar-pct{font-size:12px;font-weight:700;width:42px;text-align:right;flex-shrink:0}
-
-/* STATUS */
-.status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px}
-.dot-green{background:#2e7d32}
-.dot-yellow{background:#f9a825}
-.dot-red{background:#c62828}
-
-/* META */
-.meta-line{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0ea;font-size:13px}
-.meta-line:last-child{border-bottom:none}
-.meta-badge{font-size:11px;padding:3px 10px;border-radius:100px;font-weight:700}
-.mb-green{background:#e8f5e9;color:#2e7d32}
-.mb-yellow{background:#fff8e1;color:#e65100}
-.mb-red{background:#fdecea;color:#c62828}
-
-.loading{text-align:center;padding:3rem;color:#888;font-size:14px}
-.spinner{display:inline-block;width:32px;height:32px;border:3px solid #e0e0e0;border-top:3px solid #1565c0;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
+.bar-fill{height:100%;border-radius:100px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:700;color:#fff}
+.bar-pct{font-size:12px;font-weight:700;width:45px;text-align:right;flex-shrink:0}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{background:#f5f5f0;padding:9px 10px;text-align:left;font-weight:700;color:#555;font-size:11px;text-transform:uppercase;border-bottom:2px solid #eee;white-space:nowrap}
+.tbl td{padding:9px 10px;border-bottom:1px solid #f0f0ea}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#fafaf7}
+.badge{display:inline-block;font-size:11px;padding:2px 9px;border-radius:100px;font-weight:700}
+.bg{background:#e8f5e9;color:#2e7d32}
+.bb{background:#fff8e1;color:#e65100}
+.br{background:#fdecea;color:#c62828}
+.ranking-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f0f0ea}
+.ranking-item:last-child{border-bottom:none}
+.ranking-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.r1{background:#ffd700;color:#5d4037}
+.r2{background:#c0c0c0;color:#424242}
+.r3{background:#cd7f32;color:#fff}
+.rn{background:#f0f0ea;color:#888}
+.ranking-nome{flex:1;font-size:13px;font-weight:700}
+.ranking-info{font-size:12px;color:#888;margin-top:2px}
+.loading{text-align:center;padding:3rem;color:#888}
+.spinner{width:32px;height:32px;border:3px solid #e0e0e0;border-top:3px solid #1565c0;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.empty{text-align:center;padding:3rem;color:#aaa;font-size:14px}
-
-.links-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.link-btn{background:#fff;border:1px solid #ddd;color:#555;padding:8px 16px;border-radius:7px;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-.link-btn:hover{background:#f5f5f0;color:#1a1a1a}
-.link-btn.active{background:#1565c0;color:#fff;border-color:#1565c0}
-
-@media(max-width:700px){
-  .cards-row{grid-template-columns:1fr 1fr}
-  .grid2{grid-template-columns:1fr}
-  .panel-full{grid-column:span 1}
-  .hdr{flex-direction:column;align-items:flex-start}
-}
+.empty{text-align:center;padding:3rem;color:#aaa}
+.alerta{background:#fdecea;border:1px solid #ffcdd2;border-radius:8px;padding:10px 14px;font-size:13px;color:#c62828;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+@media(max-width:700px){.cards{grid-template-columns:1fr 1fr}.grid2,.grid3{grid-template-columns:1fr}.box-full{grid-column:span 1}}
 </style>
 </head>
 <body>
 
 <div class="hdr">
-  <div>
-    <h1>&#128202; Dashboard Operacional</h1>
-    <p>Costa Rica &mdash; Disponibilidade Mecânica e Eficiência Operacional</p>
-  </div>
-  <div class="hdr-right">
-    <input type="date" id="sel-data" class="data-sel">
-    <button class="btn-buscar" onclick="buscarDados()">&#128269; Buscar</button>
-  </div>
-</div>
-
-
-
-<div class="links-bar">
-  <a href="home.html" class="link-btn">🏠 Início</a>
-  <a href="index.html" class="link-btn">📋 Boletim</a>
-  <a href="abastecimento.html" class="link-btn">⛽ Abastecimento</a>
-  <a href="dashboard.html" class="link-btn" style="background:#6a1b9a;color:#fff;border-color:#6a1b9a">📊 Dashboard Op.</a>
-  <a href="dashboard_abast.html" class="link-btn">📈 Dashboard Abast.</a>
-</div>
-
-<div id="conteudo">
-  <div class="loading">
-    <div class="spinner"></div>
-    <div>Selecione uma data e clique em Buscar</div>
+  <h1>📊 Dashboard Operacional</h1>
+  <p>Costa Rica — Disponibilidade Mecânica e Eficiência Operacional</p>
+  <div class="filtros">
+    <button class="btn-periodo ativo" onclick="setPeriodo(&#39;dia&#39;)">Dia</button>
+    <button class="btn-periodo" onclick="setPeriodo(&#39;semana&#39;)">Semana</button>
+    <button class="btn-periodo" onclick="setPeriodo(&#39;mes&#39;)">Mês</button>
+    <span style="opacity:.5">|</span>
+    <label>De:</label><input type="date" id="data-ini">
+    <label>Até:</label><input type="date" id="data-fim">
+    <button class="btn-buscar" onclick="buscar()">🔍 Buscar</button>
   </div>
 </div>
+
+<div class="nav">
+  <a href="file:///C:/Users/mauri/Downloads/home.html">🏠 Início</a>
+  <a href="file:///C:/Users/mauri/Downloads/index.html">📋 Boletim</a>
+  <a href="file:///C:/Users/mauri/Downloads/abastecimento.html">⛽ Abastecimento</a>
+  <a href="file:///C:/Users/mauri/Downloads/dashboard.html" class="ativo">📊 Dashboard Op.</a>
+  <a href="file:///C:/Users/mauri/Downloads/dashboard_abast.html">📈 Dashboard Abast.</a>
+</div>
+
+<div id="conteudo"><div class="empty">Nenhum registro para 25/06/2026</div></div>
 
 <script>
-var URL_GS = 'https://script.google.com/macros/s/AKfycbwDRI5B1Qt7KK2G7ZPZymGFyN4yRGLioCOON4K2bQCWKiFty50oBsYrR9be38e82w5X-w/exec';
-var chartDM = null, chartEO = null;
+var URL = 'https://script.google.com/macros/s/AKfycbwDRI5B1Qt7KK2G7ZPZymGFyN4yRGLioCOON4K2bQCWKiFty50oBsYrR9be38e82w5X-w/exec';
+var charts = [];
 
-// Data atual como padrão
+// Inicializar datas
 var hoje = new Date();
-document.getElementById('sel-data').value = hoje.toISOString().split('T')[0];
+document.getElementById('data-ini').value = hoje.toISOString().split('T')[0];
+document.getElementById('data-fim').value = hoje.toISOString().split('T')[0];
 
 function fmtDate(v){if(!v)return'';var p=v.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
+function corDM(v){return parseFloat(v)>=85?'#2e7d32':parseFloat(v)>=70?'#f9a825':'#c62828';}
+function corEO(v){return parseFloat(v)>=80?'#1565c0':parseFloat(v)>=60?'#f9a825':'#c62828';}
+function classDM(v){return parseFloat(v)>=85?'bg':parseFloat(v)>=70?'bb':'br';}
+function classEO(v){return parseFloat(v)>=80?'bg':parseFloat(v)>=60?'bb':'br';}
 
-function getCorDM(v){
-  var n=parseFloat(v);
-  if(n>=85)return'#2e7d32';
-  if(n>=70)return'#f9a825';
-  return'#c62828';
-}
-function getCorEO(v){
-  var n=parseFloat(v);
-  if(n>=80)return'#1565c0';
-  if(n>=60)return'#f9a825';
-  return'#c62828';
-}
-function getClassDM(v){
-  var n=parseFloat(v);
-  if(n>=85)return'mb-green';
-  if(n>=70)return'mb-yellow';
-  return'mb-red';
-}
-function getClassEO(v){
-  var n=parseFloat(v);
-  if(n>=80)return'mb-green';
-  if(n>=60)return'mb-yellow';
-  return'mb-red';
-}
-function getDotDM(v){
-  var n=parseFloat(v);
-  if(n>=85)return'dot-green';
-  if(n>=70)return'dot-yellow';
-  return'dot-red';
+function setPeriodo(tipo){
+  document.querySelectorAll('.btn-periodo').forEach(function(b){b.classList.remove('ativo');});
+  event.target.classList.add('ativo');
+  var hoje = new Date();
+  var ini, fim = hoje;
+  if(tipo==='dia'){ ini = hoje; }
+  else if(tipo==='semana'){
+    ini = new Date(hoje);
+    ini.setDate(hoje.getDate() - hoje.getDay());
+  } else {
+    ini = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  }
+  document.getElementById('data-ini').value = ini.toISOString().split('T')[0];
+  document.getElementById('data-fim').value = fim.toISOString().split('T')[0];
+  buscar();
 }
 
-function buscarDados(){
-  var data=document.getElementById('sel-data').value;
-  if(!data){alert('Selecione uma data!');return;}
-  var dataFmt=fmtDate(data);
+function destruirCharts(){
+  charts.forEach(function(c){try{c.destroy();}catch(e){}});
+  charts=[];
+}
 
-  document.getElementById('conteudo').innerHTML=
-    '<div class="loading"><div class="spinner"></div><div>Buscando dados de '+dataFmt+'...</div></div>';
+function buscar(){
+  var ini = document.getElementById('data-ini').value;
+  var fim = document.getElementById('data-fim').value;
+  if(!ini||!fim){alert('Selecione o período!');return;}
+  var dataIni = fmtDate(ini);
+  var dataFim = fmtDate(fim);
+  document.getElementById('conteudo').innerHTML='<div class="loading"><div class="spinner"></div>Buscando '+dataIni+' a '+dataFim+'...</div>';
+  destruirCharts();
 
-  // Destruir charts anteriores
-  if(chartDM){chartDM.destroy();chartDM=null;}
-  if(chartEO){chartEO.destroy();chartEO=null;}
+  var acao = ini===fim ? 'dashboard' : 'dashboardPeriodo';
+  var params = ini===fim
+    ? '?acao=dashboard&data='+encodeURIComponent(dataIni)
+    : '?acao=dashboardPeriodo&dataIni='+encodeURIComponent(dataIni)+'&dataFim='+encodeURIComponent(dataFim);
 
-  fetch(URL_GS+'?acao=dashboard&data='+encodeURIComponent(dataFmt)+'&_t='+Date.now())
-    .then(function(r){return r.json();})
-    .then(function(resp){
-      renderDashboard(resp, dataFmt);
+  fetch(URL+params+'&_t='+Date.now())
+    .then(function(r){return r.text();})
+    .then(function(txt){
+      var resp=JSON.parse(txt);
+      if(ini===fim) renderDia(resp,dataIni);
+      else renderPeriodo(resp,dataIni,dataFim);
     })
     .catch(function(){
-      document.getElementById('conteudo').innerHTML=
-        '<div class="empty">Erro ao buscar dados. Verifique a internet.</div>';
+      // JSONP fallback
+      window.__cb=function(resp){
+        document.getElementById('__js')&&document.getElementById('__js').remove();
+        if(ini===fim) renderDia(resp,dataIni);
+        else renderPeriodo(resp,dataIni,dataFim);
+      };
+      var s=document.createElement('script');
+      s.id='__js';
+      s.onerror=function(){document.getElementById('conteudo').innerHTML='<div class="empty">Erro ao buscar dados.</div>';};
+      s.src=URL+params+'&callback=__cb&_t='+Date.now();
+      document.head.appendChild(s);
     });
 }
 
-function renderDashboard(resp, dataFmt){
-  var ops = resp.operadores || [];
-  if(!ops.length){
-    document.getElementById('conteudo').innerHTML=
-      '<div class="empty">Nenhum registro encontrado para '+dataFmt+'</div>';
-    return;
-  }
-
-  // Totais gerais
-  var totalHoras=0, totalManut=0, totalOp=0, totalDisp=0;
+function calcTotais(ops){
+  var totalH=0,totalM=0,totalOp=0,totalD=0;
   ops.forEach(function(o){
-    totalHoras+=parseFloat(o.horasTotal)||0;
-    totalManut+=parseFloat(o.horasManut)||0;
-    totalOp+=parseFloat(o.horasOp)||0;
-    totalDisp+=parseFloat(o.horasDisp)||0;
+    totalH+=parseFloat(o.horasTotal||o.total)||0;
+    totalM+=parseFloat(o.horasManut||o.manut)||0;
+    totalOp+=parseFloat(o.horasOp||o.op2)||0;
+    totalD+=parseFloat(o.horasDisp||o.disp)||0;
   });
-  var dmGeral = totalHoras>0?(totalDisp/totalHoras*100):0;
-  var eoGeral = totalDisp>0?(totalOp/totalDisp*100):0;
-
-  var html = '';
-
-  // CARDS RESUMO
-  html += '<div class="cards-row">';
-  html += '<div class="card card-blue"><div class="card-label">Horas Totais</div><div class="card-val">'+totalHoras.toFixed(1)+'h</div><div class="card-sub">'+ops.length+' operador(es)</div></div>';
-  html += '<div class="card card-green"><div class="card-label">DM Geral</div><div class="card-val" style="color:'+getCorDM(dmGeral)+'">'+dmGeral.toFixed(1)+'%</div><div class="card-sub">Meta: ≥ 85%</div></div>';
-  html += '<div class="card card-orange"><div class="card-label">EO Geral</div><div class="card-val" style="color:'+getCorEO(eoGeral)+'">'+eoGeral.toFixed(1)+'%</div><div class="card-sub">Meta: ≥ 80%</div></div>';
-  html += '<div class="card card-purple"><div class="card-label">Horas Manutenção</div><div class="card-val">'+totalManut.toFixed(1)+'h</div><div class="card-sub">'+(totalHoras>0?(totalManut/totalHoras*100).toFixed(1):0)+'% do total</div></div>';
-  html += '</div>';
-
-  // GRÁFICOS
-  html += '<div class="grid2">';
-
-  // DM por operador - barras
-  html += '<div class="panel"><div class="panel-title">&#128200; Disponibilidade Mecânica por Operador</div>';
-  html += '<div style="margin-bottom:8px;font-size:11px;color:#888">Meta: ≥ 85% <span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:100px;margin-left:4px">Verde</span> ≥ 70% <span style="background:#fff8e1;color:#e65100;padding:2px 8px;border-radius:100px;margin-left:4px">Amarelo</span> &lt; 70% <span style="background:#fdecea;color:#c62828;padding:2px 8px;border-radius:100px;margin-left:4px">Vermelho</span></div>';
-  ops.forEach(function(o){
-    var dm=parseFloat(o.dm)||0;
-    var cor=getCorDM(dm);
-    html += '<div class="bar-row">';
-    html += '<div class="bar-name" title="'+o.op+'">'+o.op.split(' ')[0]+'</div>';
-    html += '<div class="bar-track"><div class="bar-fill" style="width:'+Math.min(dm,100)+'%;background:'+cor+'">'+dm+'%</div></div>';
-    html += '<div class="bar-pct" style="color:'+cor+'">'+dm+'%</div>';
-    html += '</div>';
-  });
-  html += '</div>';
-
-  // EO por operador - barras
-  html += '<div class="panel"><div class="panel-title">&#9881; Eficiência Operacional por Operador</div>';
-  html += '<div style="margin-bottom:8px;font-size:11px;color:#888">Meta: ≥ 80% <span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:100px;margin-left:4px">Verde</span> ≥ 60% <span style="background:#fff8e1;color:#e65100;padding:2px 8px;border-radius:100px;margin-left:4px">Amarelo</span> &lt; 60% <span style="background:#fdecea;color:#c62828;padding:2px 8px;border-radius:100px;margin-left:4px">Vermelho</span></div>';
-  ops.forEach(function(o){
-    var eo=parseFloat(o.eo)||0;
-    var cor=getCorEO(eo);
-    html += '<div class="bar-row">';
-    html += '<div class="bar-name" title="'+o.op+'">'+o.op.split(' ')[0]+'</div>';
-    html += '<div class="bar-track"><div class="bar-fill" style="width:'+Math.min(eo,100)+'%;background:'+cor+'">'+eo+'%</div></div>';
-    html += '<div class="bar-pct" style="color:'+cor+'">'+eo+'%</div>';
-    html += '</div>';
-  });
-  html += '</div>';
-
-  html += '</div>'; // fim grid2
-
-  // GRÁFICO DE PIZZA - distribuição de horas
-  html += '<div class="grid2">';
-  html += '<div class="panel"><div class="panel-title">&#128200; Distribuição de Horas</div>';
-  html += '<canvas id="chart-pizza" height="220"></canvas></div>';
-
-  // TABELA DETALHADA
-  html += '<div class="panel"><div class="panel-title">&#128203; Detalhamento por Operador</div>';
-  html += '<table class="op-table"><thead><tr>';
-  html += '<th>Operador</th><th>H.Total</th><th>H.Disp</th><th>H.Manut</th><th>H.Op</th><th>DM%</th><th>EO%</th>';
-  html += '</tr></thead><tbody>';
-  ops.forEach(function(o){
-    html += '<tr>';
-    html += '<td><span class="status-dot '+getDotDM(o.dm)+'"></span>'+o.op+'</td>';
-    html += '<td>'+o.horasTotal+'h</td>';
-    html += '<td>'+o.horasDisp+'h</td>';
-    html += '<td style="color:#c62828">'+o.horasManut+'h</td>';
-    html += '<td style="color:#1565c0">'+o.horasOp+'h</td>';
-    html += '<td><span class="meta-badge '+getClassDM(o.dm)+'">'+o.dm+'%</span></td>';
-    html += '<td><span class="meta-badge '+getClassEO(o.eo)+'">'+o.eo+'%</span></td>';
-    html += '</tr>';
-  });
-  html += '</tbody></table></div>';
-  html += '</div>'; // fim grid2
-
-  // METAS
-  html += '<div class="panel" style="margin-top:16px"><div class="panel-title">&#127919; Status das Metas — '+dataFmt+'</div>';
-  html += '<div>';
-  ops.forEach(function(o){
-    var dmOk=parseFloat(o.dm)>=85;
-    var eoOk=parseFloat(o.eo)>=80;
-    html += '<div class="meta-line">';
-    html += '<span style="font-weight:700">'+o.op+'</span>';
-    html += '<div style="display:flex;gap:8px">';
-    html += '<span class="meta-badge '+(dmOk?'mb-green':'mb-red')+'">DM: '+o.dm+'% '+(dmOk?'✓':'✗')+'</span>';
-    html += '<span class="meta-badge '+(eoOk?'mb-green':'mb-red')+'">EO: '+o.eo+'% '+(eoOk?'✓':'✗')+'</span>';
-    html += '</div></div>';
-  });
-  html += '</div></div>';
-
-  document.getElementById('conteudo').innerHTML = html;
-
-  // Renderizar gráfico de pizza
-  var horasOp = totalOp;
-  var horasOpercional = totalHoras - totalOp - totalManut;
-  var ctx = document.getElementById('chart-pizza').getContext('2d');
-  chartDM = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Operação', 'Operacional', 'Manutenção'],
-      datasets: [{
-        data: [horasOp.toFixed(1), horasOpercional.toFixed(1), totalManut.toFixed(1)],
-        backgroundColor: ['#1565c0','#43a047','#c62828'],
-        borderWidth: 2,
-        borderColor: '#fff'
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 12 } } },
-        tooltip: {
-          callbacks: {
-            label: function(ctx) {
-              return ctx.label + ': ' + ctx.parsed + 'h';
-            }
-          }
-        }
-      }
-    }
-  });
+  return{totalH:totalH,totalM:totalM,totalOp:totalOp,totalD:totalD};
 }
 
-// Buscar automaticamente com a data de hoje
-buscarDados();
+function renderCards(t){
+  var dmG=t.totalH>0?(t.totalD/t.totalH*100):0;
+  var eoG=t.totalD>0?(t.totalOp/t.totalD*100):0;
+  return '<div class="cards">'+
+    '<div class="card" style="border-left-color:#1565c0"><div class="lbl">Horas Totais</div><div class="val" style="color:#1565c0">'+t.totalH.toFixed(1)+'h</div><div class="sub">período selecionado</div></div>'+
+    '<div class="card" style="border-left-color:'+corDM(dmG)+'"><div class="lbl">DM Geral</div><div class="val" style="color:'+corDM(dmG)+'">'+dmG.toFixed(1)+'%</div><div class="sub">Meta ≥ 85%'+(dmG<85?' ⚠️':'')+'</div></div>'+
+    '<div class="card" style="border-left-color:'+corEO(eoG)+'"><div class="lbl">EO Geral</div><div class="val" style="color:'+corEO(eoG)+'">'+eoG.toFixed(1)+'%</div><div class="sub">Meta ≥ 80%'+(eoG<80?' ⚠️':'')+'</div></div>'+
+    '<div class="card" style="border-left-color:#c62828"><div class="lbl">Manutenção</div><div class="val" style="color:#c62828">'+t.totalM.toFixed(1)+'h</div><div class="sub">'+(t.totalH>0?(t.totalM/t.totalH*100).toFixed(1):0)+'% do total</div></div>'+
+  '</div>';
+}
+
+function renderRanking(ops){
+  var html='<div class="box"><div class="box-title">🏆 Ranking de Operadores por DM%</div>';
+  ops.forEach(function(o,i){
+    var dm=parseFloat(o.dm)||0;
+    var numClass=i===0?'r1':i===1?'r2':i===2?'r3':'rn';
+    var numIcon=i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);
+    html+='<div class="ranking-item">'+
+      '<div class="ranking-num '+numClass+'">'+numIcon+'</div>'+
+      '<div style="flex:1">'+
+        '<div class="ranking-nome">'+(o.op||o.op)+'</div>'+
+        '<div class="ranking-info">DM: '+o.dm+'% | EO: '+o.eo+'% | '+parseFloat(o.horasTotal||o.total||0).toFixed(1)+'h</div>'+
+      '</div>'+
+      '<span class="badge '+classDM(dm)+'">'+o.dm+'%</span>'+
+    '</div>';
+  });
+  html+='</div>';
+  return html;
+}
+
+function renderDia(resp, dataFmt){
+  var ops = resp.operadores||[];
+  // Filtrar operadores sem nome
+  ops = ops.filter(function(o){return o.op && o.op.trim();});
+  if(!ops.length){document.getElementById('conteudo').innerHTML='<div class="empty">Nenhum registro para '+dataFmt+'</div>';return;}
+
+  var t=calcTotais(ops);
+  var html=renderCards(t);
+
+  // Alertas
+  var dmG=t.totalH>0?(t.totalD/t.totalH*100):0;
+  var eoG=t.totalD>0?(t.totalOp/t.totalD*100):0;
+  if(dmG<85) html+='<div class="alerta">⚠️ DM abaixo da meta ('+dmG.toFixed(1)+'% < 85%)</div>';
+  if(eoG<80) html+='<div class="alerta">⚠️ EO abaixo da meta ('+eoG.toFixed(1)+'% < 80%)</div>';
+
+  html+='<div class="grid2">';
+
+  // DM barras
+  html+='<div class="box"><div class="box-title">📊 DM% por Operador</div>';
+  ops.forEach(function(o){
+    var dm=parseFloat(o.dm)||0,cor=corDM(dm);
+    html+='<div class="bar-row"><div class="bar-name" title="'+o.op+'">'+o.op.split(' ')[0]+'</div>'+
+      '<div class="bar-track"><div class="bar-fill" style="width:'+Math.min(dm,100)+'%;background:'+cor+'">'+dm+'%</div></div>'+
+      '<div class="bar-pct" style="color:'+cor+'">'+dm+'%</div></div>';
+  });
+  html+='</div>';
+
+  // EO barras
+  html+='<div class="box"><div class="box-title">⚙️ EO% por Operador</div>';
+  ops.forEach(function(o){
+    var eo=parseFloat(o.eo)||0,cor=corEO(eo);
+    html+='<div class="bar-row"><div class="bar-name" title="'+o.op+'">'+o.op.split(' ')[0]+'</div>'+
+      '<div class="bar-track"><div class="bar-fill" style="width:'+Math.min(eo,100)+'%;background:'+cor+'">'+eo+'%</div></div>'+
+      '<div class="bar-pct" style="color:'+cor+'">'+eo+'%</div></div>';
+  });
+  html+='</div>';
+  html+='</div>';
+
+  html+='<div class="grid2">';
+  // Pizza
+  html+='<div class="box"><div class="box-title">📊 Distribuição de Horas</div><canvas id="c-pizza" height="220"></canvas></div>';
+  // Ranking
+  html+=renderRanking(ops.slice().sort(function(a,b){return parseFloat(b.dm)-parseFloat(a.dm);}));
+  html+='</div>';
+
+  // Tabela
+  html+='<div class="box" style="margin-bottom:16px"><div class="box-title">📋 Detalhamento — '+dataFmt+'</div>';
+  html+='<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Operador</th><th>H.Total</th><th>H.Disp</th><th>H.Manut</th><th>H.Op</th><th>DM%</th><th>EO%</th></tr></thead><tbody>';
+  ops.forEach(function(o){
+    html+='<tr><td><b>'+o.op+'</b></td><td>'+parseFloat(o.horasTotal||0).toFixed(1)+'h</td><td>'+parseFloat(o.horasDisp||0).toFixed(1)+'h</td>'+
+      '<td style="color:#c62828">'+parseFloat(o.horasManut||0).toFixed(1)+'h</td>'+
+      '<td style="color:#1565c0">'+parseFloat(o.horasOp||0).toFixed(1)+'h</td>'+
+      '<td><span class="badge '+classDM(o.dm)+'">'+o.dm+'%</span></td>'+
+      '<td><span class="badge '+classEO(o.eo)+'">'+o.eo+'%</span></td></tr>';
+  });
+  html+='</tbody></table></div></div>';
+
+  document.getElementById('conteudo').innerHTML=html;
+
+  // Chart pizza
+  var horasOp=t.totalOp, horasOper=Math.max(0,t.totalH-t.totalOp-t.totalM);
+  var ctx=document.getElementById('c-pizza').getContext('2d');
+  charts.push(new Chart(ctx,{type:'doughnut',
+    data:{labels:['Operação','Operacional','Manutenção'],
+      datasets:[{data:[horasOp.toFixed(1),horasOper.toFixed(1),t.totalM.toFixed(1)],
+        backgroundColor:['#1565c0','#43a047','#c62828'],borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,plugins:{legend:{position:'bottom'},
+      tooltip:{callbacks:{label:function(c){return c.label+': '+c.parsed+'h';}}}}}}));
+}
+
+function renderPeriodo(resp, dataIni, dataFim){
+  var dias = resp.dias||[];
+  var ops = (resp.operadores||[]).filter(function(o){return o.op&&o.op.trim();});
+  if(!ops.length&&!dias.length){document.getElementById('conteudo').innerHTML='<div class="empty">Nenhum registro no período</div>';return;}
+
+  var t=calcTotais(ops);
+  var html=renderCards(t);
+
+  // Gráfico evolução diária
+  html+='<div class="box box-full" style="margin-bottom:16px"><div class="box-title">📈 Evolução Diária — DM% e EO%</div><canvas id="c-linha" height="120"></canvas></div>';
+
+  html+='<div class="grid2">';
+  html+=renderRanking(ops);
+
+  // Tabela por dia
+  html+='<div class="box"><div class="box-title">📅 Resumo por Dia</div><div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Data</th><th>H.Total</th><th>H.Manut</th><th>DM%</th><th>EO%</th></tr></thead><tbody>';
+  dias.forEach(function(d){
+    html+='<tr><td><b>'+d.data+'</b></td><td>'+d.total+'h</td><td style="color:#c62828">'+d.manut+'h</td>'+
+      '<td><span class="badge '+classDM(d.dm)+'">'+d.dm+'%</span></td>'+
+      '<td><span class="badge '+classEO(d.eo)+'">'+d.eo+'%</span></td></tr>';
+  });
+  html+='</tbody></table></div></div>';
+  html+='</div>';
+
+  // Tabela operadores
+  html+='<div class="box" style="margin-bottom:16px"><div class="box-title">👤 Detalhamento por Operador</div><div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Operador</th><th>H.Total</th><th>H.Disp</th><th>H.Manut</th><th>H.Op</th><th>DM%</th><th>EO%</th></tr></thead><tbody>';
+  ops.forEach(function(o){
+    html+='<tr><td><b>'+o.op+'</b></td><td>'+parseFloat(o.total||0).toFixed(1)+'h</td><td>'+parseFloat(o.disp||0).toFixed(1)+'h</td>'+
+      '<td style="color:#c62828">'+parseFloat(o.manut||0).toFixed(1)+'h</td>'+
+      '<td style="color:#1565c0">'+parseFloat(o.op2||0).toFixed(1)+'h</td>'+
+      '<td><span class="badge '+classDM(o.dm)+'">'+o.dm+'%</span></td>'+
+      '<td><span class="badge '+classEO(o.eo)+'">'+o.eo+'%</span></td></tr>';
+  });
+  html+='</tbody></table></div></div>';
+
+  document.getElementById('conteudo').innerHTML=html;
+
+  // Gráfico linha
+  var ctx2=document.getElementById('c-linha').getContext('2d');
+  charts.push(new Chart(ctx2,{type:'line',
+    data:{
+      labels:dias.map(function(d){return d.data;}),
+      datasets:[
+        {label:'DM%',data:dias.map(function(d){return parseFloat(d.dm);}),
+          borderColor:'#2e7d32',backgroundColor:'rgba(46,125,50,0.1)',tension:.3,fill:true},
+        {label:'EO%',data:dias.map(function(d){return parseFloat(d.eo);}),
+          borderColor:'#1565c0',backgroundColor:'rgba(21,101,192,0.1)',tension:.3,fill:true},
+        {label:'Meta DM (85%)',data:dias.map(function(){return 85;}),
+          borderColor:'#c62828',borderDash:[5,5],pointRadius:0,fill:false},
+        {label:'Meta EO (80%)',data:dias.map(function(){return 80;}),
+          borderColor:'#e65100',borderDash:[5,5],pointRadius:0,fill:false}
+      ]
+    },
+    options:{responsive:true,scales:{y:{min:0,max:100,ticks:{callback:function(v){return v+'%';}}}},
+      plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.y.toFixed(1)+'%';}}}}}}));
+}
+
+buscar();
 </script>
-</body>
-</html>
+
+
+</body></html>
