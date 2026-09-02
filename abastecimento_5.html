@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abastecimento — Costa Rica</title>
+<!-- xlsx via CDN (corrigido: arquivo local não funciona no GitHub Pages) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f5f5f0;color:#1a1a1a;padding:16px;max-width:720px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:3px}
+.subtitle{font-size:13px;color:#666;margin-bottom:4px}
+.hdr{padding-bottom:12px;border-bottom:2px solid #ddd;margin-bottom:16px}
+.save-info{font-size:12px;color:#e65100;background:#fff3e0;border:1px solid #ffe0b2;border-radius:6px;padding:6px 12px;margin-bottom:16px;display:inline-block}
+.section{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:16px;margin-bottom:12px}
+.section-title{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;padding-bottom:5px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:12px;color:#555;font-weight:700}
+.field input,.field select{width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;background:#fff;color:#1a1a1a;outline:none}
+.field input:focus,.field select:focus{border-color:#e65100}
+.field input[readonly]{background:#f0f0ea;color:#2e7d32;font-weight:700}
+.field input.auto-filled{background:#fff9e6;border-color:#f0ad00;color:#856404;font-weight:700}
+.hint{font-size:11px;color:#856404;margin-top:3px}
+.hint-ok{font-size:11px;color:#2e7d32;margin-top:3px}
+.hint-err{font-size:11px;color:#c62828;margin-top:3px}
+
+/* Estoque card */
+.estoque-card{border-radius:12px;padding:18px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.estoque-ok{background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff}
+.estoque-medio{background:linear-gradient(135deg,#e65100,#f57c00);color:#fff}
+.estoque-baixo{background:linear-gradient(135deg,#b71c1c,#c62828);color:#fff}
+.estoque-card .litros{font-size:42px;font-weight:700;line-height:1}
+.estoque-card .label{font-size:12px;opacity:.85;margin-bottom:4px}
+.estoque-card .sub{font-size:12px;opacity:.75;margin-top:4px}
+.btn-add-est{background:rgba(255,255,255,0.2);border:1.5px solid rgba(255,255,255,0.5);color:#fff;padding:8px 16px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:700;white-space:nowrap}
+.btn-add-est:hover{background:rgba(255,255,255,0.35)}
+
+/* Litros destaque */
+.litros-calc{font-size:32px;font-weight:700;color:#e65100;text-align:center;padding:14px;background:#fff3e0;border:2px solid #ffe0b2;border-radius:10px;margin:8px 0;min-height:64px}
+
+/* Consumo */
+.consumo-box{background:#e3f2fd;border:1px solid #bbdefb;border-radius:8px;padding:12px;margin-top:10px;display:none}
+.consumo-box .consumo-val{font-size:24px;font-weight:700;color:#1565c0}
+.consumo-box .consumo-label{font-size:12px;color:#1565c0}
+.consumo-anomalo{background:#fff3e0;border:1px solid #ffe0b2}
+.consumo-anomalo .consumo-val{color:#e65100}
+.consumo-anomalo .consumo-label{color:#e65100}
+
+.actions{display:flex;gap:8px;margin:14px 0 10px;flex-wrap:wrap}
+.btn-p{background:#e65100;color:#fff;border:none;padding:12px 22px;border-radius:7px;font-size:15px;cursor:pointer;font-weight:700;width:100%}
+.btn-p:hover{background:#bf360c}
+.btn-p:disabled{background:#ffcc80;cursor:not-allowed}
+.btn-s{background:#fff;color:#1a1a1a;border:1px solid #ccc;padding:10px 18px;border-radius:7px;font-size:13px;cursor:pointer}
+.btn-s:hover{background:#f5f5f0}
+.btn-danger{background:#fff;color:#c0392b;border:1px solid #e8b4b0;padding:10px 18px;border-radius:7px;font-size:13px;cursor:pointer}
+.btn-green{background:#1b5e20;color:#fff;border:none;padding:10px 18px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:700}
+.btn-green:hover{background:#2e7d32}
+.btn-orange{background:#e65100;color:#fff;border:none;padding:10px 18px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:700}
+.btn-orange:hover{background:#bf360c}
+
+/* Botão reenviar pendentes */
+.btn-retry{background:#fff;color:#e65100;border:1.5px solid #e65100;padding:10px 18px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:700;display:none}
+.btn-retry:hover{background:#fff3e0}
+.badge-pend{background:#e65100;color:#fff;border-radius:100px;font-size:10px;padding:1px 6px;margin-left:4px;font-weight:700}
+
+.tbl-wrap{overflow-x:auto;border:1px solid #e0e0e0;border-radius:10px;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:750px}
+thead th{background:#e65100;color:#fff;padding:9px 10px;text-align:left;font-weight:700;white-space:nowrap}
+tbody tr{border-bottom:1px solid #f0f0ea}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:8px 10px;color:#1a1a1a}
+tbody tr:hover td{background:#fff3e0}
+.empty{text-align:center;padding:2rem;color:#aaa;font-size:13px}
+.st-env{background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:100px;font-weight:700}
+.st-pend{background:#fff8e1;color:#e65100;font-size:11px;padding:2px 8px;border-radius:100px;font-weight:700}
+.st-err{background:#fdecea;color:#c62828;font-size:11px;padding:2px 8px;border-radius:100px;font-weight:700}
+.count-b{font-size:12px;background:#f0f0ea;border:1px solid #ddd;border-radius:100px;padding:2px 10px;color:#666;margin-left:8px}
+.row-label{display:flex;align-items:center;margin-bottom:8px}
+.status-bar{font-size:12px;color:#555;margin-bottom:6px;padding:8px 12px;background:#fff;border:1px solid #e0e0e0;border-radius:7px;display:flex;align-items:center;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dot-ok{background:#2e7d32}
+.dot-pend{background:#e65100;animation:pulse 1s infinite}
+.dot-err{background:#c62828}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top:2px solid transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+.spinner-sm{display:inline-block;width:10px;height:10px;border:2px solid #e65100;border-top:2px solid transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:1.2rem;right:1.2rem;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;max-width:320px}
+.toast.show{opacity:1}
+.toast-ok{background:#2e7d32}
+.toast-err{background:#c62828}
+.toast-info{background:#1a1a1a}
+
+/* Consumo anômalo na tabela */
+.consumo-ok{color:#1565c0;font-weight:700}
+.consumo-alerta{color:#e65100;font-weight:700}
+.consumo-critico{color:#c62828;font-weight:700}
+
+/* Modal estoque */
+.modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center}
+.modal-box{background:#fff;border-radius:12px;padding:24px;width:90%;max-width:400px;margin:auto}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:#888}
+
+/* Offline banner */
+.offline-bar{background:#c62828;color:#fff;font-size:12px;text-align:center;padding:6px 12px;border-radius:7px;margin-bottom:10px;display:none;align-items:center;justify-content:center;gap:8px}
+
+@media(max-width:500px){
+  .grid2,.grid3,.grid4{grid-template-columns:1fr 1fr}
+  .actions{flex-direction:column}
+  .btn-p{width:100%}
+  .estoque-card .litros{font-size:32px}
+}
+.links-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.link-btn{background:#fff;border:1px solid #ddd;color:#555;padding:8px 16px;border-radius:7px;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-weight:500}
+.link-btn:hover{background:#f5f5f0;color:#1a1a1a}
+.link-btn-ativo{background:#e65100;color:#fff;border-color:#e65100}
+.link-btn-ativo:hover{background:#bf360c;color:#fff}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>⛽ Abastecimento de Equipamentos</h1>
+  <p class="subtitle">Costa Rica — Controle de abastecimento e estoque</p>
+  <div class="save-info">☁ Dados enviados automaticamente para o Google Sheets</div>
+</div>
+
+<!-- Banner offline -->
+<div class="offline-bar" id="offline-bar">
+  🔴 Sem conexão — registros salvos localmente e reenviados automaticamente quando a internet voltar
+</div>
+
+<!-- ESTOQUE -->
+<div id="estoque-card" class="estoque-card estoque-baixo">
+  <div>
+    <div class="label">⛽ ESTOQUE DE DIESEL S10</div>
+    <div class="litros" id="saldo-litros">… L</div>
+    <div class="sub" id="saldo-sub">Carregando...</div>
+  </div>
+  <button class="btn-add-est" onclick="abrirAddEstoque()">+ Adicionar estoque</button>
+</div>
+
+<!-- NAVEGAÇÃO — caminhos relativos corrigidos para funcionar no GitHub Pages -->
+<div class="links-bar">
+  <a href="./home.html" class="link-btn">🏠 Início</a>
+  <a href="./index.html" class="link-btn">📋 Boletim</a>
+  <a href="./abastecimento.html" class="link-btn link-btn-ativo">⛽ Abastecimento</a>
+  <a href="./dashboard.html" class="link-btn">📊 Dashboard Op.</a>
+  <a href="./dashboard_abast.html" class="link-btn">📈 Dashboard Abast.</a>
+</div>
+
+<!-- IDENTIFICAÇÃO -->
+<div class="section">
+  <div class="section-title">Identificação</div>
+  <div class="grid3">
+    <div class="field"><label>Data *</label><input type="date" id="f-data"></div>
+    <div class="field"><label>Hora *</label><input type="time" id="f-hora"></div>
+    <div class="field">
+      <label>Operador *</label>
+      <select id="f-op">
+        <option value="">Selecione...</option>
+        <option>Antonio Mauricio</option>
+        <option>Samuel Marcondes</option>
+        <option>José Wellington</option>
+        <option>Vander Pereira</option>
+        <option>Sebastião</option>
+      </select>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:10px">
+    <div class="field">
+      <label>Equipamento *</label>
+      <select id="f-eq" onchange="onEqChange()">
+        <option value="">Selecione...</option>
+        <option value="PIC - 008   PLANALTO FOREST FOX 600X800">PIC - 008 PLANALTO FOREST FOX 600X800</option>
+        <option value="PAC - 004   HYUNDAI 745 - 9">PAC - 004 HYUNDAI 745 - 9</option>
+        <option value="PAC - 014   HYUNDAI 757 - 9">PAC - 014 HYUNDAI 757 - 9</option>
+        <option value="GRU - 011   CX130C">GRU - 011 CX130C</option>
+        <option value="MPP-3C22">MPP-3C22</option>
+        <option value="PAC - 007   CASE721E">PAC - 007 CASE721E</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Fazenda *</label>
+      <select id="f-faz">
+        <option value="">Selecione...</option>
+        <option>Faz.Europa</option>
+        <option>Faz.Cassununga</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- BOMBA -->
+<div class="section">
+  <div class="section-title">Dados da bomba</div>
+  <div class="grid2">
+    <div class="field">
+      <label>Bomba *</label>
+      <select id="f-bomba" onchange="onBombaChange()">
+        <option value="">Selecione...</option>
+        <option value="Bomba 1">Bomba 1</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Combustível</label>
+      <input type="text" value="Diesel S10" readonly>
+    </div>
+  </div>
+  <div class="grid3" style="margin-top:10px">
+    <div class="field">
+      <label>Horímetro bomba anterior</label>
+      <input type="number" id="f-horim-bomb-ini" step="0.1" min="0" placeholder="Digite ou aguarde busca..." oninput="calcLitros()" style="color:#1565c0;font-weight:700">
+      <span id="hint-bomb-ini" style="display:none" class="hint-ok"></span>
+    </div>
+    <div class="field">
+      <label>Horímetro bomba atual *</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="number" id="f-horim-bomb-fin" step="0.1" min="0" placeholder="Ex: 15420.5" oninput="calcLitros()" style="flex:1">
+        <button type="button" onclick="abrirCamera()" style="background:#e65100;color:#fff;border:none;padding:9px 14px;border-radius:6px;font-size:18px;cursor:pointer;flex-shrink:0" title="Fotografar horímetro">📷</button>
+      </div>
+      <span class="hint" id="hint-ocr" style="display:none"></span>
+    </div>
+    <div class="field">
+      <label>Litros abastecidos</label>
+      <input type="text" id="f-litros-calc" readonly placeholder="—">
+    </div>
+  </div>
+  <div class="litros-calc" id="litros-display">— L</div>
+</div>
+
+<!-- HORÍMETRO EQUIPAMENTO -->
+<div class="section">
+  <div class="section-title">Horímetro do equipamento</div>
+  <div class="grid2">
+    <div class="field">
+      <label>Horímetro atual do equipamento *</label>
+      <input type="number" id="f-horim-eq" step="0.1" min="0" placeholder="Ex: 1254.5" oninput="calcConsumo()">
+      <span id="hint-horim-eq" style="display:none"></span>
+    </div>
+    <div class="field">
+      <label>Horímetro anterior (último abast.)</label>
+      <input type="number" id="f-horim-eq-ant" step="0.1" min="0" placeholder="Aguardando busca..." oninput="calcConsumo()" style="color:#1565c0;font-weight:700">
+      <span id="hint-horim-eq-ant" style="display:none;font-size:11px;color:#888;margin-top:2px"></span>
+    </div>
+  </div>
+  <!-- Consumo calculado -->
+  <div class="consumo-box" id="consumo-box">
+    <div class="consumo-label" id="consumo-label">Consumo estimado</div>
+    <div style="display:flex;align-items:baseline;gap:6px">
+      <div class="consumo-val" id="consumo-val">—</div>
+      <div style="font-size:13px;color:#1565c0" id="consumo-unidade">L/h</div>
+    </div>
+    <div style="font-size:11px;color:#888;margin-top:4px" id="consumo-detalhe"></div>
+    <div style="font-size:11px;margin-top:6px;display:none" id="consumo-aviso"></div>
+  </div>
+</div>
+
+<!-- OBSERVAÇÃO -->
+<div class="section">
+  <div class="section-title">Observação</div>
+  <div class="field">
+    <input type="text" id="f-obs" placeholder="Opcional...">
+  </div>
+</div>
+
+<div class="actions">
+  <button class="btn-p" id="btn-env" onclick="enviar()">⛽ Registrar Abastecimento</button>
+</div>
+<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+  <button class="btn-s" onclick="buscarEstoque()">🔄 Atualizar estoque</button>
+  <button class="btn-s" onclick="exportXL()">⬇ Exportar Excel</button>
+  <button class="btn-retry" id="btn-retry" onclick="reenviarPendentes()">
+    🔁 Reenviar pendentes <span class="badge-pend" id="badge-pend">0</span>
+  </button>
+  <button class="btn-danger" onclick="clearAll()" style="margin-left:auto">🗑 Apagar tudo</button>
+</div>
+
+<div class="status-bar">
+  <div class="dot dot-ok" id="sdot"></div>
+  <span id="stxt">Pronto para registrar</span>
+</div>
+
+<div class="row-label" style="margin-top:12px">
+  <span style="font-size:14px;font-weight:700">Histórico local</span>
+  <span class="count-b" id="cnt">0</span>
+</div>
+
+<div class="tbl-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Status</th><th>Data</th><th>Hora</th><th>Operador</th><th>Equip.</th>
+        <th>Bomba</th><th>Hor.Bomb.Ini</th><th>Hor.Bomb.Fin</th>
+        <th>Litros</th><th>Hor.Eq</th><th>Consumo L/h</th><th>Fazenda</th><th>Obs</th>
+      </tr>
+    </thead>
+    <tbody id="tbody">
+      <tr><td colspan="13" class="empty">Nenhum registro ainda.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- MODAL ADICIONAR ESTOQUE -->
+<div class="modal-bg" id="modal-est">
+  <div class="modal-box">
+    <div class="modal-title">
+      ➕ Adicionar Estoque
+      <button class="modal-close" onclick="fecharAddEstoque()">✕</button>
+    </div>
+    <div class="field" style="margin-bottom:10px">
+      <label>Data</label>
+      <input type="date" id="est-data">
+    </div>
+    <div class="field" style="margin-bottom:10px">
+      <label>Hora</label>
+      <input type="time" id="est-hora">
+    </div>
+    <div class="field" style="margin-bottom:10px">
+      <label>Litros recebidos *</label>
+      <input type="number" id="est-litros" step="0.1" min="0" placeholder="Ex: 5000" style="font-size:18px;font-weight:700;color:#1b5e20">
+    </div>
+    <div class="field" style="margin-bottom:16px">
+      <label>Observação (fornecedor, NF, etc.)</label>
+      <input type="text" id="est-obs" placeholder="Ex: Petrobras NF 12345">
+    </div>
+    <button class="btn-green" style="width:100%" onclick="salvarEstoque()">✓ Confirmar entrada de estoque</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Input câmera oculto -->
+<input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none" onchange="processarFoto(event)">
+
+<!-- Modal foto do horímetro — entrada manual simplificada -->
+<div id="modal-ocr" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:2000;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:12px;padding:20px;width:100%;max-width:420px;margin:auto">
+    <div style="font-size:15px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+      📷 Foto do Horímetro
+      <button onclick="fecharOCR()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#888">✕</button>
+    </div>
+    <!-- Preview da foto -->
+    <img id="ocr-preview" style="width:100%;border-radius:8px;margin-bottom:12px;display:none;max-height:260px;object-fit:contain;background:#f0f0ea">
+    <!-- Campo de entrada manual -->
+    <div id="ocr-entrada">
+      <div style="background:#e8f5e9;border:1px solid #c8e6c9;border-radius:8px;padding:14px;margin-bottom:12px">
+        <div style="font-size:11px;font-weight:700;color:#2e7d32;margin-bottom:8px">VALOR DO HORÍMETRO NA FOTO</div>
+        <input type="number" id="ocr-manual" step="0.1" placeholder="Ex: 320272.6"
+          style="width:100%;padding:12px;border:2px solid #c8e6c9;border-radius:6px;font-size:20px;font-weight:700;text-align:center;color:#1b5e20;outline:none">
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="confirmarManual()" style="flex:1;background:#e65100;color:#fff;border:none;padding:11px;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer">✓ Confirmar valor</button>
+        <button onclick="abrirCamera()" style="background:#fff;color:#555;border:1px solid #ccc;padding:11px 14px;border-radius:7px;font-size:13px;cursor:pointer">📷 Nova foto</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var URL_GS = 'https://script.google.com/macros/s/AKfycbyBlIxhe2icuQcICFFUabK8gyRyfnbMvWP4Y1FH2sHVFo0P2Qd5FI3r7c5_KzCciS-8VQ/exec';
+var SKEY = 'abast_cr_v2';
+var regs = [];
+var saldoAtual = 0;
+
+// ── Persistência local ──────────────────────────────────────────────
+function load() {
+  try { var s = localStorage.getItem(SKEY); if (s) regs = JSON.parse(s); } catch (e) { regs = []; }
+  render();
+  atualizarBotaoRetry();
+}
+function save() {
+  try { localStorage.setItem(SKEY, JSON.stringify(regs)); } catch (e) {}
+}
+
+// ── Toast e status ──────────────────────────────────────────────────
+function toast(m, t) {
+  var el = document.getElementById('toast');
+  el.textContent = m;
+  el.className = 'toast show toast-' + (t || 'info');
+  setTimeout(function () { el.classList.remove('show'); }, 4000);
+}
+function setStatus(txt, e) {
+  document.getElementById('stxt').textContent = txt;
+  document.getElementById('sdot').className = 'dot dot-' + (e || 'ok');
+}
+
+// ── Formatação ──────────────────────────────────────────────────────
+function fmtDate(v) {
+  if (!v) return '';
+  var p = v.split('-');
+  return p[2] + '/' + p[1] + '/' + p[0];
+}
+
+// ── Hora atual automática (atualiza a cada minuto) ──────────────────
+function agora() {
+  var n = new Date();
+  return n.getHours().toString().padStart(2, '0') + ':' + n.getMinutes().toString().padStart(2, '0');
+}
+function atualizarHora() {
+  var campo = document.getElementById('f-hora');
+  // Só atualiza se o campo estiver vazio ou se o usuário não tiver alterado manualmente
+  if (!campo.dataset.editadoManualmente) {
+    campo.value = agora();
+  }
+}
+document.getElementById('f-hora').addEventListener('change', function () {
+  this.dataset.editadoManualmente = '1';
+});
+
+// ── Estoque ─────────────────────────────────────────────────────────
+function atualizarCardEstoque(saldo) {
+  saldoAtual = parseFloat(saldo) || 0;
+  document.getElementById('saldo-litros').textContent = saldoAtual.toFixed(0) + ' L';
+  var card = document.getElementById('estoque-card');
+  if (saldoAtual > 2000) {
+    card.className = 'estoque-card estoque-ok';
+    document.getElementById('saldo-sub').textContent = 'Estoque normal';
+  } else if (saldoAtual > 500) {
+    card.className = 'estoque-card estoque-medio';
+    document.getElementById('saldo-sub').textContent = '⚠️ Estoque médio — providenciar reabastecimento';
+  } else {
+    card.className = 'estoque-card estoque-baixo';
+    document.getElementById('saldo-sub').textContent = '🚨 Estoque baixo — abastecer urgente!';
+  }
+}
+
+function buscarEstoque() {
+  var url = URL_GS + '?acao=estoque&_t=' + Date.now();
+  fetch(url)
+    .then(function (r) { return r.json(); })
+    .then(function (resp) {
+      // Loga a resposta para diagnóstico (ver no console do navegador)
+      console.log('[Estoque] resposta do Apps Script:', resp);
+      var saldo = resp && resp.saldo !== undefined ? resp.saldo : null;
+      if (saldo === null || isNaN(parseFloat(saldo))) {
+        // Resposta veio sem campo saldo — mantém valor atual e avisa
+        console.warn('[Estoque] campo "saldo" não encontrado na resposta:', resp);
+        document.getElementById('saldo-sub').textContent = 'Erro ao buscar estoque — resposta inválida do servidor';
+      } else {
+        atualizarCardEstoque(saldo);
+      }
+    })
+    .catch(function (err) {
+      console.error('[Estoque] erro na requisição:', err);
+      document.getElementById('saldo-sub').textContent = 'Sem conexão — verifique a internet';
+    });
+}
+
+// ── Cálculo de litros (diferença de horímetros da bomba) ────────────
+function calcLitros() {
+  var ini = parseFloat(document.getElementById('f-horim-bomb-ini').value) || 0;
+  var fin = parseFloat(document.getElementById('f-horim-bomb-fin').value) || 0;
+  var litros = fin - ini;
+  var inp = document.getElementById('f-litros-calc');
+  var disp = document.getElementById('litros-display');
+  disp.style.fontSize = '32px';
+
+  if (fin > 0 && ini > 0 && litros > 0) {
+    inp.value = litros.toFixed(1);
+    disp.textContent = litros.toFixed(1) + ' L';
+    disp.style.color = '#e65100';
+  } else if (fin > 0 && ini === 0) {
+    inp.value = '';
+    disp.textContent = 'Informe o horímetro anterior da bomba';
+    disp.style.color = '#888';
+    disp.style.fontSize = '14px';
+  } else if (litros <= 0 && fin > 0 && ini > 0) {
+    inp.value = '';
+    disp.textContent = '⚠️ Horímetro atual menor que o anterior!';
+    disp.style.color = '#c62828';
+  } else {
+    inp.value = '';
+    disp.textContent = '— L';
+    disp.style.color = '#e65100';
+  }
+  calcConsumo();
+}
+
+// ── Cálculo e validação de consumo ──────────────────────────────────
+// Limites de consumo razoável por equipamento (L/h)
+var CONSUMO_MAX_NORMAL = 80;   // acima disso: alerta laranja
+var CONSUMO_MAX_CRITICO = 150; // acima disso: alerta vermelho (erro provável)
+
+function calcConsumo() {
+  var litros = parseFloat(document.getElementById('f-litros-calc').value) || 0;
+  var horimEq = parseFloat(document.getElementById('f-horim-eq').value) || 0;
+  var horimEqAnt = parseFloat(document.getElementById('f-horim-eq-ant').value) || 0;
+  var box = document.getElementById('consumo-box');
+  var aviso = document.getElementById('consumo-aviso');
+
+  if (litros > 0 && horimEq > 0 && horimEqAnt > 0 && horimEq > horimEqAnt) {
+    var horas = horimEq - horimEqAnt;
+    var consumo = litros / horas;
+    document.getElementById('consumo-val').textContent = consumo.toFixed(2);
+    document.getElementById('consumo-detalhe').textContent =
+      litros.toFixed(1) + 'L ÷ ' + horas.toFixed(1) + 'h (horímetro ' + horimEqAnt + ' → ' + horimEq + ')';
+    box.style.display = 'block';
+    aviso.style.display = 'none';
+
+    // Detectar consumo anômalo
+    if (consumo > CONSUMO_MAX_CRITICO) {
+      box.className = 'consumo-box consumo-anomalo';
+      document.getElementById('consumo-label').textContent = '⚠️ Consumo estimado — VERIFIQUE OS HORÍMETROS';
+      aviso.style.display = 'block';
+      aviso.style.color = '#c62828';
+      aviso.textContent = 'Valor muito alto (' + consumo.toFixed(1) + ' L/h). Verifique se o horímetro anterior do equipamento está correto.';
+    } else if (consumo > CONSUMO_MAX_NORMAL) {
+      box.className = 'consumo-box consumo-anomalo';
+      document.getElementById('consumo-label').textContent = '⚠️ Consumo estimado — valor alto';
+      aviso.style.display = 'block';
+      aviso.style.color = '#e65100';
+      aviso.textContent = 'Consumo acima do esperado. Confirme os horímetros antes de registrar.';
+    } else {
+      box.className = 'consumo-box';
+      document.getElementById('consumo-label').textContent = 'Consumo estimado';
+    }
+  } else {
+    box.style.display = 'none';
+  }
+}
+
+// ── Classe CSS para consumo na tabela ───────────────────────────────
+function consumoClass(c) {
+  if (!c || c === '—') return '';
+  var v = parseFloat(c);
+  if (isNaN(v)) return '';
+  if (v > CONSUMO_MAX_CRITICO) return ' class="consumo-critico"';
+  if (v > CONSUMO_MAX_NORMAL) return ' class="consumo-alerta"';
+  return ' class="consumo-ok"';
+}
+
+// ── Busca dados ao selecionar bomba ─────────────────────────────────
+function onBombaChange() {
+  var bomba = document.getElementById('f-bomba').value;
+  if (!bomba) return;
+  var hint = document.getElementById('hint-bomb-ini');
+  hint.className = 'hint';
+  hint.style.display = 'block';
+  hint.innerHTML = '<span class="spinner-sm"></span>Buscando último horímetro da bomba...';
+  var url = URL_GS + '?acao=ultimoBomba&bomba=' + encodeURIComponent(bomba) + '&_t=' + Date.now();
+  fetch(url)
+    .then(function (r) { return r.json(); })
+    .then(function (resp) {
+      if (resp.horimBomba && parseFloat(resp.horimBomba) > 0) {
+        document.getElementById('f-horim-bomb-ini').value = resp.horimBomba;
+        document.getElementById('f-horim-bomb-ini').style.background = '#f0f0ea';
+        hint.className = 'hint-ok';
+        hint.innerHTML = '&#10003; Último horímetro da bomba: <b>' + resp.horimBomba + '</b> — edite se necessário';
+      } else {
+        document.getElementById('f-horim-bomb-ini').value = '';
+        document.getElementById('f-horim-bomb-ini').style.background = '#fff';
+        document.getElementById('f-horim-bomb-ini').placeholder = 'Nenhum registro — digite o valor';
+        hint.className = 'hint';
+        hint.innerHTML = '&#9999; Nenhum registro anterior — <b>digite o horímetro inicial da bomba</b>';
+      }
+      calcLitros();
+    })
+    .catch(function () { hint.style.display = 'none'; });
+}
+
+// ── Busca horímetro anterior do equipamento ──────────────────────────
+function onEqChange() {
+  var v = document.getElementById('f-eq').value;
+  if (!v) return;
+  var eqCode = v.split('|')[0].trim();
+  var hint = document.getElementById('hint-horim-eq');
+  hint.className = 'hint';
+  hint.style.display = 'block';
+  hint.innerHTML = '<span class="spinner-sm"></span>Buscando horímetro anterior do equipamento...';
+  var url = URL_GS + '?acao=buscarHorim&eqCode=' + encodeURIComponent(eqCode) + '&_t=' + Date.now();
+  fetch(url)
+    .then(function (r) { return r.json(); })
+    .then(function (resp) {
+      if (resp.horim && parseFloat(resp.horim) > 0) {
+        document.getElementById('f-horim-eq-ant').value = resp.horim;
+        document.getElementById('f-horim-eq-ant').style.background = '#f0f0ea';
+        hint.className = 'hint-ok';
+        hint.innerHTML = '&#10003; Horímetro anterior: <b>' + resp.horim + 'h</b> — edite se necessário';
+      } else {
+        document.getElementById('f-horim-eq-ant').value = '';
+        document.getElementById('f-horim-eq-ant').style.background = '#fff';
+        document.getElementById('f-horim-eq-ant').placeholder = 'Nenhum registro — digite se souber';
+        hint.className = 'hint';
+        hint.innerHTML = '&#9999; Nenhum registro anterior — <b>digite o horímetro do último abastecimento</b> (opcional)';
+      }
+      calcConsumo();
+    })
+    .catch(function () { hint.style.display = 'none'; });
+}
+
+// ── Carrega cadastros do Apps Script ────────────────────────────────
+function carregarCadastros() {
+  var url = URL_GS + '?acao=cadastros&_t=' + Date.now();
+  fetch(url)
+    .then(function (r) { return r.json(); })
+    .then(function (resp) {
+      var ops = resp.operadores || [];
+      if (ops.length) {
+        var selOp = document.getElementById('f-op');
+        selOp.innerHTML = '<option value="">Selecione...</option>';
+        ops.forEach(function (o) {
+          var opt = document.createElement('option');
+          opt.value = o; opt.textContent = o; selOp.appendChild(opt);
+        });
+      }
+
+      var fazs = resp.fazendas || [];
+      if (fazs.length) {
+        var selFaz = document.getElementById('f-faz');
+        selFaz.innerHTML = '<option value="">Selecione...</option>';
+        fazs.forEach(function (f) {
+          var opt = document.createElement('option');
+          opt.value = f; opt.textContent = f; selFaz.appendChild(opt);
+        });
+      }
+
+      var eqs = resp.equipamentos || [];
+      if (eqs.length) {
+        var selEq = document.getElementById('f-eq');
+        selEq.innerHTML = '<option value="">Selecione...</option>';
+        eqs.forEach(function (eq) {
+          var parts = eq.split('|');
+          var code = parts[0] ? parts[0].trim() : '';
+          var desc = parts[1] ? parts[1].trim() : '';
+          var opt = document.createElement('option');
+          opt.value = eq; opt.textContent = code + (desc ? ' — ' + desc : '');
+          selEq.appendChild(opt);
+        });
+      }
+    })
+    .catch(function () { /* falha silenciosa — mantém lista padrão */ });
+}
+
+// ── Renderiza tabela ─────────────────────────────────────────────────
+function stBadge(s) {
+  if (s === 'enviado') return '<span class="st-env">&#10003; Enviado</span>';
+  if (s === 'erro') return '<span class="st-err">&#10007; Erro</span>';
+  return '<span class="st-pend">&#8635; Pendente</span>';
+}
+
+function render() {
+  document.getElementById('cnt').textContent = regs.length;
+  var tb = document.getElementById('tbody');
+  if (!regs.length) {
+    tb.innerHTML = '<tr><td colspan="13" class="empty">Nenhum registro ainda.</td></tr>';
+    return;
+  }
+  tb.innerHTML = regs.slice().reverse().map(function (r) {
+    var consumoCell = r.consumo
+      ? '<td' + consumoClass(r.consumo) + '>' + r.consumo + ' L/h</td>'
+      : '<td style="color:#aaa">—</td>';
+    return '<tr>' +
+      '<td>' + stBadge(r.status) + '</td>' +
+      '<td>' + fmtDate(r.data) + '</td>' +
+      '<td>' + r.hora + '</td>' +
+      '<td>' + r.op + '</td>' +
+      '<td style="font-weight:700;white-space:nowrap">' + r.eqCode + '</td>' +
+      '<td>' + r.bomba + '</td>' +
+      '<td>' + r.horimBombIni + '</td>' +
+      '<td>' + r.horimBombFin + '</td>' +
+      '<td style="font-weight:700;color:#e65100">' + parseFloat(r.litros || 0).toFixed(1) + ' L</td>' +
+      '<td>' + r.horimEq + '</td>' +
+      consumoCell +
+      '<td>' + r.faz + '</td>' +
+      '<td style="color:#888;font-size:11px">' + (r.obs || '—') + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+// ── Botão Reenviar Pendentes ─────────────────────────────────────────
+function contarPendentes() {
+  return regs.filter(function (r) { return r.status === 'pendente' || r.status === 'erro'; }).length;
+}
+function atualizarBotaoRetry() {
+  var n = contarPendentes();
+  var btn = document.getElementById('btn-retry');
+  var badge = document.getElementById('badge-pend');
+  badge.textContent = n;
+  btn.style.display = n > 0 ? 'inline-block' : 'none';
+  if (n > 0) setStatus(n + ' registro(s) pendente(s) de envio', 'pend');
+}
+
+function enviarRegistro(reg, idx, onDone) {
+  var params = new URLSearchParams({
+    data: fmtDate(reg.data), hora: reg.hora, op: reg.op,
+    eqCode: reg.eqCode, eqDesc: reg.eqDesc,
+    faz: reg.faz, bomba: reg.bomba, comb: reg.comb,
+    horimBombaIni: reg.horimBombIni, horimBombaFin: reg.horimBombFin,
+    litros: reg.litros,
+    horimEqIni: reg.horimEq, horimEqAnt: reg.horimEqAnt,
+    consumo: reg.consumo, obs: reg.obs,
+    _t: Date.now()
+  }).toString();
+  fetch(URL_GS + '?' + params)
+    .then(function () {
+      regs[idx].status = 'enviado';
+      save(); render();
+      if (onDone) onDone(true);
+    })
+    .catch(function () {
+      regs[idx].status = 'erro';
+      save(); render();
+      if (onDone) onDone(false);
+    });
+}
+
+function reenviarPendentes() {
+  var pendentes = [];
+  regs.forEach(function (r, i) {
+    if (r.status === 'pendente' || r.status === 'erro') pendentes.push(i);
+  });
+  if (!pendentes.length) { toast('Nenhum pendente.', 'info'); return; }
+  setStatus('Reenviando ' + pendentes.length + ' registro(s)...', 'pend');
+  var ok = 0, fail = 0, total = pendentes.length;
+  pendentes.forEach(function (idx) {
+    enviarRegistro(regs[idx], idx, function (sucesso) {
+      sucesso ? ok++ : fail++;
+      if (ok + fail === total) {
+        atualizarBotaoRetry();
+        if (fail === 0) {
+          toast(ok + ' registro(s) enviados com sucesso!', 'ok');
+          setStatus('Todos os pendentes enviados.', 'ok');
+          buscarEstoque();
+        } else {
+          toast(ok + ' enviados, ' + fail + ' falharam.', 'err');
+          setStatus(fail + ' pendente(s) ainda com erro.', 'err');
+        }
+      }
+    });
+  });
+}
+
+// ── Detector de conexão ──────────────────────────────────────────────
+function atualizarOfflineBar() {
+  var bar = document.getElementById('offline-bar');
+  bar.style.display = navigator.onLine ? 'none' : 'flex';
+}
+window.addEventListener('online', function () {
+  atualizarOfflineBar();
+  if (contarPendentes() > 0) {
+    toast('Conexão restaurada! Reenviando pendentes...', 'info');
+    setTimeout(reenviarPendentes, 1000);
+  }
+});
+window.addEventListener('offline', function () { atualizarOfflineBar(); });
+
+// ── Enviar novo abastecimento ────────────────────────────────────────
+function enviar() {
+  var data = document.getElementById('f-data').value;
+  var hora = document.getElementById('f-hora').value;
+  var op = document.getElementById('f-op').value;
+  var eqv = document.getElementById('f-eq').value;
+  var faz = document.getElementById('f-faz').value;
+  var bomba = document.getElementById('f-bomba').value;
+  var horimBombIni = document.getElementById('f-horim-bomb-ini').value;
+  var horimBombFin = document.getElementById('f-horim-bomb-fin').value;
+  var litros = document.getElementById('f-litros-calc').value;
+  var horimEq = document.getElementById('f-horim-eq').value;
+
+  if (!data || !hora || !op || !eqv || !faz || !bomba || !horimBombFin || !horimEq) {
+    toast('Preencha todos os campos obrigatórios (*)!', 'err'); return;
+  }
+  if (!litros || parseFloat(litros) <= 0) {
+    toast('Horímetro da bomba inválido — litros não calculados!', 'err'); return;
+  }
+
+  // Alerta para consumo muito alto antes de enviar
+  var horimEqAnt = document.getElementById('f-horim-eq-ant').value || '';
+  var consumo = '';
+  if (horimEq && horimEqAnt && parseFloat(horimEq) > parseFloat(horimEqAnt)) {
+    var horas = parseFloat(horimEq) - parseFloat(horimEqAnt);
+    var cval = parseFloat(litros) / horas;
+    consumo = cval.toFixed(2);
+    if (cval > CONSUMO_MAX_CRITICO) {
+      if (!confirm('⚠️ Consumo calculado de ' + cval.toFixed(1) + ' L/h parece muito alto.\n\nVerifique os horímetros antes de continuar.\n\nDeseja registrar mesmo assim?')) return;
+    }
+  }
+
+  var eqP = eqv.split('|');
+  var reg = {
+    data: data, hora: hora, op: op,
+    eqCode: eqP[0].trim(), eqDesc: eqP[1] || '',
+    faz: faz, bomba: bomba, comb: 'Diesel S10',
+    horimBombIni: horimBombIni || '', horimBombFin: horimBombFin,
+    litros: parseFloat(litros).toFixed(1),
+    horimEq: horimEq, horimEqAnt: horimEqAnt,
+    consumo: consumo,
+    obs: document.getElementById('f-obs').value.trim(),
+    status: 'pendente'
+  };
+
+  regs.push(reg); save(); render();
+
+  // Limpar campos de abastecimento
+  document.getElementById('f-horim-bomb-fin').value = '';
+  document.getElementById('f-litros-calc').value = '';
+  document.getElementById('litros-display').textContent = '— L';
+  document.getElementById('f-horim-eq').value = '';
+  document.getElementById('f-obs').value = '';
+  document.getElementById('consumo-box').style.display = 'none';
+
+  var btn = document.getElementById('btn-env');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Enviando...';
+  setStatus('Enviando para o Google Sheets...', 'pend');
+
+  var idx = regs.length - 1;
+  enviarRegistro(reg, idx, function (sucesso) {
+    btn.disabled = false;
+    btn.innerHTML = '⛽ Registrar Abastecimento';
+    if (sucesso) {
+      toast('Abastecimento registrado na planilha!', 'ok');
+      setStatus('Enviado com sucesso!', 'ok');
+      // Atualiza o estoque localmente de imediato e busca do servidor
+      // após 4 s, para dar tempo ao Apps Script de processar o registro
+      atualizarCardEstoque(saldoAtual - parseFloat(reg.litros));
+      setTimeout(buscarEstoque, 4000);
+    } else {
+      toast('Sem internet — salvo localmente. Reenvio automático quando conectar.', 'err');
+      setStatus('Salvo localmente — sem conexão', 'err');
+    }
+    atualizarBotaoRetry();
+  });
+}
+
+// ── Modal estoque ────────────────────────────────────────────────────
+function abrirAddEstoque() {
+  document.getElementById('modal-est').style.display = 'flex';
+  var now = new Date();
+  document.getElementById('est-data').value = now.toISOString().split('T')[0];
+  document.getElementById('est-hora').value = agora();
+  document.getElementById('est-litros').value = '';
+  document.getElementById('est-obs').value = '';
+}
+function fecharAddEstoque() { document.getElementById('modal-est').style.display = 'none'; }
+
+function salvarEstoque() {
+  var litros = document.getElementById('est-litros').value;
+  if (!litros || parseFloat(litros) <= 0) { toast('Informe a quantidade de litros!', 'err'); return; }
+  var params = new URLSearchParams({
+    acao: 'addEstoque',
+    data: document.getElementById('est-data').value,
+    hora: document.getElementById('est-hora').value,
+    litros: parseFloat(litros).toFixed(1),
+    obs: document.getElementById('est-obs').value,
+    _t: Date.now()
+  }).toString();
+  fetch(URL_GS + '?' + params)
+    .then(function (r) { return r.json(); })
+    .then(function (resp) {
+      atualizarCardEstoque(resp.saldo);
+      fecharAddEstoque();
+      toast(parseFloat(litros).toFixed(1) + ' L adicionados ao estoque!', 'ok');
+    })
+    .catch(function () { toast('Erro ao salvar estoque. Verifique a internet.', 'err'); });
+}
+document.getElementById('modal-est').addEventListener('click', function (e) { if (e.target === this) fecharAddEstoque(); });
+
+// ── Limpar e exportar ────────────────────────────────────────────────
+function clearAll() {
+  if (!regs.length) return;
+  if (!confirm('Apagar todos os registros locais?')) return;
+  regs = []; save(); render();
+  atualizarBotaoRetry();
+  toast('Registros apagados.', 'info');
+}
+
+function exportXL() {
+  if (!regs.length) { toast('Nenhum registro para exportar.', 'info'); return; }
+  var rows = [['Data','Hora','Operador','Eqpto','Descrição','Fazenda','Bomba','Combust.',
+    'Hor.Bomb.Ini','Hor.Bomb.Fin','Litros','Hor.Eq','Hor.Eq.Ant','Consumo L/h','Obs','Status']];
+  regs.forEach(function (r) {
+    rows.push([fmtDate(r.data), r.hora, r.op, r.eqCode, r.eqDesc, r.faz, r.bomba, r.comb,
+      r.horimBombIni, r.horimBombFin, parseFloat(r.litros), r.horimEq, r.horimEqAnt,
+      r.consumo, r.obs, r.status]);
+  });
+  var ws = XLSX.utils.aoa_to_sheet(rows);
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'ABAST');
+  XLSX.writeFile(wb, 'Abastecimento_' + new Date().toLocaleDateString('pt-BR').replace(/\//g, '-') + '.xlsx');
+  toast('Excel exportado!', 'ok');
+}
+
+// ── Câmera / OCR manual ──────────────────────────────────────────────
+function abrirCamera() {
+  document.getElementById('camera-input').click();
+}
+function fecharOCR() {
+  document.getElementById('modal-ocr').style.display = 'none';
+}
+
+function processarFoto(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+
+  var modal = document.getElementById('modal-ocr');
+  modal.style.display = 'flex';
+
+  // Preview da imagem
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    var img = document.getElementById('ocr-preview');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    // Focar no campo de digitação
+    setTimeout(function () {
+      document.getElementById('ocr-manual').focus();
+    }, 300);
+  };
+  reader.readAsDataURL(file);
+
+  // Limpar input para permitir nova foto
+  event.target.value = '';
+  document.getElementById('ocr-manual').value = '';
+}
+
+function confirmarManual() {
+  var val = document.getElementById('ocr-manual').value;
+  if (!val) { toast('Digite o valor do horímetro.', 'err'); return; }
+  document.getElementById('f-horim-bomb-fin').value = val;
+  calcLitros();
+  fecharOCR();
+  toast('Horímetro preenchido: ' + val, 'ok');
+}
+
+document.getElementById('modal-ocr').addEventListener('click', function (e) {
+  if (e.target === this) fecharOCR();
+});
+
+// Confirmar com Enter no campo manual
+document.getElementById('ocr-manual').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') confirmarManual();
+});
+
+// ── Inicialização ────────────────────────────────────────────────────
+(function init() {
+  var now = new Date();
+  document.getElementById('f-data').value = now.toISOString().split('T')[0];
+  document.getElementById('f-hora').value = agora();
+  document.getElementById('est-data').value = now.toISOString().split('T')[0];
+
+  // Atualizar hora a cada minuto
+  setInterval(atualizarHora, 60000);
+
+  atualizarOfflineBar();
+  load();
+  carregarCadastros();
+  buscarEstoque();
+})();
+</script>
+</body>
+</html>
