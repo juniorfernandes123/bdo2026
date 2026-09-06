@@ -200,8 +200,7 @@ tbody tr:hover td{background:#fff3e0}
     <div class="field">
       <label>Bomba *</label>
       <select id="f-bomba" onchange="onBombaChange()">
-        <option value="">Selecione...</option>
-        <option value="Bomba 1">Bomba 1</option>
+        <option value="">Carregando...</option>
       </select>
     </div>
     <div class="field">
@@ -630,6 +629,16 @@ function carregarCadastros() {
           selEq.appendChild(opt);
         });
       }
+
+      var boms = resp.bombas || [];
+      if (boms.length) {
+        var selBom = document.getElementById('f-bomba');
+        selBom.innerHTML = '<option value="">Selecione...</option>';
+        boms.forEach(function (b) {
+          var opt = document.createElement('option');
+          opt.value = b; opt.textContent = b; selBom.appendChild(opt);
+        });
+      }
     })
     .catch(function () { /* falha silenciosa — mantém lista padrão */ });
 }
@@ -812,12 +821,11 @@ function enviar() {
     btn.disabled = false;
     btn.innerHTML = '⛽ Registrar Abastecimento';
     if (sucesso) {
-      toast('Abastecimento registrado na planilha!', 'ok');
+      toast('✅ Abastecimento registrado! Recarregando em 3s...', 'ok');
       setStatus('Enviado com sucesso!', 'ok');
-      // Atualiza o estoque localmente de imediato e busca do servidor
-      // após 4 s, para dar tempo ao Apps Script de processar o registro
       atualizarCardEstoque(saldoAtual - parseFloat(reg.litros));
-      setTimeout(buscarEstoque, 4000);
+      // Recarrega a página após 3 s para limpar o formulário e atualizar o estoque
+      setTimeout(function () { location.reload(); }, 3000);
     } else {
       toast('Sem internet — salvo localmente. Reenvio automático quando conectar.', 'err');
       setStatus('Salvo localmente — sem conexão', 'err');
