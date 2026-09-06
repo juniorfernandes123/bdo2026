@@ -200,12 +200,23 @@ tbody tr:hover td{background:#fff3e0}
     <div class="field">
       <label>Bomba *</label>
       <select id="f-bomba" onchange="onBombaChange()">
-        <option value="">Carregando...</option>
+        <option value="">Selecione...</option>
+        <option value="Bomba 1">Bomba 1</option>
+        <option value="Bomba 2">Bomba 2</option>
+        <option value="Bomba 3">Bomba 3</option>
+        <option value="Bomba 4">Bomba 4</option>
+        <option value="Bomba 5">Bomba 5</option>
       </select>
     </div>
     <div class="field">
-      <label>Combustível</label>
-      <input type="text" value="Diesel S10" readonly>
+      <label>Combustível *</label>
+      <select id="f-comb">
+        <option value="Diesel S10">Diesel S10</option>
+        <option value="Diesel S500">Diesel S500</option>
+        <option value="Gasolina">Gasolina</option>
+        <option value="Etanol">Etanol</option>
+        <option value="Arla 32">Arla 32</option>
+      </select>
     </div>
   </div>
   <div class="grid3" style="margin-top:10px">
@@ -638,10 +649,19 @@ function carregarCadastros() {
           var opt = document.createElement('option');
           opt.value = b; opt.textContent = b; selBom.appendChild(opt);
         });
-      } else {
-        // fallback: coluna D da planilha CADASTRO ainda não preenchida
-        selBom.innerHTML = '<option value="">Selecione...</option><option value="Bomba 1">Bomba 1</option>';
       }
+      // (se vazio, mantém as opções padrão já no HTML)
+
+      var combs = resp.combustiveis || [];
+      var selComb = document.getElementById('f-comb');
+      if (combs.length) {
+        selComb.innerHTML = '';
+        combs.forEach(function (c) {
+          var opt = document.createElement('option');
+          opt.value = c; opt.textContent = c; selComb.appendChild(opt);
+        });
+      }
+      // (se vazio, mantém as opções padrão já no HTML)
     })
     .catch(function () { /* falha silenciosa — mantém lista padrão */ });
 }
@@ -795,7 +815,7 @@ function enviar() {
   var reg = {
     data: data, hora: hora, op: op,
     eqCode: eqP[0].trim(), eqDesc: eqP[1] || '',
-    faz: faz, bomba: bomba, comb: 'Diesel S10',
+    faz: faz, bomba: bomba, comb: document.getElementById('f-comb').value || 'Diesel S10',
     horimBombIni: horimBombIni || '', horimBombFin: horimBombFin,
     litros: parseFloat(litros).toFixed(1),
     horimEq: horimEq, horimEqAnt: horimEqAnt,
