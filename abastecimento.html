@@ -631,13 +631,16 @@ function carregarCadastros() {
       }
 
       var boms = resp.bombas || [];
+      var selBom = document.getElementById('f-bomba');
       if (boms.length) {
-        var selBom = document.getElementById('f-bomba');
         selBom.innerHTML = '<option value="">Selecione...</option>';
         boms.forEach(function (b) {
           var opt = document.createElement('option');
           opt.value = b; opt.textContent = b; selBom.appendChild(opt);
         });
+      } else {
+        // fallback: coluna D da planilha CADASTRO ainda não preenchida
+        selBom.innerHTML = '<option value="">Selecione...</option><option value="Bomba 1">Bomba 1</option>';
       }
     })
     .catch(function () { /* falha silenciosa — mantém lista padrão */ });
