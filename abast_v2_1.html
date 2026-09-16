@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Costa Rica — Abastecimento v2</title>
+<style>
+/* ══ RESET & TOKENS ═══════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0f172a; --navy2:#1e3a5f; --navy3:#1e40af;
+  --orange:#f97316; --orange2:#ea580c;
+  --green:#16a34a;  --red:#dc2626;
+  --card:#ffffff;   --bg:#f1f5f9;
+  --text:#1e293b;   --muted:#64748b;
+  --border:#e2e8f0;
+  --tab-h:62px;     --hdr-h:68px;
+}
+html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  font-size:15px;background:var(--bg);color:var(--text);overscroll-behavior:none}
+
+/* ══ HEADER ═══════════════════════════════════════════════════════════ */
+#hdr{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:var(--hdr-h);
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;
+  box-shadow:0 2px 16px rgba(0,0,0,.4);
+}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-icon{width:38px;height:38px;background:rgba(255,255,255,.1);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:20px}
+.hdr-title h1{font-size:16px;font-weight:800;color:#fff;letter-spacing:.3px}
+.hdr-title p{font-size:10px;color:#93c5fd;margin-top:1px;letter-spacing:.3px}
+.hdr-right{text-align:right}
+.hdr-right .lbl{font-size:9px;color:#93c5fd;text-transform:uppercase;letter-spacing:.6px}
+.hdr-right .val{font-size:20px;font-weight:800;color:#fff;line-height:1;margin-top:1px}
+.hdr-right .val small{font-size:11px;color:#93c5fd;font-weight:400}
+
+/* ══ MAIN ═════════════════════════════════════════════════════════════ */
+#main{
+  margin-top:var(--hdr-h);margin-bottom:var(--tab-h);
+  min-height:calc(100dvh - var(--hdr-h) - var(--tab-h));
+  overflow-y:auto;padding:14px 12px;
+}
+
+/* ══ BOTTOM TABS ══════════════════════════════════════════════════════ */
+#tabs{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  height:var(--tab-h);
+  background:var(--navy);
+  display:flex;border-top:1px solid #1e3a5f;
+  box-shadow:0 -2px 12px rgba(0,0,0,.3);
+}
+.tab-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:none;border:none;cursor:pointer;
+  color:#475569;font-size:9.5px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.5px;gap:3px;padding:0;
+  transition:color .2s;-webkit-tap-highlight-color:transparent;
+}
+.tab-btn .ti{font-size:22px;line-height:1}
+.tab-btn.active{color:var(--orange)}
+.tab-bar{height:3px;border-radius:2px;background:transparent;width:28px;transition:background .2s}
+.tab-btn.active .tab-bar{background:var(--orange)}
+
+/* ══ PAGES ════════════════════════════════════════════════════════════ */
+.page{display:none}
+.page.active{display:block}
+
+/* ══ CARDS ════════════════════════════════════════════════════════════ */
+.card{
+  background:var(--card);border-radius:14px;
+  padding:15px 14px;margin-bottom:12px;
+  box-shadow:0 1px 5px rgba(0,0,0,.07);
+}
+.card-title{
+  font-size:10px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.8px;color:var(--muted);margin-bottom:13px;
+  display:flex;align-items:center;gap:7px;
+}
+.card-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ══ FORM ═════════════════════════════════════════════════════════════ */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:11px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.field input,.field select,.field textarea{
+  border:1.5px solid var(--border);border-radius:9px;
+  padding:10px 12px;font-size:14.5px;color:var(--text);
+  background:#fff;outline:none;width:100%;
+  transition:border-color .15s;-webkit-appearance:none;
+  font-family:inherit;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+.field input[readonly],.field input[disabled]{background:#f8fafc;color:var(--muted)}
+.field textarea{resize:vertical;min-height:56px}
+.hint{font-size:10px;color:var(--muted);margin-top:-2px}
+
+/* Litros highlight card */
+.litros-box{
+  background:linear-gradient(135deg,#fff7ed,#ffedd5);
+  border:2px solid var(--orange);border-radius:12px;
+  padding:14px;text-align:center;margin-top:2px;
+}
+.litros-box .lb-lbl{font-size:9px;font-weight:800;color:var(--orange2);text-transform:uppercase;letter-spacing:.8px}
+.litros-box .lb-val{font-size:38px;font-weight:900;color:var(--orange);line-height:1.1;margin-top:2px}
+.litros-box .lb-val small{font-size:17px;font-weight:600;color:var(--orange2)}
+.litros-box .lb-sub{font-size:10px;color:var(--orange2);margin-top:2px;opacity:.8}
+
+/* ══ BUTTONS ══════════════════════════════════════════════════════════ */
+.btn-primary{
+  width:100%;padding:15px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--orange),var(--orange2));
+  color:#fff;font-size:16px;font-weight:800;cursor:pointer;
+  letter-spacing:.2px;margin-top:4px;
+  box-shadow:0 4px 14px rgba(249,115,22,.4);
+  transition:transform .1s,box-shadow .1s;-webkit-tap-highlight-color:transparent;
+}
+.btn-primary:active{transform:scale(.98);box-shadow:0 2px 8px rgba(249,115,22,.25)}
+.btn-primary:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.btn-green{
+  width:100%;padding:13px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--green),#15803d);
+  color:#fff;font-size:15px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 12px rgba(22,163,74,.3);margin-top:4px;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-green:disabled{opacity:.55;cursor:not-allowed}
+.btn-outline{
+  width:100%;padding:11px;border:1.5px solid var(--border);border-radius:10px;
+  background:#fff;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;margin-top:6px;
+}
+
+/* ══ TOAST ════════════════════════════════════════════════════════════ */
+#toast{
+  position:fixed;bottom:calc(var(--tab-h) + 12px);left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:#1e293b;color:#fff;padding:10px 20px;
+  border-radius:24px;font-size:13px;font-weight:500;
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;
+  z-index:300;white-space:nowrap;max-width:92vw;text-overflow:ellipsis;overflow:hidden;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.ok  {background:#166534}
+#toast.err {background:#991b1b}
+#toast.warn{background:#92400e}
+
+/* ══ ESTOQUE CARDS ════════════════════════════════════════════════════ */
+.tank-total{
+  background:linear-gradient(135deg,var(--orange),var(--orange2));
+  border-radius:14px;padding:14px 16px;
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:12px;
+  box-shadow:0 4px 14px rgba(249,115,22,.35);
+}
+.tank-total .tl-left .lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.5px}
+.tank-total .tl-left p{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px}
+.tank-total .val{font-size:28px;font-weight:900;color:#fff;line-height:1}
+.tank-total .val small{font-size:13px;font-weight:500;opacity:.8}
+
+.tank-card{
+  background:linear-gradient(135deg,var(--navy),var(--navy2));
+  border-radius:12px;padding:14px 16px;margin-bottom:10px;
+  display:flex;justify-content:space-between;align-items:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.2);
+}
+.tank-card.warning{background:linear-gradient(135deg,#7c2d12,#92400e)}
+.tc-left .name{font-size:14px;font-weight:700;color:#e2e8f0}
+.tc-left .sub{font-size:11px;color:#93c5fd;margin-top:2px}
+.tank-card.warning .tc-left .sub{color:#fcd34d}
+.tc-right{text-align:right}
+.tc-right .n{font-size:28px;font-weight:900;color:#fff;line-height:1}
+.tc-right .n.warn-n{color:#fca5a5}
+.tc-right .u{font-size:11px;color:#93c5fd;margin-top:1px}
+.tank-card.warning .tc-right .u{color:#fcd34d}
+
+/* ══ HISTÓRICO ════════════════════════════════════════════════════════ */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-box{
+  background:var(--card);border-radius:11px;padding:11px 8px;text-align:center;
+  box-shadow:0 1px 5px rgba(0,0,0,.07);
+}
+.stat-box .sn{font-size:22px;font-weight:900;color:var(--navy2)}
+.stat-box .sl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-top:2px}
+
+.hist-item{
+  background:var(--card);border-radius:11px;padding:12px 14px;
+  margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06);
+  border-left:3px solid var(--orange);
+}
+.hi-row{display:flex;justify-content:space-between;align-items:flex-start}
+.hi-date{font-size:11px;color:var(--muted)}
+.hi-litros{font-size:20px;font-weight:900;color:var(--orange);line-height:1}
+.hi-litros small{font-size:11px;color:var(--muted);font-weight:400}
+.hi-eq{font-size:13px;font-weight:600;color:var(--text);margin-top:3px}
+.hi-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;
+  background:#f1f5f9;color:var(--muted);font-weight:600}
+.tag.blue  {background:#dbeafe;color:#1d4ed8}
+.tag.green {background:#dcfce7;color:#166534}
+.tag.orange{background:#ffedd5;color:#c2410c}
+.tag.purple{background:#ede9fe;color:#6d28d9}
+
+/* ══ EMPTY ════════════════════════════════════════════════════════════ */
+.empty{text-align:center;padding:44px 20px;color:var(--muted)}
+.empty .ei{font-size:52px;margin-bottom:12px;display:block}
+.empty p{font-size:13px;line-height:1.5}
+
+/* ══ SPINNER ══════════════════════════════════════════════════════════ */
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.35);
+  border-top-color:#fff;border-radius:50%;animation:rot .55s linear infinite;
+  vertical-align:middle;margin-right:6px}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* ══ OFFLINE BADGE ════════════════════════════════════════════════════ */
+#offline-badge{
+  display:none;position:fixed;top:calc(var(--hdr-h) + 6px);right:10px;
+  background:#fbbf24;color:#78350f;font-size:10px;font-weight:800;
+  padding:3px 10px;border-radius:20px;z-index:150;letter-spacing:.3px;
+}
+
+/* ══ SECTION DIVIDER ══════════════════════════════════════════════════ */
+.section-title{
+  font-size:10px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.8px;color:var(--muted);margin:16px 2px 8px;
+}
+
+/* ══ REFRESH BTN ══════════════════════════════════════════════════════ */
+.btn-refresh{
+  background:none;border:1.5px solid #334155;border-radius:8px;
+  color:#93c5fd;padding:6px 12px;font-size:12px;font-weight:600;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════════════════════════════ -->
+<header id="hdr">
+  <div class="hdr-left">
+    <div class="hdr-icon">⛽</div>
+    <div class="hdr-title">
+      <h1>Costa Rica</h1>
+      <p>Sistema de Abastecimento</p>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="lbl">Estoque Total</div>
+    <div class="val" id="hdr-total">— <small>L</small></div>
+  </div>
+</header>
+
+<div id="offline-badge">📵 Offline</div>
+
+<!-- ══ MAIN CONTENT ══════════════════════════════════════════════════ -->
+<main id="main">
+
+  <!-- ════ ABA: ABASTECER ════════════════════════════════════════════ -->
+  <div id="page-abast" class="page active">
+
+    <div class="card">
+      <div class="card-title">📋 Informações Gerais</div>
+      <div class="row2">
+        <div class="field">
+          <label>Data</label>
+          <input type="date" id="f-data">
+        </div>
+        <div class="field">
+          <label>Hora</label>
+          <input type="time" id="f-hora">
+        </div>
+      </div>
+      <div class="field">
+        <label>Operador</label>
+        <select id="f-op">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Fazenda</label>
+        <select id="f-faz">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🚜 Equipamento</div>
+      <div class="field">
+        <label>Equipamento</label>
+        <select id="f-eq" onchange="onEquipChange()">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Horímetro Atual</label>
+          <input type="number" id="f-horimEq" placeholder="Ex: 4520.5" step="0.1" oninput="calcLitros()">
+          <span class="hint" id="hint-horimEq"></span>
+        </div>
+        <div class="field">
+          <label>Horímetro Anterior</label>
+          <input type="number" id="f-horimEqAnt" placeholder="Auto" step="0.1" readonly>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🛢 Bomba &amp; Tanque</div>
+      <div class="row2">
+        <div class="field">
+          <label>Bomba</label>
+          <select id="f-bomba" onchange="onBombaChange()">
+            <option value="">Selecione...</option>
+            <option>Bomba 1</option>
+            <option>Bomba 2</option>
+            <option>Bomba 3</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tanque</label>
+          <select id="f-tanque">
+            <option>Tanque Principal</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Combustível</label>
+        <select id="f-comb">
+          <option>Diesel S10</option>
+          <option>Diesel S500</option>
+          <option>Gasolina</option>
+          <option>Etanol</option>
+          <option>Arla 32</option>
+        </select>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Horímetro Bomba Ini</label>
+          <input type="number" id="f-horimBombaIni" placeholder="Último reg." step="0.1" oninput="calcLitros()">
+        </div>
+        <div class="field">
+          <label>Horímetro Bomba Fim</label>
+          <input type="number" id="f-horimBombaFin" placeholder="Atual" step="0.1" oninput="calcLitros()">
+        </div>
+      </div>
+      <div class="litros-box">
+        <div class="lb-lbl">⛽ Litros abastecidos</div>
+        <div class="lb-val" id="litros-display">0 <small>L</small></div>
+        <div class="lb-sub" id="consumo-display"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📝 Observações</div>
+      <div class="field" style="margin-bottom:0">
+        <textarea id="f-obs" placeholder="Opcional..."></textarea>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btn-salvar" onclick="salvar()">
+      💾 &nbsp;Salvar Abastecimento
+    </button>
+    <div id="fila-badge" style="text-align:center;font-size:11px;color:var(--muted);margin-top:8px;display:none"></div>
+  </div>
+
+  <!-- ════ ABA: ESTOQUE ═════════════════════════════════════════════ -->
+  <div id="page-estoque" class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div class="section-title" style="margin:0">Resumo dos Tanques</div>
+      <button class="btn-refresh" onclick="carregarEstoques()">↻ Atualizar</button>
+    </div>
+
+    <div class="tank-total">
+      <div class="tl-left">
+        <div class="lbl">Estoque Total</div>
+        <p>Todos os tanques</p>
+      </div>
+      <div class="val" id="est-total">— <small>L</small></div>
+    </div>
+
+    <div id="tanques-container">
+      <div class="empty"><span class="ei">🛢</span><p>Carregando tanques...</p></div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-title">➕ Adicionar Combustível</div>
+      <div class="row2">
+        <div class="field">
+          <label>Data</label>
+          <input type="date" id="est-data">
+        </div>
+        <div class="field">
+          <label>Hora</label>
+          <input type="time" id="est-hora">
+        </div>
+      </div>
+      <div class="field">
+        <label>Tanque</label>
+        <select id="est-tanque">
+          <option>Tanque Principal</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Litros Recebidos</label>
+        <input type="number" id="est-litros" placeholder="Ex: 1000" step="0.1">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Observação</label>
+        <input type="text" id="est-obs" placeholder="Nota fiscal, fornecedor...">
+      </div>
+      <button class="btn-green" id="btn-add-est" onclick="addEstoque()">
+        ➕ &nbsp;Adicionar ao Estoque
+      </button>
+    </div>
+  </div>
+
+  <!-- ════ ABA: HISTÓRICO ════════════════════════════════════════════ -->
+  <div id="page-hist" class="page">
+    <div class="card">
+      <div class="card-title">🔍 Filtrar Registros</div>
+      <div class="field">
+        <label>Equipamento</label>
+        <select id="hist-eq">
+          <option value="">Todos os equipamentos</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Mês</label>
+        <input type="month" id="hist-mes">
+      </div>
+      <button class="btn-primary" style="margin-top:12px" onclick="buscarHistorico()">
+        🔍 &nbsp;Buscar
+      </button>
+    </div>
+
+    <div id="hist-stats" style="display:none">
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="sn" id="hs-litros">—</div>
+          <div class="sl">Litros</div>
+        </div>
+        <div class="stat-box">
+          <div class="sn" id="hs-abast">—</div>
+          <div class="sl">Abast.</div>
+        </div>
+        <div class="stat-box">
+          <div class="sn" id="hs-cons">—</div>
+          <div class="sl">L/h médio</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="hist-list">
+      <div class="empty">
+        <span class="ei">📋</span>
+        <p>Selecione um filtro e clique<br>em Buscar para ver os registros.</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══ BOTTOM TABS ══════════════════════════════════════════════════ -->
+<nav id="tabs">
+  <button class="tab-btn active" data-page="abast" onclick="switchTab('abast')">
+    <span class="ti">⛽</span>
+    <span>Abastecer</span>
+    <div class="tab-bar"></div>
+  </button>
+  <button class="tab-btn" data-page="estoque" onclick="switchTab('estoque')">
+    <span class="ti">🛢</span>
+    <span>Estoque</span>
+    <div class="tab-bar"></div>
+  </button>
+  <button class="tab-btn" data-page="hist" onclick="switchTab('hist')">
+    <span class="ti">📋</span>
+    <span>Histórico</span>
+    <div class="tab-bar"></div>
+  </button>
+</nav>
+
+<div id="toast"></div>
+
+<script>
+// ══ CONFIG ═════════════════════════════════════════════════════════
+var URL_GS = 'https://script.google.com/macros/s/AKfycbyBlIxhe2icuQcICFFUabK8gyRyfnbMvWP4Y1FH2sHVFo0P2Qd5FI3r7c5_KzCciS-8VQ/exec';
+var LOW_THRESHOLD = 150; // litros — abaixo disso avisa estoque baixo
+
+// ══ STATE ══════════════════════════════════════════════════════════
+var cadastros     = {};
+var saldosTanques = {};
+var offlineQueue  = [];
+try { offlineQueue = JSON.parse(localStorage.getItem('_fila') || '[]'); } catch(e){}
+var isOnline = navigator.onLine;
+
+// ══ INIT ═══════════════════════════════════════════════════════════
+window.addEventListener('load', function() {
+  initDates();
+  carregarCadastros();
+  carregarEstoques();
+  atualizarBadgeFila();
+});
+window.addEventListener('online',  function() {
+  isOnline = true;
+  document.getElementById('offline-badge').style.display = 'none';
+  processarFila();
+});
+window.addEventListener('offline', function() {
+  isOnline = false;
+  document.getElementById('offline-badge').style.display = 'block';
+});
+
+// ══ DATAS ══════════════════════════════════════════════════════════
+function initDates() {
+  var now = new Date();
+  var ymd = now.toISOString().substring(0,10);
+  var hm  = now.toTimeString().substring(0,5);
+  var ym  = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  setVal('f-data', ymd);  setVal('f-hora', hm);
+  setVal('est-data',ymd); setVal('est-hora',hm);
+  setVal('hist-mes', ym);
+}
+function setVal(id, v){ var e=document.getElementById(id); if(e) e.value=v; }
+
+// ══ TABS ═══════════════════════════════════════════════════════════
+function switchTab(page) {
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.querySelectorAll('.tab-btn').forEach(function(b){
+    b.classList.remove('active');
+    b.querySelector('.tab-bar').style.background='transparent';
+  });
+  document.getElementById('page-'+page).classList.add('active');
+  var btn = document.querySelector('[data-page="'+page+'"]');
+  btn.classList.add('active');
+  btn.querySelector('.tab-bar').style.background='var(--orange)';
+  if (page === 'estoque') carregarEstoques();
+}
+
+// ══ TOAST ══════════════════════════════════════════════════════════
+var _tt;
+function toast(msg, type) {
+  var el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'show '+(type||'');
+  clearTimeout(_tt);
+  _tt = setTimeout(function(){ el.className=''; }, 3800);
+}
+
+// ══ FETCH HELPER ═══════════════════════════════════════════════════
+function gs(params) {
+  var qs = Object.keys(params).map(function(k){
+    return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);
+  }).join('&');
+  return fetch(URL_GS+'?'+qs+'&_t='+Date.now());
+}
+
+// ══ CADASTROS ══════════════════════════════════════════════════════
+function carregarCadastros() {
+  gs({acao:'cadastros'})
+    .then(function(r){return r.json()})
+    .then(function(d) {
+      cadastros = d;
+      preencherSelect('f-op',    d.operadores  ||[], 'Selecione...');
+      preencherSelect('f-faz',   d.fazendas    ||[], 'Selecione...');
+      preencherSelect('f-eq',    d.equipamentos||[], 'Selecione...');
+      preencherSelect('hist-eq', d.equipamentos||[], 'Todos os equipamentos');
+
+      // Bombas
+      var bombas = d.bombas||[];
+      if (bombas.length) {
+        var sb = document.getElementById('f-bomba');
+        sb.innerHTML = '<option value="">Selecione...</option>';
+        bombas.forEach(function(b){ addOpt(sb,b); });
+      }
+      // Combustíveis
+      var combs = d.combustiveis||[];
+      if (combs.length) {
+        var sc = document.getElementById('f-comb');
+        sc.innerHTML = '';
+        combs.forEach(function(c){ addOpt(sc,c); });
+      }
+      // Tanques
+      var tanques = d.tanques||[];
+      if (!tanques.length) tanques = ['Tanque Principal'];
+      ['f-tanque','est-tanque'].forEach(function(id){
+        var sel = document.getElementById(id); sel.innerHTML='';
+        tanques.forEach(function(t){ addOpt(sel,t); });
+      });
+    })
+    .catch(function(){ toast('⚠️ Sem conexão — usando padrões', 'warn'); });
+}
+
+function preencherSelect(id, items, ph) {
+  var sel = document.getElementById(id); if(!sel) return;
+  sel.innerHTML = ph ? '<option value="">'+ph+'</option>' : '';
+  items.forEach(function(v){ addOpt(sel,v); });
+}
+function addOpt(sel, val) {
+  var o = document.createElement('option');
+  o.value = val; o.textContent = val; sel.appendChild(o);
+}
+
+// ══ ESTOQUE ════════════════════════════════════════════════════════
+function carregarEstoques() {
+  gs({acao:'estoques'})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      saldosTanques = d.tanques||{};
+      var total = d.total||0;
+      var fmt = total.toLocaleString('pt-BR',{minimumFractionDigits:1});
+      document.getElementById('hdr-total').innerHTML = fmt+' <small>L</small>';
+      document.getElementById('est-total').innerHTML = fmt+' <small>L</small>';
+      renderTanques(saldosTanques);
+    })
+    .catch(function(){
+      document.getElementById('hdr-total').innerHTML = '— <small>L</small>';
+    });
+}
+
+function renderTanques(tanques) {
+  var container = document.getElementById('tanques-container');
+  var keys = Object.keys(tanques);
+  if (!keys.length) {
+    container.innerHTML = '<div class="empty"><span class="ei">🛢</span><p>Nenhum registro de estoque.<br>Adicione combustível abaixo.</p></div>';
+    return;
+  }
+  // sort by saldo desc
+  keys.sort(function(a,b){ return tanques[b]-tanques[a]; });
+  container.innerHTML = keys.map(function(nome){
+    var v   = tanques[nome];
+    var low = v < LOW_THRESHOLD;
+    var fmt = v.toLocaleString('pt-BR',{minimumFractionDigits:1});
+    return '<div class="tank-card'+(low?' warning':'')+'">'+
+      '<div class="tc-left">'+
+        '<div class="name">🛢 '+nome+'</div>'+
+        '<div class="sub">'+(low?'⚠️ Nível crítico':'Disponível')+'</div>'+
+      '</div>'+
+      '<div class="tc-right">'+
+        '<div class="n'+(low?' warn-n':'')+'">'+fmt+'</div>'+
+        '<div class="u">Litros</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+// ══ EQUIPAMENTO → busca horímetro anterior ════════════════════════
+function onEquipChange() {
+  var eq = document.getElementById('f-eq').value; if(!eq) return;
+  document.getElementById('f-horimEqAnt').value = '';
+  document.getElementById('hint-horimEq').textContent = 'Buscando...';
+  gs({acao:'buscarHorim', eqCode:eq})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if (d.horim) {
+        document.getElementById('f-horimEqAnt').value = d.horim;
+        document.getElementById('hint-horimEq').textContent = '↳ Último reg.: '+d.horim+'h';
+      } else {
+        document.getElementById('hint-horimEq').textContent = 'Primeiro registro deste equipamento';
+      }
+    })
+    .catch(function(){ document.getElementById('hint-horimEq').textContent=''; });
+}
+
+// ══ BOMBA → busca último horímetro ═══════════════════════════════
+function onBombaChange() {
+  var bomba = document.getElementById('f-bomba').value; if(!bomba) return;
+  document.getElementById('f-horimBombaIni').value = '';
+  gs({acao:'ultimoBomba', bomba:bomba})
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if (d.horimBomba) {
+        document.getElementById('f-horimBombaIni').value = d.horimBomba;
+        calcLitros();
+        toast('↳ Horímetro ini: '+d.horimBomba, '');
+      }
+    })
+    .catch(function(){});
+}
+
+// ══ CALC LITROS & CONSUMO ═════════════════════════════════════════
+function calcLitros() {
+  var ini    = parseFloat(document.getElementById('f-horimBombaIni').value)||0;
+  var fim    = parseFloat(document.getElementById('f-horimBombaFin').value)||0;
+  var litros = fim > ini ? parseFloat((fim-ini).toFixed(1)) : 0;
+  var fmtL   = litros.toLocaleString('pt-BR',{minimumFractionDigits:1});
+  document.getElementById('litros-display').innerHTML = fmtL+' <small>L</small>';
+  // consumo
+  var hEq    = parseFloat(document.getElementById('f-horimEq').value)||0;
+  var hEqAnt = parseFloat(document.getElementById('f-horimEqAnt').value)||0;
+  var sub    = '';
+  if (hEq > hEqAnt && hEqAnt > 0 && litros > 0) {
+    var cons = (litros/(hEq-hEqAnt)).toFixed(2);
+    sub = 'Consumo: '+cons.replace('.',',')+' L/h';
+  }
+  document.getElementById('consumo-display').textContent = sub;
+  return litros;
+}
+
+// ══ SALVAR ABASTECIMENTO ══════════════════════════════════════════
+function salvar() {
+  var litros = calcLitros();
+  var reg = {
+    data:          document.getElementById('f-data').value,
+    hora:          document.getElementById('f-hora').value,
+    op:            document.getElementById('f-op').value,
+    faz:           document.getElementById('f-faz').value,
+    eqCode:        document.getElementById('f-eq').value,
+    horimEqIni:    document.getElementById('f-horimEq').value,
+    horimEqAnt:    document.getElementById('f-horimEqAnt').value,
+    bomba:         document.getElementById('f-bomba').value,
+    tanque:        document.getElementById('f-tanque').value||'Tanque Principal',
+    comb:          document.getElementById('f-comb').value||'Diesel S10',
+    horimBombaIni: document.getElementById('f-horimBombaIni').value,
+    horimBombaFin: document.getElementById('f-horimBombaFin').value,
+    obs:           document.getElementById('f-obs').value,
+    litros:        litros
+  };
+  // validações
+  if (!reg.data||!reg.hora) { toast('⚠️ Informe data e hora','err'); return; }
+  if (!reg.eqCode)           { toast('⚠️ Selecione o equipamento','err'); return; }
+  if (!reg.bomba)            { toast('⚠️ Selecione a bomba','err'); return; }
+  if (litros <= 0)           { toast('⚠️ Horímetro fim deve ser maior que ini','err'); return; }
+
+  var btn = document.getElementById('btn-salvar');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Salvando...';
+
+  if (!isOnline) {
+    salvarNaFila(reg);
+    toast('📵 Salvo offline — enviará ao conectar','warn');
+    btn.disabled=false; btn.innerHTML='💾 &nbsp;Salvar Abastecimento';
+    limpar(); return;
+  }
+
+  enviarRegistro(reg, function(ok) {
+    btn.disabled=false; btn.innerHTML='💾 &nbsp;Salvar Abastecimento';
+    if (ok) {
+      toast('✅ Abastecimento registrado!','ok');
+      carregarEstoques();
+      setTimeout(limpar, 1200);
+    } else {
+      salvarNaFila(reg);
+      toast('⚠️ Erro de rede — salvo offline','warn');
+      limpar();
+    }
+  });
+}
+
+function enviarRegistro(reg, cb) {
+  var params = {};
+  Object.keys(reg).forEach(function(k){ if(k!=='litros') params[k]=reg[k]; });
+  gs(params)
+    .then(function(r){return r.text()})
+    .then(function(t){ cb(t.trim()==='OK'); })
+    .catch(function(){ cb(false); });
+}
+
+function salvarNaFila(reg) {
+  offlineQueue.push(reg);
+  try{ localStorage.setItem('_fila', JSON.stringify(offlineQueue)); }catch(e){}
+  atualizarBadgeFila();
+}
+
+function processarFila() {
+  if (!isOnline||!offlineQueue.length) return;
+  var reg = offlineQueue[0];
+  enviarRegistro(reg, function(ok){
+    if (ok) {
+      offlineQueue.shift();
+      try{ localStorage.setItem('_fila', JSON.stringify(offlineQueue)); }catch(e){}
+      atualizarBadgeFila();
+      toast('✅ Registro offline enviado ('+offlineQueue.length+' restantes)','ok');
+      carregarEstoques();
+      if (offlineQueue.length) setTimeout(processarFila, 800);
+    }
+  });
+}
+
+function atualizarBadgeFila() {
+  var badge = document.getElementById('fila-badge');
+  if (offlineQueue.length > 0) {
+    badge.style.display='block';
+    badge.textContent = '📵 '+offlineQueue.length+' registro(s) na fila offline';
+  } else {
+    badge.style.display='none';
+  }
+}
+
+function limpar() {
+  initDates();
+  ['f-op','f-faz','f-eq','f-bomba'].forEach(function(id){setVal(id,'')});
+  ['f-horimEq','f-horimEqAnt','f-horimBombaIni','f-horimBombaFin','f-obs'].forEach(function(id){setVal(id,'')});
+  document.getElementById('hint-horimEq').textContent='';
+  document.getElementById('litros-display').innerHTML='0 <small>L</small>';
+  document.getElementById('consumo-display').textContent='';
+}
+
+// ══ ADICIONAR ESTOQUE ═════════════════════════════════════════════
+function addEstoque() {
+  var litros = parseFloat(document.getElementById('est-litros').value)||0;
+  if (litros<=0){ toast('⚠️ Informe os litros','err'); return; }
+  var btn = document.getElementById('btn-add-est');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Salvando...';
+  gs({
+    acao:   'addEstoque',
+    data:   document.getElementById('est-data').value,
+    hora:   document.getElementById('est-hora').value,
+    litros: litros,
+    tanque: document.getElementById('est-tanque').value||'Tanque Principal',
+    obs:    document.getElementById('est-obs').value
+  })
+    .then(function(r){return r.json()})
+    .then(function(d){
+      btn.disabled=false; btn.innerHTML='➕ &nbsp;Adicionar ao Estoque';
+      var fmt = (d.saldo||0).toLocaleString('pt-BR',{minimumFractionDigits:1});
+      toast('✅ Estoque atualizado! Saldo: '+fmt+' L','ok');
+      setVal('est-litros',''); setVal('est-obs','');
+      carregarEstoques();
+    })
+    .catch(function(){
+      btn.disabled=false; btn.innerHTML='➕ &nbsp;Adicionar ao Estoque';
+      toast('⚠️ Erro ao adicionar ao estoque','err');
+    });
+}
+
+// ══ HISTÓRICO ═════════════════════════════════════════════════════
+function buscarHistorico() {
+  var eq  = document.getElementById('hist-eq').value;
+  var mes = document.getElementById('hist-mes').value;
+  var params = {acao:'historico'};
+  if (eq)  params.eqCode = eq;
+  if (mes) params.mes    = mes;
+
+  document.getElementById('hist-list').innerHTML =
+    '<div class="empty"><span class="ei">⏳</span><p>Buscando registros...</p></div>';
+  document.getElementById('hist-stats').style.display='none';
+
+  gs(params)
+    .then(function(r){return r.json()})
+    .then(function(d){
+      var tl = parseFloat(d.totalLitros)||0;
+      document.getElementById('hs-litros').textContent = tl.toLocaleString('pt-BR',{minimumFractionDigits:1});
+      document.getElementById('hs-abast').textContent  = d.totalAbast||0;
+      document.getElementById('hs-cons').textContent   = d.consumoMedio||'—';
+      document.getElementById('hist-stats').style.display='block';
+
+      if (!d.registros||!d.registros.length) {
+        document.getElementById('hist-list').innerHTML =
+          '<div class="empty"><span class="ei">🔍</span><p>Nenhum registro encontrado<br>para este filtro.</p></div>';
+        return;
+      }
+      document.getElementById('hist-list').innerHTML = d.registros.map(function(r){
+        var litros = parseFloat(r.litros)||0;
+        var fmtL = litros.toLocaleString('pt-BR',{minimumFractionDigits:1});
+        return '<div class="hist-item">'+
+          '<div class="hi-row">'+
+            '<div>'+
+              '<div class="hi-date">'+r.data+(r.hora?' &nbsp;'+r.hora:'')+'</div>'+
+              '<div class="hi-eq">'+r.eqCode+(r.fazenda?' · '+r.fazenda:'')+'</div>'+
+            '</div>'+
+            '<div class="hi-litros">'+fmtL+'<small> L</small></div>'+
+          '</div>'+
+          '<div class="hi-tags">'+
+            (r.tanque  ?'<span class="tag blue">🛢 '+r.tanque+'</span>':'') +
+            (r.bomba   ?'<span class="tag orange">'+r.bomba+'</span>':'') +
+            (r.consumo ?'<span class="tag green">'+r.consumo+' L/h</span>':'') +
+            (r.op      ?'<span class="tag purple">'+r.op+'</span>':'') +
+          '</div>'+
+          (r.obs?'<div style="font-size:11px;color:var(--muted);margin-top:5px;font-style:italic">'+r.obs+'</div>':'')+
+        '</div>';
+      }).join('');
+    })
+    .catch(function(){
+      document.getElementById('hist-list').innerHTML =
+        '<div class="empty"><span class="ei">⚠️</span><p>Erro ao buscar histórico.<br>Verifique a conexão.</p></div>';
+    });
+}
+</script>
+</body>
+</html>
