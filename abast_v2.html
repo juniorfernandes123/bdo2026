@@ -309,33 +309,20 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
     </div>
 
     <div class="card">
-      <div class="card-title">🛢 Bomba &amp; Tanque</div>
+      <div class="card-title">🛢 Tanque &amp; Bomba</div>
       <div class="row2">
+        <div class="field">
+          <label>Tanque</label>
+          <select id="f-tanque" onchange="onTanqueChange()">
+            <option value="">Selecione...</option>
+          </select>
+        </div>
         <div class="field">
           <label>Bomba</label>
           <select id="f-bomba" onchange="onBombaChange()">
-            <option value="">Selecione...</option>
-            <option>Bomba 1</option>
-            <option>Bomba 2</option>
-            <option>Bomba 3</option>
+            <option value="">Selecione o tanque primeiro</option>
           </select>
         </div>
-        <div class="field">
-          <label>Tanque</label>
-          <select id="f-tanque">
-            <option>Tanque Principal</option>
-          </select>
-        </div>
-      </div>
-      <div class="field">
-        <label>Combustível</label>
-        <select id="f-comb">
-          <option>Diesel S10</option>
-          <option>Diesel S500</option>
-          <option>Gasolina</option>
-          <option>Etanol</option>
-          <option>Arla 32</option>
-        </select>
       </div>
       <div class="row2">
         <div class="field">
@@ -568,27 +555,24 @@ function carregarCadastros() {
       preencherSelect('f-eq',    d.equipamentos||[], 'Selecione...');
       preencherSelect('hist-eq', d.equipamentos||[], 'Todos os equipamentos');
 
-      // Bombas
-      var bombas = d.bombas||[];
-      if (bombas.length) {
-        var sb = document.getElementById('f-bomba');
-        sb.innerHTML = '<option value="">Selecione...</option>';
-        bombas.forEach(function(b){ addOpt(sb,b); });
-      }
-      // Combustíveis
-      var combs = d.combustiveis||[];
-      if (combs.length) {
-        var sc = document.getElementById('f-comb');
-        sc.innerHTML = '';
-        combs.forEach(function(c){ addOpt(sc,c); });
-      }
-      // Tanques
-      var tanques = d.tanques||[];
+      // Tanques (chaves do mapa tanqueBombas)
+      var tb = d.tanqueBombas || {};
+      var tanques = Object.keys(tb);
       if (!tanques.length) tanques = ['Tanque Principal'];
-      ['f-tanque','est-tanque'].forEach(function(id){
-        var sel = document.getElementById(id); sel.innerHTML='';
-        tanques.forEach(function(t){ addOpt(sel,t); });
-      });
+      var stq = document.getElementById('f-tanque');
+      stq.innerHTML = '<option value="">Selecione...</option>';
+      tanques.forEach(function(t){ addOpt(stq, t); });
+
+      // Estoque — tanques também
+      var selEst = document.getElementById('est-tanque');
+      if (selEst) {
+        selEst.innerHTML = '';
+        tanques.forEach(function(t){ addOpt(selEst, t); });
+      }
+
+      // Bomba inicia vazia (será preenchida ao selecionar tanque)
+      var sb = document.getElementById('f-bomba');
+      sb.innerHTML = '<option value="">Selecione o tanque primeiro</option>';
     })
     .catch(function(){ toast('⚠️ Sem conexão — usando padrões', 'warn'); });
 }
@@ -664,6 +648,27 @@ function onEquipChange() {
     .catch(function(){ document.getElementById('hint-horimEq').textContent=''; });
 }
 
+// ══ TANQUE → filtra bombas ════════════════════════════════════════
+function onTanqueChange() {
+  var tanque = document.getElementById('f-tanque').value;
+  var sb = document.getElementById('f-bomba');
+  sb.innerHTML = '<option value="">Selecione...</option>';
+  if (!tanque) {
+    sb.innerHTML = '<option value="">Selecione o tanque primeiro</option>';
+    return;
+  }
+  var tb = (cadastros && cadastros.tanqueBombas) || {};
+  var bombas = tb[tanque] || [];
+  if (bombas.length) {
+    bombas.forEach(function(b){ addOpt(sb, b); });
+  } else {
+    sb.innerHTML = '<option value="">Sem bombas cadastradas</option>';
+  }
+  // limpa horímetro bomba ao trocar tanque
+  document.getElementById('f-horimBombaIni').value = '';
+  calcLitros();
+}
+
 // ══ BOMBA → busca último horímetro ═══════════════════════════════
 function onBombaChange() {
   var bomba = document.getElementById('f-bomba').value; if(!bomba) return;
@@ -712,7 +717,6 @@ function salvar() {
     horimEqAnt:    document.getElementById('f-horimEqAnt').value,
     bomba:         document.getElementById('f-bomba').value,
     tanque:        document.getElementById('f-tanque').value||'Tanque Principal',
-    comb:          document.getElementById('f-comb').value||'Diesel S10',
     horimBombaIni: document.getElementById('f-horimBombaIni').value,
     horimBombaFin: document.getElementById('f-horimBombaFin').value,
     obs:           document.getElementById('f-obs').value,
@@ -721,6 +725,8 @@ function salvar() {
   // validações
   if (!reg.data||!reg.hora) { toast('⚠️ Informe data e hora','err'); return; }
   if (!reg.eqCode)           { toast('⚠️ Selecione o equipamento','err'); return; }
+  if (!reg.tanque || reg.tanque === 'Selecione...')
+                             { toast('⚠️ Selecione o tanque','err'); return; }
   if (!reg.bomba)            { toast('⚠️ Selecione a bomba','err'); return; }
   if (litros <= 0)           { toast('⚠️ Horímetro fim deve ser maior que ini','err'); return; }
 
@@ -791,7 +797,8 @@ function atualizarBadgeFila() {
 
 function limpar() {
   initDates();
-  ['f-op','f-faz','f-eq','f-bomba'].forEach(function(id){setVal(id,'')});
+  ['f-op','f-faz','f-eq','f-tanque','f-bomba'].forEach(function(id){setVal(id,'')});
+  document.getElementById('f-bomba').innerHTML = '<option value="">Selecione o tanque primeiro</option>';
   ['f-horimEq','f-horimEqAnt','f-horimBombaIni','f-horimBombaFin','f-obs'].forEach(function(id){setVal(id,'')});
   document.getElementById('hint-horimEq').textContent='';
   document.getElementById('litros-display').innerHTML='0 <small>L</small>';
