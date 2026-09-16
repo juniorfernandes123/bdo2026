@@ -163,11 +163,11 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 
 .tank-card{
   background:linear-gradient(135deg,var(--navy),var(--navy2));
-  border-radius:12px;padding:14px 16px;margin-bottom:10px;
-  display:flex;justify-content:space-between;align-items:center;
-  box-shadow:0 2px 10px rgba(0,0,0,.2);
+  border-radius:12px;padding:0;margin-bottom:10px;
+  box-shadow:0 2px 10px rgba(0,0,0,.2);overflow:hidden;
 }
 .tank-card.warning{background:linear-gradient(135deg,#7c2d12,#92400e)}
+.tc-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px}
 .tc-left .name{font-size:14px;font-weight:700;color:#e2e8f0}
 .tc-left .sub{font-size:11px;color:#93c5fd;margin-top:2px}
 .tank-card.warning .tc-left .sub{color:#fcd34d}
@@ -176,6 +176,16 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 .tc-right .n.warn-n{color:#fca5a5}
 .tc-right .u{font-size:11px;color:#93c5fd;margin-top:1px}
 .tank-card.warning .tc-right .u{color:#fcd34d}
+/* sub-linha por bomba */
+.tc-sub{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:7px 16px;border-top:1px solid rgba(255,255,255,.08);
+  background:rgba(0,0,0,.18);
+}
+.tc-sub-left{font-size:12px;color:#cbd5e1}
+.tc-sub-right{font-size:13px;font-weight:700;color:#fff}
+.tc-sub-right.warn-n{color:#fca5a5}
+.tc-sub.warning{background:rgba(0,0,0,.28)}
 
 /* ══ HISTÓRICO ════════════════════════════════════════════════════════ */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
@@ -385,11 +395,19 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
           <input type="time" id="est-hora">
         </div>
       </div>
-      <div class="field">
-        <label>Tanque</label>
-        <select id="est-tanque">
-          <option>Tanque Principal</option>
-        </select>
+      <div class="row2">
+        <div class="field">
+          <label>Tanque</label>
+          <select id="est-tanque" onchange="onEstTanqueChange()">
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Bomba</label>
+          <select id="est-bomba">
+            <option value="">Selecione o tanque</option>
+          </select>
+        </div>
       </div>
       <div class="field">
         <label>Litros Recebidos</label>
@@ -566,9 +584,12 @@ function carregarCadastros() {
       // Estoque — tanques também
       var selEst = document.getElementById('est-tanque');
       if (selEst) {
-        selEst.innerHTML = '';
+        selEst.innerHTML = '<option value="">Selecione...</option>';
         tanques.forEach(function(t){ addOpt(selEst, t); });
       }
+      // est-bomba inicia vazio
+      var selEstB = document.getElementById('est-bomba');
+      if (selEstB) selEstB.innerHTML = '<option value="">Selecione o tanque</option>';
 
       // Bomba inicia vazia (será preenchida ao selecionar tanque)
       var sb = document.getElementById('f-bomba');
@@ -597,37 +618,71 @@ function carregarEstoques() {
       var fmt = total.toLocaleString('pt-BR',{minimumFractionDigits:1});
       document.getElementById('hdr-total').innerHTML = fmt+' <small>L</small>';
       document.getElementById('est-total').innerHTML = fmt+' <small>L</small>';
-      renderTanques(saldosTanques);
+      renderPares(d.pares||{});
     })
     .catch(function(){
       document.getElementById('hdr-total').innerHTML = '— <small>L</small>';
     });
 }
 
-function renderTanques(tanques) {
+// renderPares — exibe por tanque com sub-linhas por bomba
+function renderPares(pares) {
   var container = document.getElementById('tanques-container');
-  var keys = Object.keys(tanques);
-  if (!keys.length) {
+  var tanqKeys  = Object.keys(pares);
+  if (!tanqKeys.length) {
     container.innerHTML = '<div class="empty"><span class="ei">🛢</span><p>Nenhum registro de estoque.<br>Adicione combustível abaixo.</p></div>';
     return;
   }
-  // sort by saldo desc
-  keys.sort(function(a,b){ return tanques[b]-tanques[a]; });
-  container.innerHTML = keys.map(function(nome){
-    var v   = tanques[nome];
-    var low = v < LOW_THRESHOLD;
-    var fmt = v.toLocaleString('pt-BR',{minimumFractionDigits:1});
+  // calcula total por tanque para ordenação
+  var totaisTanque = {};
+  tanqKeys.forEach(function(t){
+    var soma = 0;
+    Object.keys(pares[t]).forEach(function(b){ soma += pares[t][b]; });
+    totaisTanque[t] = parseFloat(soma.toFixed(1));
+  });
+  tanqKeys.sort(function(a,b){ return totaisTanque[b]-totaisTanque[a]; });
+
+  container.innerHTML = tanqKeys.map(function(tanque){
+    var totalTq = totaisTanque[tanque];
+    var low     = totalTq < LOW_THRESHOLD;
+    var fmtTot  = totalTq.toLocaleString('pt-BR',{minimumFractionDigits:1});
+    var bombas  = Object.keys(pares[tanque]);
+    bombas.sort(function(a,b){ return pares[tanque][b]-pares[tanque][a]; });
+
+    // sub-linhas por bomba
+    var subRows = bombas.map(function(bomba){
+      var v   = pares[tanque][bomba];
+      var lowB= v < LOW_THRESHOLD;
+      var fmt = v.toLocaleString('pt-BR',{minimumFractionDigits:1});
+      var label = bomba || 'Padrão';
+      return '<div class="tc-sub'+(lowB?' warning':'')+'">'+
+        '<div class="tc-sub-left">⛽ '+label+'</div>'+
+        '<div class="tc-sub-right'+(lowB?' warn-n':'')+'">'+fmt+' <small>L</small>'+(lowB?' ⚠️':'')+'</div>'+
+      '</div>';
+    }).join('');
+
     return '<div class="tank-card'+(low?' warning':'')+'">'+
-      '<div class="tc-left">'+
-        '<div class="name">🛢 '+nome+'</div>'+
-        '<div class="sub">'+(low?'⚠️ Nível crítico':'Disponível')+'</div>'+
+      '<div class="tc-head">'+
+        '<div class="tc-left">'+
+          '<div class="name">🛢 '+tanque+'</div>'+
+          '<div class="sub">Total: '+fmtTot+' L'+(low?' · ⚠️ Nível crítico':'')+'</div>'+
+        '</div>'+
+        '<div class="tc-right">'+
+          '<div class="n'+(low?' warn-n':'')+'">'+fmtTot+'</div>'+
+          '<div class="u">Litros</div>'+
+        '</div>'+
       '</div>'+
-      '<div class="tc-right">'+
-        '<div class="n'+(low?' warn-n':'')+'">'+fmt+'</div>'+
-        '<div class="u">Litros</div>'+
-      '</div>'+
+      subRows+
     '</div>';
   }).join('');
+}
+
+// mantido para compatibilidade interna
+function renderTanques(tanques) {
+  // converte formato legado { Tanque: saldo } em pares { Tanque: { "": saldo } }
+  var pares = {};
+  Object.keys(tanques).forEach(function(t){ pares[t] = {'': tanques[t]}; });
+  renderPares(pares);
 }
 
 // ══ EQUIPAMENTO → busca horímetro anterior ════════════════════════
@@ -667,6 +722,20 @@ function onTanqueChange() {
   // limpa horímetro bomba ao trocar tanque
   document.getElementById('f-horimBombaIni').value = '';
   calcLitros();
+}
+
+// ══ ESTOQUE: Tanque → filtra bombas ══════════════════════════════
+function onEstTanqueChange() {
+  var tanque = document.getElementById('est-tanque').value;
+  var sb = document.getElementById('est-bomba');
+  if (!tanque) {
+    sb.innerHTML = '<option value="">Selecione o tanque</option>';
+    return;
+  }
+  var tb = (cadastros && cadastros.tanqueBombas) || {};
+  var bombas = tb[tanque] || [];
+  sb.innerHTML = '<option value="">Selecione...</option>';
+  bombas.forEach(function(b){ addOpt(sb, b); });
 }
 
 // ══ BOMBA → busca último horímetro ═══════════════════════════════
@@ -811,12 +880,16 @@ function addEstoque() {
   if (litros<=0){ toast('⚠️ Informe os litros','err'); return; }
   var btn = document.getElementById('btn-add-est');
   btn.disabled=true; btn.innerHTML='<span class="spin"></span> Salvando...';
+  var tanqueEst = document.getElementById('est-tanque').value||'Tanque Principal';
+  var bombaEst  = document.getElementById('est-bomba').value||'';
+  if (!bombaEst) { toast('⚠️ Selecione a bomba','err'); btn.disabled=false; btn.innerHTML='➕ &nbsp;Adicionar ao Estoque'; return; }
   gs({
     acao:   'addEstoque',
     data:   document.getElementById('est-data').value,
     hora:   document.getElementById('est-hora').value,
     litros: litros,
-    tanque: document.getElementById('est-tanque').value||'Tanque Principal',
+    tanque: tanqueEst,
+    bomba:  bombaEst,
     obs:    document.getElementById('est-obs').value
   })
     .then(function(r){return r.json()})
