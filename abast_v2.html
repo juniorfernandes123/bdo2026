@@ -810,17 +810,18 @@ function onEstTanqueChange() {
   bombas.forEach(function(b){ addOpt(sb, b); });
 }
 
-// ══ BOMBA → busca último horímetro ═══════════════════════════════
+// ══ BOMBA → busca último horímetro (por tanque + bomba) ═════════
 function onBombaChange() {
-  var bomba = document.getElementById('f-bomba').value; if(!bomba) return;
+  var bomba  = document.getElementById('f-bomba').value;  if(!bomba) return;
+  var tanque = document.getElementById('f-tanque').value || 'Tanque Principal';
   document.getElementById('f-horimBombaIni').value = '';
-  gs({acao:'ultimoBomba', bomba:bomba})
+  gs({acao:'ultimoBomba', bomba:bomba, tanque:tanque})
     .then(function(r){return r.json()})
     .then(function(d){
       if (d.horimBomba) {
         document.getElementById('f-horimBombaIni').value = d.horimBomba;
         calcLitros();
-        toast('↳ Horímetro ini: '+d.horimBomba, '');
+        toast('↳ Horímetro ini ('+tanque+' / '+bomba+'): '+d.horimBomba, '');
       }
     })
     .catch(function(){});
