@@ -269,6 +269,39 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
   box-shadow:0 1px 4px rgba(0,0,0,.07);text-align:center}
 .dash-stat .dsn{font-size:24px;font-weight:900;color:var(--navy2);line-height:1}
 .dash-stat .dsl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+
+/* ══ EQ STATS ════════════════════════════════════════════════════════════ */
+.eq-stat-card{
+  background:var(--card);border-radius:11px;
+  padding:11px 12px;margin-bottom:8px;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
+  display:flex;align-items:center;gap:11px;
+}
+.eq-rank{
+  width:26px;height:26px;border-radius:50%;flex-shrink:0;
+  background:var(--navy);color:#fff;
+  font-size:11px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.eq-rank.gold  {background:#d97706}
+.eq-rank.silver{background:#64748b}
+.eq-rank.bronze{background:#92400e}
+.eq-info{flex:1;min-width:0}
+.eq-info .en{font-size:13px;font-weight:700;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eq-info .es{font-size:10px;color:var(--muted);margin-top:2px}
+.eq-cons{background:#f0fdf4;border-radius:7px;padding:3px 8px;
+  font-size:11px;font-weight:700;color:#166534;white-space:nowrap;flex-shrink:0}
+.eq-nums{text-align:right;flex-shrink:0}
+.eq-nums .evl{font-size:17px;font-weight:900;color:var(--navy2);line-height:1}
+.eq-nums .evu{font-size:10px;color:var(--muted);margin-top:1px}
+.dash-month-sel{
+  margin-left:auto;background:none;
+  border:1.5px solid var(--border);border-radius:7px;
+  color:var(--muted);font-size:11px;padding:3px 7px;
+  font-family:inherit;outline:none;cursor:pointer;
+  font-weight:normal;text-transform:none;letter-spacing:0;
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
@@ -331,6 +364,18 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
     <div id="dash-tanques-container">
       <div class="empty"><span class="ei">📊</span><p>Carregando...</p></div>
     </div>
+
+    <!-- Consumo por Equipamento -->
+    <div class="card" style="margin-top:4px">
+      <div class="card-title">
+        🚜 Consumo por Equipamento
+        <select id="dash-mes-filter" class="dash-month-sel" onchange="carregarMediaEquip()"></select>
+      </div>
+      <div id="dash-eq-chart-wrap" style="position:relative;width:100%;height:160px">
+        <canvas id="dash-eq-chart"></canvas>
+      </div>
+    </div>
+    <div id="dash-eq-list"></div>
   </div>
 
   <!-- ════ ABA: ABASTECER ════════════════════════════════════════════ -->
@@ -575,8 +620,10 @@ var isOnline = navigator.onLine;
 // ══ INIT ═══════════════════════════════════════════════════════════
 window.addEventListener('load', function() {
   initDates();
+  preencherFiltroMes();
   carregarCadastros();
   carregarEstoques();
+  carregarMediaEquip();
   atualizarBadgeFila();
 });
 window.addEventListener('online',  function() {
@@ -613,7 +660,7 @@ function switchTab(page) {
   btn.classList.add('active');
   btn.querySelector('.tab-bar').style.background='var(--orange)';
   if (page === 'estoque') carregarEstoques();
-  if (page === 'dash')    carregarEstoques();
+  if (page === 'dash')  { carregarEstoques(); carregarMediaEquip(); }
 }
 
 // ══ TOAST ══════════════════════════════════════════════════════════
@@ -1091,6 +1138,117 @@ function renderDashboard(pares, total) {
       }
     }
   });
+}
+
+// ══ FILTRO DE MÊS (dashboard) ════════════════════════════════════
+function preencherFiltroMes() {
+  var sel = document.getElementById('dash-mes-filter');
+  if (!sel) return;
+  var agora = new Date();
+  var opts = ['<option value="">Todo período</option>'];
+  for (var m = 0; m < 12; m++) {
+    var d  = new Date(agora.getFullYear(), agora.getMonth() - m, 1);
+    var yy = d.getFullYear();
+    var mm = String(d.getMonth()+1).padStart(2,'0');
+    var ym = yy+'-'+mm;
+    var lb = d.toLocaleDateString('pt-BR',{month:'short',year:'numeric'});
+    opts.push('<option value="'+ym+'"'+(m===0?' selected':'')+'>'+lb+'</option>');
+  }
+  sel.innerHTML = opts.join('');
+}
+
+// ══ MÉDIA POR EQUIPAMENTO ════════════════════════════════════════
+var _dashEqChart = null;
+
+function carregarMediaEquip() {
+  var sel = document.getElementById('dash-mes-filter');
+  var mes = sel ? sel.value : '';
+  var params = { acao:'dashAbast' };
+  if (mes) params.mes = mes;
+  gs(params)
+    .then(function(r){ return r.json(); })
+    .then(function(d){ renderMediaEquip(d.porEquip||{}); })
+    .catch(function(){});
+}
+
+function renderMediaEquip(porEquip) {
+  var equips = Object.keys(porEquip);
+  equips.sort(function(a,b){
+    return parseFloat(porEquip[b].litros) - parseFloat(porEquip[a].litros);
+  });
+
+  // Gráfico horizontal L/h médio
+  var equipsC = equips.filter(function(e){ return parseFloat(porEquip[e].consumoMedio)>0; });
+  var canvas  = document.getElementById('dash-eq-chart');
+  var wrap    = document.getElementById('dash-eq-chart-wrap');
+  if (canvas && wrap) {
+    var h = equipsC.length ? Math.max(120, equipsC.length*48+50) : 50;
+    wrap.style.height = h+'px';
+    if (_dashEqChart) { _dashEqChart.destroy(); _dashEqChart=null; }
+    if (equipsC.length) {
+      _dashEqChart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+          labels: equipsC,
+          datasets: [{
+            label: 'L/h médio',
+            data: equipsC.map(function(e){ return parseFloat(porEquip[e].consumoMedio)||0; }),
+            backgroundColor: '#0ea5e9',
+            borderRadius: 6,
+            borderSkipped: false
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display:false },
+            tooltip: {
+              callbacks: {
+                label: function(ctx){
+                  return ' '+ctx.parsed.x.toFixed(2).replace('.',',')+' L/h';
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              grid: { color:'rgba(0,0,0,.06)' },
+              ticks: { font:{size:10}, callback:function(v){ return v.toFixed(1).replace('.',','); } }
+            },
+            y: { grid:{display:false}, ticks:{font:{size:11}} }
+          }
+        }
+      });
+    }
+  }
+
+  // Ranking list
+  var list = document.getElementById('dash-eq-list');
+  if (!list) return;
+  if (!equips.length) {
+    list.innerHTML = '<div class="empty" style="padding:18px 20px"><p>Sem dados no período</p></div>';
+    return;
+  }
+  var rankCls = ['gold','silver','bronze'];
+  list.innerHTML = equips.map(function(eq, i){
+    var d    = porEquip[eq];
+    var fmtL = (parseFloat(d.litros)||0).toLocaleString('pt-BR',{minimumFractionDigits:1});
+    var cons = parseFloat(d.consumoMedio)||0;
+    var consTxt = cons > 0 ? cons.toFixed(2).replace('.',',') : null;
+    var cnt  = d.abast || '—';
+    return '<div class="eq-stat-card">'+
+      '<div class="eq-rank '+(rankCls[i]||'')+'">'+( i+1 )+'</div>'+
+      '<div class="eq-info">'+
+        '<div class="en">'+eq+'</div>'+
+        '<div class="es">'+cnt+' abastecimento'+(cnt!==1?'s':'')+'</div>'+
+      '</div>'+
+      (consTxt?'<div class="eq-cons">⚡ '+consTxt+' L/h</div>':'')+
+      '<div class="eq-nums"><div class="evl">'+fmtL+'</div><div class="evu">Litros</div></div>'+
+    '</div>';
+  }).join('');
 }
 
 // ══ HISTÓRICO ═════════════════════════════════════════════════════
