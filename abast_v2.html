@@ -5,29 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Filial MS — Abastecimento</title>
 <style>
-/* ══ RESET & TOKENS ═══════════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --navy:#0f172a; --navy2:#1e3a5f; --navy3:#1e40af;
   --orange:#f97316; --orange2:#ea580c;
   --green:#16a34a;  --red:#dc2626;
+  --amber:#f59e0b;
   --card:#ffffff;   --bg:#f1f5f9;
   --text:#1e293b;   --muted:#64748b;
   --border:#e2e8f0;
-  --tab-h:62px;     --hdr-h:68px;
+  --tab-h:58px;     --hdr-h:68px;
 }
 html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
   font-size:15px;background:var(--bg);color:var(--text);overscroll-behavior:none}
-
-/* ══ HEADER ═══════════════════════════════════════════════════════════ */
-#hdr{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  height:var(--hdr-h);
+#hdr{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--hdr-h);
   background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 16px;
-  box-shadow:0 2px 16px rgba(0,0,0,.4);
-}
+  display:flex;align-items:center;justify-content:space-between;padding:0 16px;
+  box-shadow:0 2px 16px rgba(0,0,0,.4)}
 .hdr-left{display:flex;align-items:center;gap:10px}
 .hdr-icon{width:38px;height:38px;background:rgba(255,255,255,.1);border-radius:10px;
   display:flex;align-items:center;justify-content:center;font-size:20px}
@@ -37,136 +31,75 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 .hdr-right .lbl{font-size:9px;color:#93c5fd;text-transform:uppercase;letter-spacing:.6px}
 .hdr-right .val{font-size:20px;font-weight:800;color:#fff;line-height:1;margin-top:1px}
 .hdr-right .val small{font-size:11px;color:#93c5fd;font-weight:400}
-
-/* ══ MAIN ═════════════════════════════════════════════════════════════ */
-#main{
-  margin-top:var(--hdr-h);
-  min-height:calc(100dvh - var(--hdr-h) - var(--tab-h));
-  overflow-y:auto;padding:14px 12px calc(var(--tab-h) + 28px + env(safe-area-inset-bottom,0px));
-}
-
-/* ══ BOTTOM TABS ══════════════════════════════════════════════════════ */
-#tabs{
-  position:fixed;bottom:0;left:0;right:0;z-index:100;
+#main{margin-top:var(--hdr-h);min-height:calc(100dvh - var(--hdr-h) - var(--tab-h));
+  overflow-y:auto;padding:14px 12px calc(var(--tab-h) + 28px + env(safe-area-inset-bottom,0px))}
+#tabs{position:fixed;bottom:0;left:0;right:0;z-index:100;
   height:calc(var(--tab-h) + env(safe-area-inset-bottom,0px));
-  padding-bottom:env(safe-area-inset-bottom,0px);
-  background:var(--navy);
-  display:flex;border-top:1px solid #1e3a5f;
-  box-shadow:0 -2px 12px rgba(0,0,0,.3);
-}
-.tab-btn{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:none;border:none;cursor:pointer;
-  color:#475569;font-size:9.5px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.5px;gap:3px;padding:0;
-  transition:color .2s;-webkit-tap-highlight-color:transparent;
-}
-.tab-btn .ti{font-size:22px;line-height:1}
+  padding-bottom:env(safe-area-inset-bottom,0px);background:var(--navy);
+  display:flex;border-top:1px solid #1e3a5f;box-shadow:0 -2px 12px rgba(0,0,0,.3)}
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:none;border:none;cursor:pointer;color:#475569;font-size:8.5px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.4px;gap:3px;padding:0;
+  transition:color .2s;-webkit-tap-highlight-color:transparent}
+.tab-btn .ti{font-size:20px;line-height:1}
 .tab-btn.active{color:var(--orange)}
-.tab-bar{height:3px;border-radius:2px;background:transparent;width:28px;transition:background .2s}
+.tab-bar{height:3px;border-radius:2px;background:transparent;width:26px;transition:background .2s}
 .tab-btn.active .tab-bar{background:var(--orange)}
-
-/* ══ PAGES ════════════════════════════════════════════════════════════ */
-.page{display:none}
-.page.active{display:block}
-
-/* ══ CARDS ════════════════════════════════════════════════════════════ */
-.card{
-  background:var(--card);border-radius:14px;
-  padding:15px 14px;margin-bottom:12px;
-  box-shadow:0 1px 5px rgba(0,0,0,.07);
-}
-.card-title{
-  font-size:10px;font-weight:800;text-transform:uppercase;
-  letter-spacing:.8px;color:var(--muted);margin-bottom:13px;
-  display:flex;align-items:center;gap:7px;
-}
+.page{display:none}.page.active{display:block}
+.card{background:var(--card);border-radius:14px;padding:15px 14px;margin-bottom:12px;
+  box-shadow:0 1px 5px rgba(0,0,0,.07)}
+.card-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;
+  color:var(--muted);margin-bottom:13px;display:flex;align-items:center;gap:7px}
 .card-title::after{content:'';flex:1;height:1px;background:var(--border)}
-
-/* ══ FORM ═════════════════════════════════════════════════════════════ */
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .field{display:flex;flex-direction:column;gap:5px;margin-bottom:11px}
 .field:last-child{margin-bottom:0}
 .field label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.field input,.field select,.field textarea{
-  border:1.5px solid var(--border);border-radius:9px;
-  padding:10px 12px;font-size:14.5px;color:var(--text);
-  background:#fff;outline:none;width:100%;
-  transition:border-color .15s;-webkit-appearance:none;
-  font-family:inherit;
-}
+.field input,.field select,.field textarea{border:1.5px solid var(--border);border-radius:9px;
+  padding:10px 12px;font-size:14.5px;color:var(--text);background:#fff;outline:none;width:100%;
+  transition:border-color .15s;-webkit-appearance:none;font-family:inherit}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
 .field input[readonly],.field input[disabled]{background:#f8fafc;color:var(--muted)}
 .field textarea{resize:vertical;min-height:56px}
 .hint{font-size:10px;color:var(--muted);margin-top:-2px}
-
-/* Litros highlight card */
-.litros-box{
-  background:linear-gradient(135deg,#fff7ed,#ffedd5);
-  border:2px solid var(--orange);border-radius:12px;
-  padding:14px;text-align:center;margin-top:2px;
-}
+.litros-box{background:linear-gradient(135deg,#fff7ed,#ffedd5);border:2px solid var(--orange);
+  border-radius:12px;padding:14px;text-align:center;margin-top:2px}
 .litros-box .lb-lbl{font-size:9px;font-weight:800;color:var(--orange2);text-transform:uppercase;letter-spacing:.8px}
 .litros-box .lb-val{font-size:38px;font-weight:900;color:var(--orange);line-height:1.1;margin-top:2px}
 .litros-box .lb-val small{font-size:17px;font-weight:600;color:var(--orange2)}
 .litros-box .lb-sub{font-size:10px;color:var(--orange2);margin-top:2px;opacity:.8}
-
-/* ══ BUTTONS ══════════════════════════════════════════════════════════ */
-.btn-primary{
-  width:100%;padding:15px;border:none;border-radius:12px;
-  background:linear-gradient(135deg,var(--orange),var(--orange2));
-  color:#fff;font-size:16px;font-weight:800;cursor:pointer;
-  letter-spacing:.2px;margin-top:4px;
-  box-shadow:0 4px 14px rgba(249,115,22,.4);
-  transition:transform .1s,box-shadow .1s;-webkit-tap-highlight-color:transparent;
-}
+.btn-primary{width:100%;padding:15px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--orange),var(--orange2));color:#fff;font-size:16px;
+  font-weight:800;cursor:pointer;letter-spacing:.2px;margin-top:4px;
+  box-shadow:0 4px 14px rgba(249,115,22,.4);transition:transform .1s,box-shadow .1s;
+  -webkit-tap-highlight-color:transparent}
 .btn-primary:active{transform:scale(.98);box-shadow:0 2px 8px rgba(249,115,22,.25)}
 .btn-primary:disabled{opacity:.55;cursor:not-allowed;transform:none}
-.btn-green{
-  width:100%;padding:13px;border:none;border-radius:12px;
-  background:linear-gradient(135deg,var(--green),#15803d);
-  color:#fff;font-size:15px;font-weight:700;cursor:pointer;
-  box-shadow:0 4px 12px rgba(22,163,74,.3);margin-top:4px;
-  -webkit-tap-highlight-color:transparent;
-}
+.btn-green{width:100%;padding:13px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--green),#15803d);color:#fff;font-size:15px;
+  font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(22,163,74,.3);margin-top:4px;
+  -webkit-tap-highlight-color:transparent}
 .btn-green:disabled{opacity:.55;cursor:not-allowed}
-.btn-outline{
-  width:100%;padding:11px;border:1.5px solid var(--border);border-radius:10px;
-  background:#fff;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;margin-top:6px;
-}
-
-/* ══ TOAST ════════════════════════════════════════════════════════════ */
-#toast{
-  position:fixed;bottom:calc(var(--tab-h) + 12px);left:50%;
-  transform:translateX(-50%) translateY(20px);
-  background:#1e293b;color:#fff;padding:10px 20px;
-  border-radius:24px;font-size:13px;font-weight:500;
-  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;
-  z-index:300;white-space:nowrap;max-width:92vw;text-overflow:ellipsis;overflow:hidden;
-}
+.btn-outline{width:100%;padding:11px;border:1.5px solid var(--border);border-radius:10px;
+  background:#fff;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;margin-top:6px}
+#toast{position:fixed;bottom:calc(var(--tab-h) + 12px);left:50%;
+  transform:translateX(-50%) translateY(20px);background:#1e293b;color:#fff;padding:10px 20px;
+  border-radius:24px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;
+  transition:opacity .25s,transform .25s;z-index:300;white-space:nowrap;max-width:92vw;
+  text-overflow:ellipsis;overflow:hidden}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #toast.ok  {background:#166534}
 #toast.err {background:#991b1b}
 #toast.warn{background:#92400e}
-
-/* ══ ESTOQUE CARDS ════════════════════════════════════════════════════ */
-.tank-total{
-  background:linear-gradient(135deg,var(--orange),var(--orange2));
-  border-radius:14px;padding:14px 16px;
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:12px;
-  box-shadow:0 4px 14px rgba(249,115,22,.35);
-}
+.tank-total{background:linear-gradient(135deg,var(--orange),var(--orange2));border-radius:14px;
+  padding:14px 16px;display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:12px;box-shadow:0 4px 14px rgba(249,115,22,.35)}
 .tank-total .tl-left .lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.5px}
 .tank-total .tl-left p{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px}
 .tank-total .val{font-size:28px;font-weight:900;color:#fff;line-height:1}
 .tank-total .val small{font-size:13px;font-weight:500;opacity:.8}
-
-.tank-card{
-  background:linear-gradient(135deg,var(--navy),var(--navy2));
-  border-radius:12px;padding:0;margin-bottom:10px;
-  box-shadow:0 2px 10px rgba(0,0,0,.2);overflow:hidden;
-}
+.tank-card{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:12px;
+  padding:0;margin-bottom:10px;box-shadow:0 2px 10px rgba(0,0,0,.2);overflow:hidden}
 .tank-card.warning{background:linear-gradient(135deg,#7c2d12,#92400e)}
 .tc-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px}
 .tc-left .name{font-size:14px;font-weight:700;color:#e2e8f0}
@@ -177,31 +110,19 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 .tc-right .n.warn-n{color:#fca5a5}
 .tc-right .u{font-size:11px;color:#93c5fd;margin-top:1px}
 .tank-card.warning .tc-right .u{color:#fcd34d}
-/* sub-linha por bomba */
-.tc-sub{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:7px 16px;border-top:1px solid rgba(255,255,255,.08);
-  background:rgba(0,0,0,.18);
-}
+.tc-sub{display:flex;justify-content:space-between;align-items:center;
+  padding:7px 16px;border-top:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.18)}
 .tc-sub-left{font-size:12px;color:#cbd5e1}
 .tc-sub-right{font-size:13px;font-weight:700;color:#fff}
 .tc-sub-right.warn-n{color:#fca5a5}
 .tc-sub.warning{background:rgba(0,0,0,.28)}
-
-/* ══ HISTÓRICO ════════════════════════════════════════════════════════ */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
-.stat-box{
-  background:var(--card);border-radius:11px;padding:11px 8px;text-align:center;
-  box-shadow:0 1px 5px rgba(0,0,0,.07);
-}
+.stat-box{background:var(--card);border-radius:11px;padding:11px 8px;text-align:center;
+  box-shadow:0 1px 5px rgba(0,0,0,.07)}
 .stat-box .sn{font-size:22px;font-weight:900;color:var(--navy2)}
 .stat-box .sl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-top:2px}
-
-.hist-item{
-  background:var(--card);border-radius:11px;padding:12px 14px;
-  margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06);
-  border-left:3px solid var(--orange);
-}
+.hist-item{background:var(--card);border-radius:11px;padding:12px 14px;margin-bottom:8px;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);border-left:3px solid var(--orange)}
 .hi-row{display:flex;justify-content:space-between;align-items:flex-start}
 .hi-date{font-size:11px;color:var(--muted)}
 .hi-litros{font-size:20px;font-weight:900;color:var(--orange);line-height:1}
@@ -214,54 +135,30 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 .tag.green {background:#dcfce7;color:#166534}
 .tag.orange{background:#ffedd5;color:#c2410c}
 .tag.purple{background:#ede9fe;color:#6d28d9}
-
-/* ══ EMPTY ════════════════════════════════════════════════════════════ */
 .empty{text-align:center;padding:44px 20px;color:var(--muted)}
 .empty .ei{font-size:52px;margin-bottom:12px;display:block}
 .empty p{font-size:13px;line-height:1.5}
-
-/* ══ SPINNER ══════════════════════════════════════════════════════════ */
 .spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.35);
   border-top-color:#fff;border-radius:50%;animation:rot .55s linear infinite;
   vertical-align:middle;margin-right:6px}
 @keyframes rot{to{transform:rotate(360deg)}}
-
-/* ══ OFFLINE BADGE ════════════════════════════════════════════════════ */
-#offline-badge{
-  display:none;position:fixed;top:calc(var(--hdr-h) + 6px);right:10px;
-  background:#fbbf24;color:#78350f;font-size:10px;font-weight:800;
-  padding:3px 10px;border-radius:20px;z-index:150;letter-spacing:.3px;
-}
-
-/* ══ SECTION DIVIDER ══════════════════════════════════════════════════ */
-.section-title{
-  font-size:10px;font-weight:800;text-transform:uppercase;
-  letter-spacing:.8px;color:var(--muted);margin:16px 2px 8px;
-}
-
-/* ══ REFRESH BTN ══════════════════════════════════════════════════════ */
-.btn-refresh{
-  background:none;border:1.5px solid #334155;border-radius:8px;
-  color:#93c5fd;padding:6px 12px;font-size:12px;font-weight:600;
-  cursor:pointer;-webkit-tap-highlight-color:transparent;
-}
-
-/* ══ DASHBOARD ════════════════════════════════════════════════════════ */
-.dash-hero{
-  background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);
-  border-radius:16px;padding:18px 16px;margin-bottom:12px;
-  display:flex;align-items:center;justify-content:space-between;
-  box-shadow:0 2px 12px rgba(0,0,0,.15);
-}
+#offline-badge{display:none;position:fixed;top:calc(var(--hdr-h) + 6px);right:10px;
+  background:#fbbf24;color:#78350f;font-size:10px;font-weight:800;padding:3px 10px;
+  border-radius:20px;z-index:150;letter-spacing:.3px}
+.section-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;
+  color:var(--muted);margin:16px 2px 8px}
+.btn-refresh{background:none;border:1.5px solid #334155;border-radius:8px;color:#93c5fd;
+  padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent}
+/* DASHBOARD */
+.dash-hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);border-radius:16px;
+  padding:18px 16px;margin-bottom:12px;display:flex;align-items:center;
+  justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,.15)}
 .dash-hero-left .lbl{font-size:10px;color:#93c5fd;text-transform:uppercase;letter-spacing:.6px}
 .dash-hero-left .val{font-size:34px;font-weight:900;color:#fff;line-height:1.1;margin-top:2px}
 .dash-hero-left .val small{font-size:14px;color:#93c5fd;font-weight:400}
-.btn-launch{
-  background:var(--orange);color:#fff;border:none;border-radius:12px;
-  padding:12px 18px;font-size:13px;font-weight:800;cursor:pointer;
-  white-space:nowrap;-webkit-tap-highlight-color:transparent;
-  box-shadow:0 2px 8px rgba(249,115,22,.4);letter-spacing:.2px;
-}
+.btn-launch{background:var(--orange);color:#fff;border:none;border-radius:12px;
+  padding:12px 18px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;
+  -webkit-tap-highlight-color:transparent;box-shadow:0 2px 8px rgba(249,115,22,.4);letter-spacing:.2px}
 .btn-launch:active{background:var(--orange2)}
 .chart-wrap{position:relative;width:100%;height:220px}
 .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
@@ -269,68 +166,79 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
   box-shadow:0 1px 4px rgba(0,0,0,.07);text-align:center}
 .dash-stat .dsn{font-size:24px;font-weight:900;color:var(--navy2);line-height:1}
 .dash-stat .dsl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
-
-/* ══ EQ STATS ════════════════════════════════════════════════════════════ */
-.eq-stat-card{
-  background:var(--card);border-radius:11px;
-  padding:11px 12px;margin-bottom:8px;
-  box-shadow:0 1px 4px rgba(0,0,0,.06);
-  display:flex;align-items:center;gap:11px;
-}
-.eq-rank{
-  width:26px;height:26px;border-radius:50%;flex-shrink:0;
-  background:var(--navy);color:#fff;
-  font-size:11px;font-weight:800;
-  display:flex;align-items:center;justify-content:center;
-}
+/* EQ STATS */
+.eq-stat-card{background:var(--card);border-radius:11px;padding:11px 12px;margin-bottom:8px;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);display:flex;align-items:center;gap:11px}
+.eq-rank{width:26px;height:26px;border-radius:50%;flex-shrink:0;background:var(--navy);color:#fff;
+  font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
 .eq-rank.gold  {background:#d97706}
 .eq-rank.silver{background:#64748b}
 .eq-rank.bronze{background:#92400e}
 .eq-info{flex:1;min-width:0}
-.eq-info .en{font-size:13px;font-weight:700;color:var(--text);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eq-info .en{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .eq-info .es{font-size:10px;color:var(--muted);margin-top:2px}
-.eq-cons{background:#f0fdf4;border-radius:7px;padding:3px 8px;
-  font-size:11px;font-weight:700;color:#166534;white-space:nowrap;flex-shrink:0}
+.eq-cons{background:#f0fdf4;border-radius:7px;padding:3px 8px;font-size:11px;font-weight:700;color:#166534;white-space:nowrap;flex-shrink:0}
 .eq-nums{text-align:right;flex-shrink:0}
 .eq-nums .evl{font-size:17px;font-weight:900;color:var(--navy2);line-height:1}
 .eq-nums .evu{font-size:10px;color:var(--muted);margin-top:1px}
-.dash-month-sel{
-  margin-left:auto;background:none;
-  border:1.5px solid var(--border);border-radius:7px;
-  color:var(--muted);font-size:11px;padding:3px 7px;
-  font-family:inherit;outline:none;cursor:pointer;
-  font-weight:normal;text-transform:none;letter-spacing:0;
-}
+.dash-month-sel{margin-left:auto;background:none;border:1.5px solid var(--border);border-radius:7px;
+  color:var(--muted);font-size:11px;padding:3px 7px;font-family:inherit;outline:none;cursor:pointer;
+  font-weight:normal;text-transform:none;letter-spacing:0}
+/* PREVENTIVAS */
+.prev-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.ps-box{border-radius:11px;padding:11px 8px;text-align:center;box-shadow:0 1px 5px rgba(0,0,0,.07)}
+.ps-box.red   {background:linear-gradient(135deg,#fef2f2,#fee2e2);border:1px solid #fca5a5}
+.ps-box.yellow{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid #fcd34d}
+.ps-box.green {background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac}
+.ps-box .psn{font-size:26px;font-weight:900}
+.ps-box.red    .psn{color:#dc2626}
+.ps-box.yellow .psn{color:#d97706}
+.ps-box.green  .psn{color:#16a34a}
+.ps-box .psl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-top:2px}
+.prev-item{background:var(--card);border-radius:12px;padding:13px 14px;margin-bottom:9px;
+  box-shadow:0 1px 4px rgba(0,0,0,.07);border-left:4px solid var(--border)}
+.prev-item.vencida{border-left-color:var(--red)}
+.prev-item.proxima{border-left-color:var(--amber)}
+.prev-item.ok     {border-left-color:var(--green)}
+.prev-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.4px;padding:2px 9px;border-radius:20px;margin-bottom:5px}
+.prev-badge.vencida{background:#fee2e2;color:#dc2626}
+.prev-badge.proxima{background:#fef3c7;color:#d97706}
+.prev-badge.ok     {background:#dcfce7;color:#16a34a}
+.prev-eq  {font-size:11px;font-weight:700;color:var(--navy2);margin-bottom:1px}
+.prev-tipo{font-size:14px;font-weight:800;color:var(--text);margin-bottom:6px}
+.prev-meta{font-size:11px;color:var(--muted);line-height:1.7}
+.prev-meta span{color:var(--text);font-weight:600}
+.btn-reg{background:var(--navy);color:#fff;border:none;border-radius:8px;
+  padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;margin-top:10px;
+  -webkit-tap-highlight-color:transparent}
+.btn-reg:active{background:var(--navy2)}
+.prev-form-wrap{background:var(--card);border-radius:14px;padding:16px 14px;
+  margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.12);
+  border:2px solid var(--amber)}
+.prev-form-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:14px;
+  display:flex;align-items:center;gap:8px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
-<!-- ══ HEADER ══════════════════════════════════════════════════════════ -->
 <header id="hdr">
   <div class="hdr-left">
     <div class="hdr-icon">⛽</div>
-    <div class="hdr-title">
-      <h1>Filial MS</h1>
-      <p>Sistema de Abastecimento</p>
-    </div>
+    <div class="hdr-title"><h1>Filial MS</h1><p>Sistema de Abastecimento</p></div>
   </div>
   <div class="hdr-right">
     <div class="lbl">Estoque Total</div>
     <div class="val" id="hdr-total">— <small>L</small></div>
   </div>
 </header>
-
 <div id="offline-badge">📵 Offline</div>
 
-<!-- ══ MAIN CONTENT ══════════════════════════════════════════════════ -->
 <main id="main">
 
-  <!-- ════ ABA: DASHBOARD ═══════════════════════════════════════════ -->
+  <!-- ════ DASHBOARD ═══════════════════════════════════════════════ -->
   <div id="page-dash" class="page active">
-
-    <!-- Hero total -->
     <div class="dash-hero">
       <div class="dash-hero-left">
         <div class="lbl">⛽ Estoque Total</div>
@@ -338,33 +246,18 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
       </div>
       <button class="btn-launch" onclick="switchTab('abast')">➕ Lançar<br>Abast.</button>
     </div>
-
-    <!-- Mini stats -->
     <div class="dash-grid">
-      <div class="dash-stat">
-        <div class="dsn" id="dash-ntanques">—</div>
-        <div class="dsl">Tanques</div>
-      </div>
-      <div class="dash-stat">
-        <div class="dsn" id="dash-nbombas">—</div>
-        <div class="dsl">Bombas</div>
-      </div>
+      <div class="dash-stat"><div class="dsn" id="dash-ntanques">—</div><div class="dsl">Tanques</div></div>
+      <div class="dash-stat"><div class="dsn" id="dash-nbombas">—</div><div class="dsl">Bombas</div></div>
     </div>
-
-    <!-- Gráfico -->
     <div class="card">
       <div class="card-title">📊 Estoque por Tanque &amp; Bomba</div>
-      <div class="chart-wrap">
-        <canvas id="dash-chart"></canvas>
-      </div>
+      <div class="chart-wrap"><canvas id="dash-chart"></canvas></div>
     </div>
-
-    <!-- Tanques resumo (reutiliza renderPares) -->
     <div class="section-title">Detalhes</div>
     <div id="dash-tanques-container">
       <div class="empty"><span class="ei">📊</span><p>Carregando...</p></div>
     </div>
-
     <!-- Consumo por Equipamento -->
     <div class="card" style="margin-top:4px">
       <div class="card-title">
@@ -378,81 +271,38 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
     <div id="dash-eq-list"></div>
   </div>
 
-  <!-- ════ ABA: ABASTECER ════════════════════════════════════════════ -->
+  <!-- ════ ABASTECER ════════════════════════════════════════════════ -->
   <div id="page-abast" class="page">
-
     <div class="card">
       <div class="card-title">📋 Informações Gerais</div>
       <div class="row2">
-        <div class="field">
-          <label>Data</label>
-          <input type="date" id="f-data">
-        </div>
-        <div class="field">
-          <label>Hora</label>
-          <input type="time" id="f-hora">
-        </div>
+        <div class="field"><label>Data</label><input type="date" id="f-data"></div>
+        <div class="field"><label>Hora</label><input type="time" id="f-hora"></div>
       </div>
-      <div class="field">
-        <label>Operador</label>
-        <select id="f-op">
-          <option value="">Selecione...</option>
-        </select>
-      </div>
-      <div class="field" style="margin-bottom:0">
-        <label>Fazenda</label>
-        <select id="f-faz">
-          <option value="">Selecione...</option>
-        </select>
-      </div>
+      <div class="field"><label>Operador</label><select id="f-op"><option value="">Selecione...</option></select></div>
+      <div class="field" style="margin-bottom:0"><label>Fazenda</label><select id="f-faz"><option value="">Selecione...</option></select></div>
     </div>
-
     <div class="card">
       <div class="card-title">🚜 Equipamento</div>
-      <div class="field">
-        <label>Equipamento</label>
-        <select id="f-eq" onchange="onEquipChange()">
-          <option value="">Selecione...</option>
-        </select>
-      </div>
+      <div class="field"><label>Equipamento</label><select id="f-eq" onchange="onEquipChange()"><option value="">Selecione...</option></select></div>
       <div class="row2">
         <div class="field">
           <label>Horímetro Atual</label>
           <input type="number" id="f-horimEq" placeholder="Ex: 4520.5" step="0.1" oninput="calcLitros()">
           <span class="hint" id="hint-horimEq"></span>
         </div>
-        <div class="field">
-          <label>Horímetro Anterior</label>
-          <input type="number" id="f-horimEqAnt" placeholder="Auto" step="0.1" readonly>
-        </div>
+        <div class="field"><label>Horímetro Anterior</label><input type="number" id="f-horimEqAnt" placeholder="Auto" step="0.1" readonly></div>
       </div>
     </div>
-
     <div class="card">
       <div class="card-title">🛢 Tanque &amp; Bomba</div>
       <div class="row2">
-        <div class="field">
-          <label>Tanque</label>
-          <select id="f-tanque" onchange="onTanqueChange()">
-            <option value="">Selecione...</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Bomba</label>
-          <select id="f-bomba" onchange="onBombaChange()">
-            <option value="">Selecione o tanque primeiro</option>
-          </select>
-        </div>
+        <div class="field"><label>Tanque</label><select id="f-tanque" onchange="onTanqueChange()"><option value="">Selecione...</option></select></div>
+        <div class="field"><label>Bomba</label><select id="f-bomba" onchange="onBombaChange()"><option value="">Selecione o tanque primeiro</option></select></div>
       </div>
       <div class="row2">
-        <div class="field">
-          <label>Horímetro Bomba Ini</label>
-          <input type="number" id="f-horimBombaIni" placeholder="Último reg." step="0.1" oninput="calcLitros()">
-        </div>
-        <div class="field">
-          <label>Horímetro Bomba Fim</label>
-          <input type="number" id="f-horimBombaFin" placeholder="Atual" step="0.1" oninput="calcLitros()">
-        </div>
+        <div class="field"><label>Horímetro Bomba Ini</label><input type="number" id="f-horimBombaIni" placeholder="Último reg." step="0.1" oninput="calcLitros()"></div>
+        <div class="field"><label>Horímetro Bomba Fim</label><input type="number" id="f-horimBombaFin" placeholder="Atual" step="0.1" oninput="calcLitros()"></div>
       </div>
       <div class="litros-box">
         <div class="lb-lbl">⛽ Litros abastecidos</div>
@@ -460,848 +310,535 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
         <div class="lb-sub" id="consumo-display"></div>
       </div>
     </div>
-
     <div class="card">
       <div class="card-title">📝 Observações</div>
-      <div class="field" style="margin-bottom:0">
-        <textarea id="f-obs" placeholder="Opcional..."></textarea>
-      </div>
+      <div class="field" style="margin-bottom:0"><textarea id="f-obs" placeholder="Opcional..."></textarea></div>
     </div>
-
-    <button class="btn-primary" id="btn-salvar" onclick="salvar()">
-      💾 &nbsp;Salvar Abastecimento
-    </button>
+    <button class="btn-primary" id="btn-salvar" onclick="salvar()">💾 &nbsp;Salvar Abastecimento</button>
     <div id="fila-badge" style="text-align:center;font-size:11px;color:var(--muted);margin-top:8px;display:none"></div>
   </div>
 
-  <!-- ════ ABA: ESTOQUE ═════════════════════════════════════════════ -->
+  <!-- ════ ESTOQUE ══════════════════════════════════════════════════ -->
   <div id="page-estoque" class="page">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
       <div class="section-title" style="margin:0">Resumo dos Tanques</div>
       <button class="btn-refresh" onclick="carregarEstoques()">↻ Atualizar</button>
     </div>
-
     <div class="tank-total">
-      <div class="tl-left">
-        <div class="lbl">Estoque Total</div>
-        <p>Todos os tanques</p>
-      </div>
+      <div class="tl-left"><div class="lbl">Estoque Total</div><p>Todos os tanques</p></div>
       <div class="val" id="est-total">— <small>L</small></div>
     </div>
-
-    <div id="tanques-container">
-      <div class="empty"><span class="ei">🛢</span><p>Carregando tanques...</p></div>
-    </div>
-
+    <div id="tanques-container"><div class="empty"><span class="ei">🛢</span><p>Carregando tanques...</p></div></div>
     <div class="card" style="margin-top:16px">
       <div class="card-title">➕ Adicionar Combustível</div>
       <div class="row2">
-        <div class="field">
-          <label>Data</label>
-          <input type="date" id="est-data">
-        </div>
-        <div class="field">
-          <label>Hora</label>
-          <input type="time" id="est-hora">
-        </div>
+        <div class="field"><label>Data</label><input type="date" id="est-data"></div>
+        <div class="field"><label>Hora</label><input type="time" id="est-hora"></div>
       </div>
       <div class="row2">
-        <div class="field">
-          <label>Tanque</label>
-          <select id="est-tanque" onchange="onEstTanqueChange()">
-            <option value="">Selecione...</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Bomba</label>
-          <select id="est-bomba">
-            <option value="">Selecione o tanque</option>
-          </select>
-        </div>
+        <div class="field"><label>Tanque</label><select id="est-tanque" onchange="onEstTanqueChange()"><option value="">Selecione...</option></select></div>
+        <div class="field"><label>Bomba</label><select id="est-bomba"><option value="">Selecione o tanque</option></select></div>
       </div>
-      <div class="field">
-        <label>Litros Recebidos</label>
-        <input type="number" id="est-litros" placeholder="Ex: 1000" step="0.1">
-      </div>
-      <div class="field" style="margin-bottom:0">
-        <label>Observação</label>
-        <input type="text" id="est-obs" placeholder="Nota fiscal, fornecedor...">
-      </div>
-      <button class="btn-green" id="btn-add-est" onclick="addEstoque()">
-        ➕ &nbsp;Adicionar ao Estoque
-      </button>
+      <div class="field"><label>Litros Recebidos</label><input type="number" id="est-litros" placeholder="Ex: 1000" step="0.1"></div>
+      <div class="field" style="margin-bottom:0"><label>Observação</label><input type="text" id="est-obs" placeholder="Nota fiscal, fornecedor..."></div>
+      <button class="btn-green" id="btn-add-est" onclick="addEstoque()">➕ &nbsp;Adicionar ao Estoque</button>
     </div>
   </div>
 
-  <!-- ════ ABA: HISTÓRICO ════════════════════════════════════════════ -->
+  <!-- ════ HISTÓRICO ════════════════════════════════════════════════ -->
   <div id="page-hist" class="page">
     <div class="card">
       <div class="card-title">🔍 Filtrar Registros</div>
-      <div class="field">
-        <label>Equipamento</label>
-        <select id="hist-eq">
-          <option value="">Todos os equipamentos</option>
-        </select>
-      </div>
-      <div class="field" style="margin-bottom:0">
-        <label>Mês</label>
-        <input type="month" id="hist-mes">
-      </div>
-      <button class="btn-primary" style="margin-top:12px" onclick="buscarHistorico()">
-        🔍 &nbsp;Buscar
-      </button>
+      <div class="field"><label>Equipamento</label><select id="hist-eq"><option value="">Todos os equipamentos</option></select></div>
+      <div class="field" style="margin-bottom:0"><label>Mês</label><input type="month" id="hist-mes"></div>
+      <button class="btn-primary" style="margin-top:12px" onclick="buscarHistorico()">🔍 &nbsp;Buscar</button>
     </div>
-
     <div id="hist-stats" style="display:none">
       <div class="stats-grid">
-        <div class="stat-box">
-          <div class="sn" id="hs-litros">—</div>
-          <div class="sl">Litros</div>
-        </div>
-        <div class="stat-box">
-          <div class="sn" id="hs-abast">—</div>
-          <div class="sl">Abast.</div>
-        </div>
-        <div class="stat-box">
-          <div class="sn" id="hs-cons">—</div>
-          <div class="sl">L/h médio</div>
-        </div>
+        <div class="stat-box"><div class="sn" id="hs-litros">—</div><div class="sl">Litros</div></div>
+        <div class="stat-box"><div class="sn" id="hs-abast">—</div><div class="sl">Abast.</div></div>
+        <div class="stat-box"><div class="sn" id="hs-cons">—</div><div class="sl">L/h médio</div></div>
+      </div>
+    </div>
+    <div id="hist-list">
+      <div class="empty"><span class="ei">📋</span><p>Selecione um filtro e clique<br>em Buscar para ver os registros.</p></div>
+    </div>
+  </div>
+
+  <!-- ════ PREVENTIVAS ══════════════════════════════════════════════ -->
+  <div id="page-prev" class="page">
+
+    <!-- Resumo -->
+    <div class="prev-summary">
+      <div class="ps-box red" onclick="filtrarPrev('vencida')">
+        <div class="psn" id="prev-nvencidas">—</div>
+        <div class="psl">Vencidas</div>
+      </div>
+      <div class="ps-box yellow" onclick="filtrarPrev('proxima')">
+        <div class="psn" id="prev-nproximas">—</div>
+        <div class="psl">Próximas</div>
+      </div>
+      <div class="ps-box green" onclick="filtrarPrev('ok')">
+        <div class="psn" id="prev-nok">—</div>
+        <div class="psl">Em dia</div>
       </div>
     </div>
 
-    <div id="hist-list">
-      <div class="empty">
-        <span class="ei">📋</span>
-        <p>Selecione um filtro e clique<br>em Buscar para ver os registros.</p>
-      </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="section-title" style="margin:0" id="prev-filter-label">Todas</div>
+      <button class="btn-refresh" onclick="filtrarPrev(null)">↻ Todas</button>
     </div>
+
+    <div id="prev-list">
+      <div class="empty"><span class="ei">🔧</span><p>Carregando preventivas...</p></div>
+    </div>
+
+    <!-- Formulário registro -->
+    <div class="prev-form-wrap" id="prev-form-wrap" style="display:none">
+      <div class="prev-form-title">🔧 <span id="prev-form-titulo">Registrar Manutenção</span></div>
+      <div class="row2">
+        <div class="field"><label>Data Realizado</label><input type="date" id="pf-data"></div>
+        <div class="field"><label>Hora</label><input type="time" id="pf-hora"></div>
+      </div>
+      <div class="field">
+        <label>Equipamento</label>
+        <select id="pf-eq"><option value="">Selecione...</option></select>
+      </div>
+      <div class="field">
+        <label>Tipo de Revisão</label>
+        <select id="pf-tipo">
+          <option value="">Selecione...</option>
+          <option>Troca de Óleo Motor</option>
+          <option>Troca de Filtro de Óleo</option>
+          <option>Troca de Filtro de Combustível</option>
+          <option>Troca de Filtro de Ar</option>
+          <option>Lubrificação (Graxagem)</option>
+          <option>Troca de Correia</option>
+          <option>Fluido Hidráulico</option>
+          <option>Regulagem de Válvulas</option>
+          <option>Inspeção Geral</option>
+          <option>Revisão Elétrica</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Horímetro Atual</label>
+        <input type="number" id="pf-horim" placeholder="Ex: 4520" step="0.1">
+      </div>
+      <div class="card-title" style="margin:14px 0 10px;font-size:10px">📅 Próxima Revisão</div>
+      <div class="row2">
+        <div class="field"><label>Data</label><input type="date" id="pf-prox-data"></div>
+        <div class="field"><label>Horímetro</label><input type="number" id="pf-prox-horim" placeholder="Ex: 4720" step="1"></div>
+      </div>
+      <div class="field" style="margin-bottom:0"><label>Observações</label><textarea id="pf-obs" placeholder="Peças trocadas, oficina..."></textarea></div>
+      <button class="btn-primary" id="btn-salvar-prev" onclick="salvarPreventiva()" style="margin-top:12px">💾 &nbsp;Salvar Manutenção</button>
+      <button class="btn-outline" onclick="fecharFormPreventiva()" style="margin-top:6px">Cancelar</button>
+    </div>
+
+    <button class="btn-green" onclick="abrirFormPreventiva(null)" style="margin-top:4px">
+      🔧 &nbsp;+ Nova Preventiva
+    </button>
   </div>
 
 </main>
 
-<!-- ══ BOTTOM TABS ══════════════════════════════════════════════════ -->
 <nav id="tabs">
   <button class="tab-btn active" data-page="dash" onclick="switchTab('dash')" style="color:var(--orange)">
-    <span class="ti">📊</span>
-    <span>Dashboard</span>
-    <div class="tab-bar"></div>
+    <span class="ti">📊</span><span>Dashboard</span><div class="tab-bar"></div>
   </button>
   <button class="tab-btn" data-page="abast" onclick="switchTab('abast')">
-    <span class="ti">⛽</span>
-    <span>Abastecer</span>
-    <div class="tab-bar"></div>
+    <span class="ti">⛽</span><span>Abastecer</span><div class="tab-bar"></div>
   </button>
   <button class="tab-btn" data-page="estoque" onclick="switchTab('estoque')">
-    <span class="ti">🛢</span>
-    <span>Estoque</span>
-    <div class="tab-bar"></div>
+    <span class="ti">🛢</span><span>Estoque</span><div class="tab-bar"></div>
   </button>
   <button class="tab-btn" data-page="hist" onclick="switchTab('hist')">
-    <span class="ti">📋</span>
-    <span>Histórico</span>
-    <div class="tab-bar"></div>
+    <span class="ti">📋</span><span>Histórico</span><div class="tab-bar"></div>
+  </button>
+  <button class="tab-btn" data-page="prev" onclick="switchTab('prev')">
+    <span class="ti">🔧</span><span>Preventivas</span><div class="tab-bar"></div>
   </button>
 </nav>
-
 <div id="toast"></div>
 
 <script>
-// ══ CONFIG ═════════════════════════════════════════════════════════
 var URL_GS = 'https://script.google.com/macros/s/AKfycbzRgEKnBUxWZQO6TOg0e2I6VVDWqkqA1_C50g2H_bjh0oDcLAVPYXPAUZT8p9GTebmYRQ/exec';
-var LOW_THRESHOLD = 150; // litros — abaixo disso avisa estoque baixo
+var LOW_THRESHOLD = 150;
+var cadastros={}, saldosTanques={}, offlineQueue=[];
+try{ offlineQueue=JSON.parse(localStorage.getItem('_fila')||'[]'); }catch(e){}
+var isOnline=navigator.onLine;
+var _prevData=[], _prevFiltro=null;
 
-// ══ STATE ══════════════════════════════════════════════════════════
-var cadastros     = {};
-var saldosTanques = {};
-var offlineQueue  = [];
-try { offlineQueue = JSON.parse(localStorage.getItem('_fila') || '[]'); } catch(e){}
-var isOnline = navigator.onLine;
+window.addEventListener('load', function(){
+  initDates(); preencherFiltroMes(); carregarCadastros(); carregarEstoques(); carregarMediaEquip(); atualizarBadgeFila();
+});
+window.addEventListener('online',  function(){ isOnline=true;  document.getElementById('offline-badge').style.display='none'; processarFila(); });
+window.addEventListener('offline', function(){ isOnline=false; document.getElementById('offline-badge').style.display='block'; });
 
-// ══ INIT ═══════════════════════════════════════════════════════════
-window.addEventListener('load', function() {
-  initDates();
-  preencherFiltroMes();
-  carregarCadastros();
-  carregarEstoques();
-  carregarMediaEquip();
-  atualizarBadgeFila();
-});
-window.addEventListener('online',  function() {
-  isOnline = true;
-  document.getElementById('offline-badge').style.display = 'none';
-  processarFila();
-});
-window.addEventListener('offline', function() {
-  isOnline = false;
-  document.getElementById('offline-badge').style.display = 'block';
-});
-
-// ══ DATAS ══════════════════════════════════════════════════════════
-function initDates() {
-  var now = new Date();
-  var ymd = now.toISOString().substring(0,10);
-  var hm  = now.toTimeString().substring(0,5);
-  var ym  = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-  setVal('f-data', ymd);  setVal('f-hora', hm);
-  setVal('est-data',ymd); setVal('est-hora',hm);
-  setVal('hist-mes', ym);
+function initDates(){
+  var now=new Date(), ymd=now.toISOString().substring(0,10), hm=now.toTimeString().substring(0,5);
+  var ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  setVal('f-data',ymd); setVal('f-hora',hm); setVal('est-data',ymd); setVal('est-hora',hm); setVal('hist-mes',ym);
+  setVal('pf-data',ymd); setVal('pf-hora',hm);
 }
-function setVal(id, v){ var e=document.getElementById(id); if(e) e.value=v; }
+function setVal(id,v){ var e=document.getElementById(id); if(e) e.value=v; }
 
-// ══ TABS ═══════════════════════════════════════════════════════════
-function switchTab(page) {
-  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
-  document.querySelectorAll('.tab-btn').forEach(function(b){
-    b.classList.remove('active');
-    b.querySelector('.tab-bar').style.background='transparent';
-  });
+function switchTab(page){
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.querySelector('.tab-bar').style.background='transparent'; });
   document.getElementById('page-'+page).classList.add('active');
-  var btn = document.querySelector('[data-page="'+page+'"]');
-  btn.classList.add('active');
-  btn.querySelector('.tab-bar').style.background='var(--orange)';
-  if (page === 'estoque') carregarEstoques();
-  if (page === 'dash')  { carregarEstoques(); carregarMediaEquip(); }
+  var btn=document.querySelector('[data-page="'+page+'"]');
+  btn.classList.add('active'); btn.querySelector('.tab-bar').style.background='var(--orange)';
+  if(page==='estoque') carregarEstoques();
+  if(page==='dash')   { carregarEstoques(); carregarMediaEquip(); }
+  if(page==='prev')   carregarPreventivas();
 }
 
-// ══ TOAST ══════════════════════════════════════════════════════════
 var _tt;
-function toast(msg, type) {
-  var el = document.getElementById('toast');
-  el.textContent = msg; el.className = 'show '+(type||'');
-  clearTimeout(_tt);
-  _tt = setTimeout(function(){ el.className=''; }, 3800);
-}
+function toast(msg,type){ var el=document.getElementById('toast'); el.textContent=msg; el.className='show '+(type||''); clearTimeout(_tt); _tt=setTimeout(function(){ el.className=''; },3800); }
 
-// ══ FETCH HELPER ═══════════════════════════════════════════════════
-function gs(params) {
-  var qs = Object.keys(params).map(function(k){
-    return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);
-  }).join('&');
+function gs(params){
+  var qs=Object.keys(params).map(function(k){ return encodeURIComponent(k)+'='+encodeURIComponent(params[k]); }).join('&');
   return fetch(URL_GS+'?'+qs+'&_t='+Date.now());
 }
 
-// ══ CADASTROS ══════════════════════════════════════════════════════
-function carregarCadastros() {
-  gs({acao:'cadastros'})
-    .then(function(r){return r.json()})
-    .then(function(d) {
-      cadastros = d;
-      preencherSelect('f-op',    d.operadores  ||[], 'Selecione...');
-      preencherSelect('f-faz',   d.fazendas    ||[], 'Selecione...');
-      preencherSelect('f-eq',    d.equipamentos||[], 'Selecione...');
-      preencherSelect('hist-eq', d.equipamentos||[], 'Todos os equipamentos');
-
-      // Tanques (chaves do mapa tanqueBombas)
-      var tb = d.tanqueBombas || {};
-      var tanques = Object.keys(tb);
-      if (!tanques.length) tanques = ['Tanque Principal'];
-      var stq = document.getElementById('f-tanque');
-      stq.innerHTML = '<option value="">Selecione...</option>';
-      tanques.forEach(function(t){ addOpt(stq, t); });
-
-      // Estoque — tanques também
-      var selEst = document.getElementById('est-tanque');
-      if (selEst) {
-        selEst.innerHTML = '<option value="">Selecione...</option>';
-        tanques.forEach(function(t){ addOpt(selEst, t); });
-      }
-      // est-bomba inicia vazio
-      var selEstB = document.getElementById('est-bomba');
-      if (selEstB) selEstB.innerHTML = '<option value="">Selecione o tanque</option>';
-
-      // Bomba inicia vazia (será preenchida ao selecionar tanque)
-      var sb = document.getElementById('f-bomba');
-      sb.innerHTML = '<option value="">Selecione o tanque primeiro</option>';
-    })
-    .catch(function(){ toast('⚠️ Sem conexão — usando padrões', 'warn'); });
+function carregarCadastros(){
+  gs({acao:'cadastros'}).then(function(r){return r.json();}).then(function(d){
+    cadastros=d;
+    preencherSelect('f-op',    d.operadores  ||[], 'Selecione...');
+    preencherSelect('f-faz',   d.fazendas    ||[], 'Selecione...');
+    preencherSelect('f-eq',    d.equipamentos||[], 'Selecione...');
+    preencherSelect('hist-eq', d.equipamentos||[], 'Todos os equipamentos');
+    preencherSelect('pf-eq',   d.equipamentos||[], 'Selecione...');
+    var tb=d.tanqueBombas||{}, tanques=Object.keys(tb);
+    if(!tanques.length) tanques=['Tanque Principal'];
+    var stq=document.getElementById('f-tanque');
+    stq.innerHTML='<option value="">Selecione...</option>';
+    tanques.forEach(function(t){ addOpt(stq,t); });
+    var selEst=document.getElementById('est-tanque');
+    if(selEst){ selEst.innerHTML='<option value="">Selecione...</option>'; tanques.forEach(function(t){ addOpt(selEst,t); }); }
+    var selEstB=document.getElementById('est-bomba');
+    if(selEstB) selEstB.innerHTML='<option value="">Selecione o tanque</option>';
+    var sb=document.getElementById('f-bomba');
+    sb.innerHTML='<option value="">Selecione o tanque primeiro</option>';
+  }).catch(function(){ toast('⚠️ Sem conexão — usando padrões','warn'); });
 }
 
-function preencherSelect(id, items, ph) {
-  var sel = document.getElementById(id); if(!sel) return;
-  sel.innerHTML = ph ? '<option value="">'+ph+'</option>' : '';
+function preencherSelect(id,items,ph){
+  var sel=document.getElementById(id); if(!sel) return;
+  sel.innerHTML=ph?'<option value="">'+ph+'</option>':'';
   items.forEach(function(v){ addOpt(sel,v); });
 }
-function addOpt(sel, val) {
-  var o = document.createElement('option');
-  o.value = val; o.textContent = val; sel.appendChild(o);
+function addOpt(sel,val){ var o=document.createElement('option'); o.value=val; o.textContent=val; sel.appendChild(o); }
+
+function carregarEstoques(){
+  gs({acao:'estoques'}).then(function(r){return r.json();}).then(function(d){
+    saldosTanques=d.tanques||{};
+    var total=d.total||0, fmt=total.toLocaleString('pt-BR',{minimumFractionDigits:1});
+    document.getElementById('hdr-total').innerHTML=fmt+' <small>L</small>';
+    document.getElementById('est-total').innerHTML=fmt+' <small>L</small>';
+    renderPares(d.pares||{}); renderDashboard(d.pares||{},total);
+  }).catch(function(){ document.getElementById('hdr-total').innerHTML='— <small>L</small>'; });
 }
 
-// ══ ESTOQUE ════════════════════════════════════════════════════════
-function carregarEstoques() {
-  gs({acao:'estoques'})
-    .then(function(r){return r.json()})
-    .then(function(d){
-      saldosTanques = d.tanques||{};
-      var total = d.total||0;
-      var fmt = total.toLocaleString('pt-BR',{minimumFractionDigits:1});
-      document.getElementById('hdr-total').innerHTML = fmt+' <small>L</small>';
-      document.getElementById('est-total').innerHTML = fmt+' <small>L</small>';
-      renderPares(d.pares||{});
-      renderDashboard(d.pares||{}, total);
-    })
-    .catch(function(){
-      document.getElementById('hdr-total').innerHTML = '— <small>L</small>';
-    });
-}
-
-// renderPares — exibe por tanque com sub-linhas por bomba
-function renderPares(pares) {
-  var container = document.getElementById('tanques-container');
-  var tanqKeys  = Object.keys(pares);
-  if (!tanqKeys.length) {
-    container.innerHTML = '<div class="empty"><span class="ei">🛢</span><p>Nenhum registro de estoque.<br>Adicione combustível abaixo.</p></div>';
-    return;
-  }
-  // calcula total por tanque para ordenação
-  var totaisTanque = {};
-  tanqKeys.forEach(function(t){
-    var soma = 0;
-    Object.keys(pares[t]).forEach(function(b){ soma += pares[t][b]; });
-    totaisTanque[t] = parseFloat(soma.toFixed(1));
-  });
+function renderPares(pares){
+  var container=document.getElementById('tanques-container'), tanqKeys=Object.keys(pares);
+  if(!tanqKeys.length){ container.innerHTML='<div class="empty"><span class="ei">🛢</span><p>Nenhum registro de estoque.<br>Adicione combustível abaixo.</p></div>'; return; }
+  var totaisTanque={};
+  tanqKeys.forEach(function(t){ var soma=0; Object.keys(pares[t]).forEach(function(b){ soma+=pares[t][b]; }); totaisTanque[t]=parseFloat(soma.toFixed(1)); });
   tanqKeys.sort(function(a,b){ return totaisTanque[b]-totaisTanque[a]; });
-
-  container.innerHTML = tanqKeys.map(function(tanque){
-    var totalTq = totaisTanque[tanque];
-    var low     = totalTq < LOW_THRESHOLD;
-    var fmtTot  = totalTq.toLocaleString('pt-BR',{minimumFractionDigits:1});
-    var bombas  = Object.keys(pares[tanque]);
-    bombas.sort(function(a,b){ return pares[tanque][b]-pares[tanque][a]; });
-
-    // sub-linhas por bomba
-    var subRows = bombas.map(function(bomba){
-      var v   = pares[tanque][bomba];
-      var lowB= v < LOW_THRESHOLD;
-      var fmt = v.toLocaleString('pt-BR',{minimumFractionDigits:1});
-      var label = bomba || 'Padrão';
-      return '<div class="tc-sub'+(lowB?' warning':'')+'">'+
-        '<div class="tc-sub-left">⛽ '+label+'</div>'+
-        '<div class="tc-sub-right'+(lowB?' warn-n':'')+'">'+fmt+' <small>L</small>'+(lowB?' ⚠️':'')+'</div>'+
-      '</div>';
+  container.innerHTML=tanqKeys.map(function(tanque){
+    var totalTq=totaisTanque[tanque], low=totalTq<LOW_THRESHOLD;
+    var fmtTot=totalTq.toLocaleString('pt-BR',{minimumFractionDigits:1});
+    var bombas=Object.keys(pares[tanque]).sort(function(a,b){ return pares[tanque][b]-pares[tanque][a]; });
+    var subRows=bombas.map(function(bomba){
+      var v=pares[tanque][bomba], lowB=v<LOW_THRESHOLD, fmt=v.toLocaleString('pt-BR',{minimumFractionDigits:1}), label=bomba||'Padrão';
+      return '<div class="tc-sub'+(lowB?' warning':'')+'"><div class="tc-sub-left">⛽ '+label+'</div><div class="tc-sub-right'+(lowB?' warn-n':'')+'">'+fmt+' <small>L</small>'+(lowB?' ⚠️':'')+'</div></div>';
     }).join('');
-
-    return '<div class="tank-card'+(low?' warning':'')+'">'+
-      '<div class="tc-head">'+
-        '<div class="tc-left">'+
-          '<div class="name">🛢 '+tanque+'</div>'+
-          '<div class="sub">Total: '+fmtTot+' L'+(low?' · ⚠️ Nível crítico':'')+'</div>'+
-        '</div>'+
-        '<div class="tc-right">'+
-          '<div class="n'+(low?' warn-n':'')+'">'+fmtTot+'</div>'+
-          '<div class="u">Litros</div>'+
-        '</div>'+
-      '</div>'+
-      subRows+
-    '</div>';
+    return '<div class="tank-card'+(low?' warning':'')+'"><div class="tc-head"><div class="tc-left"><div class="name">🛢 '+tanque+'</div><div class="sub">Total: '+fmtTot+' L'+(low?' · ⚠️ Nível crítico':'')+'</div></div><div class="tc-right"><div class="n'+(low?' warn-n':'')+'">'+fmtTot+'</div><div class="u">Litros</div></div></div>'+subRows+'</div>';
   }).join('');
 }
 
-// mantido para compatibilidade interna
-function renderTanques(tanques) {
-  // converte formato legado { Tanque: saldo } em pares { Tanque: { "": saldo } }
-  var pares = {};
-  Object.keys(tanques).forEach(function(t){ pares[t] = {'': tanques[t]}; });
-  renderPares(pares);
+function onEquipChange(){
+  var eq=document.getElementById('f-eq').value; if(!eq) return;
+  document.getElementById('f-horimEqAnt').value=''; document.getElementById('hint-horimEq').textContent='Buscando...';
+  gs({acao:'buscarHorim',eqCode:eq}).then(function(r){return r.json();}).then(function(d){
+    if(d.horim){ document.getElementById('f-horimEqAnt').value=d.horim; document.getElementById('hint-horimEq').textContent='↳ Último reg.: '+d.horim+'h'; }
+    else{ document.getElementById('hint-horimEq').textContent='Primeiro registro deste equipamento'; }
+  }).catch(function(){ document.getElementById('hint-horimEq').textContent=''; });
 }
 
-// ══ EQUIPAMENTO → busca horímetro anterior ════════════════════════
-function onEquipChange() {
-  var eq = document.getElementById('f-eq').value; if(!eq) return;
-  document.getElementById('f-horimEqAnt').value = '';
-  document.getElementById('hint-horimEq').textContent = 'Buscando...';
-  gs({acao:'buscarHorim', eqCode:eq})
-    .then(function(r){return r.json()})
-    .then(function(d){
-      if (d.horim) {
-        document.getElementById('f-horimEqAnt').value = d.horim;
-        document.getElementById('hint-horimEq').textContent = '↳ Último reg.: '+d.horim+'h';
-      } else {
-        document.getElementById('hint-horimEq').textContent = 'Primeiro registro deste equipamento';
-      }
-    })
-    .catch(function(){ document.getElementById('hint-horimEq').textContent=''; });
+function onTanqueChange(){
+  var tanque=document.getElementById('f-tanque').value, sb=document.getElementById('f-bomba');
+  sb.innerHTML='<option value="">Selecione...</option>';
+  if(!tanque){ sb.innerHTML='<option value="">Selecione o tanque primeiro</option>'; return; }
+  var bombas=((cadastros&&cadastros.tanqueBombas)||{})[tanque]||[];
+  if(bombas.length){ bombas.forEach(function(b){ addOpt(sb,b); }); }
+  else{ sb.innerHTML='<option value="">Sem bombas cadastradas</option>'; }
+  document.getElementById('f-horimBombaIni').value=''; calcLitros();
 }
 
-// ══ TANQUE → filtra bombas ════════════════════════════════════════
-function onTanqueChange() {
-  var tanque = document.getElementById('f-tanque').value;
-  var sb = document.getElementById('f-bomba');
-  sb.innerHTML = '<option value="">Selecione...</option>';
-  if (!tanque) {
-    sb.innerHTML = '<option value="">Selecione o tanque primeiro</option>';
-    return;
-  }
-  var tb = (cadastros && cadastros.tanqueBombas) || {};
-  var bombas = tb[tanque] || [];
-  if (bombas.length) {
-    bombas.forEach(function(b){ addOpt(sb, b); });
-  } else {
-    sb.innerHTML = '<option value="">Sem bombas cadastradas</option>';
-  }
-  // limpa horímetro bomba ao trocar tanque
-  document.getElementById('f-horimBombaIni').value = '';
-  calcLitros();
+function onEstTanqueChange(){
+  var tanque=document.getElementById('est-tanque').value, sb=document.getElementById('est-bomba');
+  if(!tanque){ sb.innerHTML='<option value="">Selecione o tanque</option>'; return; }
+  var bombas=((cadastros&&cadastros.tanqueBombas)||{})[tanque]||[];
+  sb.innerHTML='<option value="">Selecione...</option>';
+  bombas.forEach(function(b){ addOpt(sb,b); });
 }
 
-// ══ ESTOQUE: Tanque → filtra bombas ══════════════════════════════
-function onEstTanqueChange() {
-  var tanque = document.getElementById('est-tanque').value;
-  var sb = document.getElementById('est-bomba');
-  if (!tanque) {
-    sb.innerHTML = '<option value="">Selecione o tanque</option>';
-    return;
-  }
-  var tb = (cadastros && cadastros.tanqueBombas) || {};
-  var bombas = tb[tanque] || [];
-  sb.innerHTML = '<option value="">Selecione...</option>';
-  bombas.forEach(function(b){ addOpt(sb, b); });
+var _reqBombaId=0;
+function onBombaChange(){
+  var bomba=document.getElementById('f-bomba').value; if(!bomba) return;
+  var tanque=document.getElementById('f-tanque').value||'Tanque Principal';
+  var eqCode=document.getElementById('f-eq').value||'';
+  document.getElementById('f-horimBombaIni').value=''; document.getElementById('hint-horimEq').textContent='';
+  var meuReq=++_reqBombaId;
+  gs({acao:'ultimoBomba',bomba:bomba,tanque:tanque,eqCode:eqCode}).then(function(r){return r.json();}).then(function(d){
+    if(meuReq!==_reqBombaId) return;
+    if(d.horimBomba){ document.getElementById('f-horimBombaIni').value=d.horimBomba; calcLitros(); toast('↳ Horímetro ini ('+tanque+' / '+bomba+'): '+d.horimBomba,''); }
+    else{ toast('ℹ️ Sem horímetro anterior para '+bomba,''); }
+  }).catch(function(){});
 }
 
-// ══ BOMBA → busca último horímetro (por tanque + bomba) ═════════
-var _reqBombaId = 0; // previne race condition entre trocas rápidas de bomba
-function onBombaChange() {
-  var bomba  = document.getElementById('f-bomba').value;  if(!bomba) return;
-  var tanque = document.getElementById('f-tanque').value || 'Tanque Principal';
-  var eqCode = document.getElementById('f-eq').value || '';
-  document.getElementById('f-horimBombaIni').value = '';
-  document.getElementById('hint-horimEq').textContent = '';
-  var meuReq = ++_reqBombaId;
-  gs({acao:'ultimoBomba', bomba:bomba, tanque:tanque, eqCode:eqCode})
-    .then(function(r){return r.json()})
-    .then(function(d){
-      if (meuReq !== _reqBombaId) return; // resposta antiga — descarta
-      if (d.horimBomba) {
-        document.getElementById('f-horimBombaIni').value = d.horimBomba;
-        calcLitros();
-        toast('↳ Horímetro ini ('+tanque+' / '+bomba+'): '+d.horimBomba, '');
-      } else {
-        toast('ℹ️ Sem horímetro anterior para '+bomba, '');
-      }
-    })
-    .catch(function(){});
+function calcLitros(){
+  var ini=parseFloat(document.getElementById('f-horimBombaIni').value)||0;
+  var fim=parseFloat(document.getElementById('f-horimBombaFin').value)||0;
+  var litros=fim>ini?parseFloat((fim-ini).toFixed(1)):0;
+  document.getElementById('litros-display').innerHTML=litros.toLocaleString('pt-BR',{minimumFractionDigits:1})+' <small>L</small>';
+  var hEq=parseFloat(document.getElementById('f-horimEq').value)||0;
+  var hEqAnt=parseFloat(document.getElementById('f-horimEqAnt').value)||0;
+  var sub='';
+  if(hEq>hEqAnt&&hEqAnt>0&&litros>0){ var cons=(litros/(hEq-hEqAnt)).toFixed(2); sub='Consumo: '+cons.replace('.',',')+' L/h'; }
+  document.getElementById('consumo-display').textContent=sub; return litros;
 }
 
-// ══ CALC LITROS & CONSUMO ═════════════════════════════════════════
-function calcLitros() {
-  var ini    = parseFloat(document.getElementById('f-horimBombaIni').value)||0;
-  var fim    = parseFloat(document.getElementById('f-horimBombaFin').value)||0;
-  var litros = fim > ini ? parseFloat((fim-ini).toFixed(1)) : 0;
-  var fmtL   = litros.toLocaleString('pt-BR',{minimumFractionDigits:1});
-  document.getElementById('litros-display').innerHTML = fmtL+' <small>L</small>';
-  // consumo
-  var hEq    = parseFloat(document.getElementById('f-horimEq').value)||0;
-  var hEqAnt = parseFloat(document.getElementById('f-horimEqAnt').value)||0;
-  var sub    = '';
-  if (hEq > hEqAnt && hEqAnt > 0 && litros > 0) {
-    var cons = (litros/(hEq-hEqAnt)).toFixed(2);
-    sub = 'Consumo: '+cons.replace('.',',')+' L/h';
-  }
-  document.getElementById('consumo-display').textContent = sub;
-  return litros;
-}
-
-// ══ SALVAR ABASTECIMENTO ══════════════════════════════════════════
-function salvar() {
-  var litros = calcLitros();
-  var reg = {
-    data:          document.getElementById('f-data').value,
-    hora:          document.getElementById('f-hora').value,
-    op:            document.getElementById('f-op').value,
-    faz:           document.getElementById('f-faz').value,
-    eqCode:        document.getElementById('f-eq').value,
-    horimEqIni:    document.getElementById('f-horimEq').value,
-    horimEqAnt:    document.getElementById('f-horimEqAnt').value,
-    bomba:         document.getElementById('f-bomba').value,
-    tanque:        document.getElementById('f-tanque').value||'Tanque Principal',
-    horimBombaIni: document.getElementById('f-horimBombaIni').value,
-    horimBombaFin: document.getElementById('f-horimBombaFin').value,
-    obs:           document.getElementById('f-obs').value,
-    litros:        litros
-  };
-  // validações
-  if (!reg.data||!reg.hora) { toast('⚠️ Informe data e hora','err'); return; }
-  if (!reg.eqCode)           { toast('⚠️ Selecione o equipamento','err'); return; }
-  if (!reg.tanque || reg.tanque === 'Selecione...')
-                             { toast('⚠️ Selecione o tanque','err'); return; }
-  if (!reg.bomba)            { toast('⚠️ Selecione a bomba','err'); return; }
-  if (litros <= 0)           { toast('⚠️ Horímetro fim deve ser maior que ini','err'); return; }
-
-  var btn = document.getElementById('btn-salvar');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spin"></span> Salvando...';
-
-  if (!isOnline) {
-    salvarNaFila(reg);
-    toast('📵 Salvo offline — enviará ao conectar','warn');
+function salvar(){
+  var litros=calcLitros();
+  var reg={data:document.getElementById('f-data').value,hora:document.getElementById('f-hora').value,
+    op:document.getElementById('f-op').value,faz:document.getElementById('f-faz').value,
+    eqCode:document.getElementById('f-eq').value,horimEqIni:document.getElementById('f-horimEq').value,
+    horimEqAnt:document.getElementById('f-horimEqAnt').value,bomba:document.getElementById('f-bomba').value,
+    tanque:document.getElementById('f-tanque').value||'Tanque Principal',
+    horimBombaIni:document.getElementById('f-horimBombaIni').value,
+    horimBombaFin:document.getElementById('f-horimBombaFin').value,
+    obs:document.getElementById('f-obs').value,litros:litros};
+  if(!reg.data||!reg.hora){ toast('⚠️ Informe data e hora','err'); return; }
+  if(!reg.eqCode){ toast('⚠️ Selecione o equipamento','err'); return; }
+  if(!reg.tanque||reg.tanque==='Selecione...'){ toast('⚠️ Selecione o tanque','err'); return; }
+  if(!reg.bomba){ toast('⚠️ Selecione a bomba','err'); return; }
+  if(litros<=0){ toast('⚠️ Horímetro fim deve ser maior que ini','err'); return; }
+  var btn=document.getElementById('btn-salvar'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Salvando...';
+  if(!isOnline){ salvarNaFila(reg); toast('📵 Salvo offline — enviará ao conectar','warn'); btn.disabled=false; btn.innerHTML='💾 &nbsp;Salvar Abastecimento'; limpar(); return; }
+  enviarRegistro(reg,function(ok){
     btn.disabled=false; btn.innerHTML='💾 &nbsp;Salvar Abastecimento';
-    limpar(); return;
-  }
-
-  enviarRegistro(reg, function(ok) {
-    btn.disabled=false; btn.innerHTML='💾 &nbsp;Salvar Abastecimento';
-    if (ok) {
-      toast('✅ Abastecimento registrado!','ok');
-      carregarEstoques();
-      setTimeout(limpar, 1200);
-    } else {
-      salvarNaFila(reg);
-      toast('⚠️ Erro de rede — salvo offline','warn');
-      limpar();
-    }
+    if(ok){ toast('✅ Abastecimento registrado!','ok'); carregarEstoques(); setTimeout(limpar,1200); }
+    else{ salvarNaFila(reg); toast('⚠️ Erro de rede — salvo offline','warn'); limpar(); }
   });
 }
-
-function enviarRegistro(reg, cb) {
-  var params = {};
-  Object.keys(reg).forEach(function(k){ if(k!=='litros') params[k]=reg[k]; });
-  gs(params)
-    .then(function(r){return r.text()})
-    .then(function(t){ cb(t.trim()==='OK'); })
-    .catch(function(){ cb(false); });
+function enviarRegistro(reg,cb){
+  var params={}; Object.keys(reg).forEach(function(k){ if(k!=='litros') params[k]=reg[k]; });
+  gs(params).then(function(r){return r.text();}).then(function(t){ cb(t.trim()==='OK'); }).catch(function(){ cb(false); });
 }
-
-function salvarNaFila(reg) {
-  offlineQueue.push(reg);
-  try{ localStorage.setItem('_fila', JSON.stringify(offlineQueue)); }catch(e){}
-  atualizarBadgeFila();
-}
-
-function processarFila() {
-  if (!isOnline||!offlineQueue.length) return;
-  var reg = offlineQueue[0];
-  enviarRegistro(reg, function(ok){
-    if (ok) {
-      offlineQueue.shift();
-      try{ localStorage.setItem('_fila', JSON.stringify(offlineQueue)); }catch(e){}
-      atualizarBadgeFila();
-      toast('✅ Registro offline enviado ('+offlineQueue.length+' restantes)','ok');
-      carregarEstoques();
-      if (offlineQueue.length) setTimeout(processarFila, 800);
-    }
+function salvarNaFila(reg){ offlineQueue.push(reg); try{ localStorage.setItem('_fila',JSON.stringify(offlineQueue)); }catch(e){} atualizarBadgeFila(); }
+function processarFila(){
+  if(!isOnline||!offlineQueue.length) return;
+  var reg=offlineQueue[0];
+  enviarRegistro(reg,function(ok){
+    if(ok){ offlineQueue.shift(); try{ localStorage.setItem('_fila',JSON.stringify(offlineQueue)); }catch(e){} atualizarBadgeFila(); toast('✅ Registro offline enviado ('+offlineQueue.length+' restantes)','ok'); carregarEstoques(); if(offlineQueue.length) setTimeout(processarFila,800); }
   });
 }
-
-function atualizarBadgeFila() {
-  var badge = document.getElementById('fila-badge');
-  if (offlineQueue.length > 0) {
-    badge.style.display='block';
-    badge.textContent = '📵 '+offlineQueue.length+' registro(s) na fila offline';
-  } else {
-    badge.style.display='none';
-  }
+function atualizarBadgeFila(){
+  var badge=document.getElementById('fila-badge');
+  if(offlineQueue.length>0){ badge.style.display='block'; badge.textContent='📵 '+offlineQueue.length+' registro(s) na fila offline'; }
+  else badge.style.display='none';
 }
-
-function limpar() {
-  initDates();
-  ['f-op','f-faz','f-eq','f-tanque','f-bomba'].forEach(function(id){setVal(id,'')});
-  document.getElementById('f-bomba').innerHTML = '<option value="">Selecione o tanque primeiro</option>';
-  ['f-horimEq','f-horimEqAnt','f-horimBombaIni','f-horimBombaFin','f-obs'].forEach(function(id){setVal(id,'')});
+function limpar(){
+  initDates(); ['f-op','f-faz','f-eq','f-tanque','f-bomba'].forEach(function(id){ setVal(id,''); });
+  document.getElementById('f-bomba').innerHTML='<option value="">Selecione o tanque primeiro</option>';
+  ['f-horimEq','f-horimEqAnt','f-horimBombaIni','f-horimBombaFin','f-obs'].forEach(function(id){ setVal(id,''); });
   document.getElementById('hint-horimEq').textContent='';
   document.getElementById('litros-display').innerHTML='0 <small>L</small>';
   document.getElementById('consumo-display').textContent='';
 }
 
-// ══ ADICIONAR ESTOQUE ═════════════════════════════════════════════
-function addEstoque() {
-  var litros = parseFloat(document.getElementById('est-litros').value)||0;
-  if (litros<=0){ toast('⚠️ Informe os litros','err'); return; }
-  var btn = document.getElementById('btn-add-est');
-  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Salvando...';
-  var tanqueEst = document.getElementById('est-tanque').value||'Tanque Principal';
-  var bombaEst  = document.getElementById('est-bomba').value||'';
-  if (!bombaEst) { toast('⚠️ Selecione a bomba','err'); btn.disabled=false; btn.innerHTML='➕ &nbsp;Adicionar ao Estoque'; return; }
-  gs({
-    acao:   'addEstoque',
-    data:   document.getElementById('est-data').value,
-    hora:   document.getElementById('est-hora').value,
-    litros: litros,
-    tanque: tanqueEst,
-    bomba:  bombaEst,
-    obs:    document.getElementById('est-obs').value
-  })
-    .then(function(r){return r.json()})
-    .then(function(d){
+function addEstoque(){
+  var litros=parseFloat(document.getElementById('est-litros').value)||0;
+  if(litros<=0){ toast('⚠️ Informe os litros','err'); return; }
+  var btn=document.getElementById('btn-add-est'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Salvando...';
+  var tanqueEst=document.getElementById('est-tanque').value||'Tanque Principal';
+  var bombaEst=document.getElementById('est-bomba').value||'';
+  if(!bombaEst){ toast('⚠️ Selecione a bomba','err'); btn.disabled=false; btn.innerHTML='➕ &nbsp;Adicionar ao Estoque'; return; }
+  gs({acao:'addEstoque',data:document.getElementById('est-data').value,hora:document.getElementById('est-hora').value,litros:litros,tanque:tanqueEst,bomba:bombaEst,obs:document.getElementById('est-obs').value})
+    .then(function(r){return r.json();}).then(function(d){
       btn.disabled=false; btn.innerHTML='➕ &nbsp;Adicionar ao Estoque';
-      var fmt = (d.saldo||0).toLocaleString('pt-BR',{minimumFractionDigits:1});
-      toast('✅ Estoque atualizado! Saldo: '+fmt+' L','ok');
-      setVal('est-litros',''); setVal('est-obs','');
-      carregarEstoques();
-    })
-    .catch(function(){
-      btn.disabled=false; btn.innerHTML='➕ &nbsp;Adicionar ao Estoque';
-      toast('⚠️ Erro ao adicionar ao estoque','err');
-    });
+      toast('✅ Estoque atualizado! Saldo: '+(d.saldo||0).toLocaleString('pt-BR',{minimumFractionDigits:1})+' L','ok');
+      setVal('est-litros',''); setVal('est-obs',''); carregarEstoques();
+    }).catch(function(){ btn.disabled=false; btn.innerHTML='➕ &nbsp;Adicionar ao Estoque'; toast('⚠️ Erro ao adicionar ao estoque','err'); });
 }
 
 // ══ DASHBOARD ════════════════════════════════════════════════════
-var _dashChart = null;
-
-function renderDashboard(pares, total) {
-  // Hero total
-  var fmt = (total||0).toLocaleString('pt-BR',{minimumFractionDigits:1});
-  var dashTot = document.getElementById('dash-total');
-  if (dashTot) dashTot.innerHTML = fmt+' <small>L</small>';
-
-  // Mini stats
-  var tanqKeys = Object.keys(pares);
-  var nTanques = tanqKeys.length;
-  var nBombas  = 0;
-  tanqKeys.forEach(function(t){ nBombas += Object.keys(pares[t]).length; });
-  var elNT = document.getElementById('dash-ntanques');
-  var elNB = document.getElementById('dash-nbombas');
-  if (elNT) elNT.textContent = nTanques;
-  if (elNB) elNB.textContent = nBombas;
-
-  // Detalhes (mesmo renderPares mas container diferente)
-  var cDash = document.getElementById('dash-tanques-container');
-  if (cDash) {
-    var prevContainer = document.getElementById('tanques-container');
-    cDash.innerHTML = prevContainer ? prevContainer.innerHTML : '';
-  }
-
-  // Gráfico
-  if (!tanqKeys.length) return;
-
-  // Monta labels e datasets
-  var labels   = [];
-  var datasets = [];
-  var allBombas = [];
-
-  // Coleta todas as bombas únicas
-  tanqKeys.forEach(function(t){
-    Object.keys(pares[t]).forEach(function(b){
-      var bLabel = b || 'Padrão';
-      if (allBombas.indexOf(bLabel) === -1) allBombas.push(bLabel);
-    });
+var _dashChart=null;
+function renderDashboard(pares,total){
+  var fmt=(total||0).toLocaleString('pt-BR',{minimumFractionDigits:1});
+  var dashTot=document.getElementById('dash-total'); if(dashTot) dashTot.innerHTML=fmt+' <small>L</small>';
+  var tanqKeys=Object.keys(pares), nTanques=tanqKeys.length, nBombas=0;
+  tanqKeys.forEach(function(t){ nBombas+=Object.keys(pares[t]).length; });
+  var elNT=document.getElementById('dash-ntanques'), elNB=document.getElementById('dash-nbombas');
+  if(elNT) elNT.textContent=nTanques; if(elNB) elNB.textContent=nBombas;
+  var cDash=document.getElementById('dash-tanques-container'), prevContainer=document.getElementById('tanques-container');
+  if(cDash) cDash.innerHTML=prevContainer?prevContainer.innerHTML:'';
+  if(!tanqKeys.length) return;
+  var labels=tanqKeys, allBombas=[];
+  tanqKeys.forEach(function(t){ Object.keys(pares[t]).forEach(function(b){ var bl=b||'Padrão'; if(allBombas.indexOf(bl)===-1) allBombas.push(bl); }); });
+  var palette=['#f97316','#0ea5e9','#16a34a','#8b5cf6','#ec4899','#f59e0b'];
+  var datasets=allBombas.map(function(bomba,idx){
+    return {label:bomba,data:tanqKeys.map(function(t){ var key=bomba==='Padrão'?'':bomba; return pares[t]&&pares[t][key]!==undefined?pares[t][key]:(pares[t]&&pares[t][bomba]!==undefined?pares[t][bomba]:0); }),backgroundColor:palette[idx%palette.length],borderRadius:6,borderSkipped:false};
   });
-
-  // Labels = tanques
-  labels = tanqKeys;
-
-  // Paleta de cores
-  var palette = ['#f97316','#0ea5e9','#16a34a','#8b5cf6','#ec4899','#f59e0b','#06b6d4','#84cc16'];
-
-  allBombas.forEach(function(bomba, idx) {
-    var data = tanqKeys.map(function(t){
-      var key = bomba === 'Padrão' ? '' : bomba;
-      return (pares[t] && pares[t][key] !== undefined) ? pares[t][key] :
-             (pares[t] && pares[t][bomba] !== undefined) ? pares[t][bomba] : 0;
-    });
-    datasets.push({
-      label: bomba,
-      data: data,
-      backgroundColor: palette[idx % palette.length],
-      borderRadius: 6,
-      borderSkipped: false,
-    });
-  });
-
-  var canvas = document.getElementById('dash-chart');
-  if (!canvas) return;
-  if (_dashChart) { _dashChart.destroy(); _dashChart = null; }
-
-  _dashChart = new Chart(canvas, {
-    type: 'bar',
-    data: { labels: labels, datasets: datasets },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: { font:{size:11}, padding:10, boxWidth:12 }
-        },
-        tooltip: {
-          callbacks: {
-            label: function(ctx) {
-              return ' '+ctx.dataset.label+': '+
-                ctx.parsed.y.toLocaleString('pt-BR',{minimumFractionDigits:1})+' L';
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          stacked: false,
-          grid: { display:false },
-          ticks: { font:{size:11}, maxRotation:0 }
-        },
-        y: {
-          stacked: false,
-          beginAtZero: true,
-          grid: { color:'rgba(0,0,0,.06)' },
-          ticks: {
-            font:{size:10},
-            callback: function(v){ return v.toLocaleString('pt-BR'); }
-          }
-        }
-      }
-    }
-  });
+  var canvas=document.getElementById('dash-chart'); if(!canvas) return;
+  if(_dashChart){ _dashChart.destroy(); _dashChart=null; }
+  _dashChart=new Chart(canvas,{type:'bar',data:{labels:labels,datasets:datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:10,boxWidth:12}},tooltip:{callbacks:{label:function(ctx){ return ' '+ctx.dataset.label+': '+ctx.parsed.y.toLocaleString('pt-BR',{minimumFractionDigits:1})+' L'; }}}},scales:{x:{stacked:false,grid:{display:false},ticks:{font:{size:11},maxRotation:0}},y:{beginAtZero:true,grid:{color:'rgba(0,0,0,.06)'},ticks:{font:{size:10},callback:function(v){ return v.toLocaleString('pt-BR'); }}}}}});
 }
 
-// ══ FILTRO DE MÊS (dashboard) ════════════════════════════════════
-function preencherFiltroMes() {
-  var sel = document.getElementById('dash-mes-filter');
-  if (!sel) return;
-  var agora = new Date();
-  var opts = ['<option value="">Todo período</option>'];
-  for (var m = 0; m < 12; m++) {
-    var d  = new Date(agora.getFullYear(), agora.getMonth() - m, 1);
-    var yy = d.getFullYear();
-    var mm = String(d.getMonth()+1).padStart(2,'0');
-    var ym = yy+'-'+mm;
-    var lb = d.toLocaleDateString('pt-BR',{month:'short',year:'numeric'});
+// ══ FILTRO MÊS ════════════════════════════════════════════════════
+function preencherFiltroMes(){
+  var sel=document.getElementById('dash-mes-filter'); if(!sel) return;
+  var agora=new Date(), opts=['<option value="">Todo período</option>'];
+  for(var m=0;m<12;m++){
+    var d=new Date(agora.getFullYear(),agora.getMonth()-m,1);
+    var yy=d.getFullYear(), mm=String(d.getMonth()+1).padStart(2,'0'), ym=yy+'-'+mm;
+    var lb=d.toLocaleDateString('pt-BR',{month:'short',year:'numeric'});
     opts.push('<option value="'+ym+'"'+(m===0?' selected':'')+'>'+lb+'</option>');
   }
-  sel.innerHTML = opts.join('');
+  sel.innerHTML=opts.join('');
 }
 
 // ══ MÉDIA POR EQUIPAMENTO ════════════════════════════════════════
-var _dashEqChart = null;
-
-function carregarMediaEquip() {
-  var sel = document.getElementById('dash-mes-filter');
-  var mes = sel ? sel.value : '';
-  var params = { acao:'dashAbast' };
-  if (mes) params.mes = mes;
-  gs(params)
-    .then(function(r){ return r.json(); })
-    .then(function(d){ renderMediaEquip(d.porEquip||{}); })
-    .catch(function(){});
+var _dashEqChart=null;
+function carregarMediaEquip(){
+  var sel=document.getElementById('dash-mes-filter'), mes=sel?sel.value:'';
+  var params={acao:'dashAbast'}; if(mes) params.mes=mes;
+  gs(params).then(function(r){return r.json();}).then(function(d){ renderMediaEquip(d.porEquip||{}); }).catch(function(){});
 }
-
-function renderMediaEquip(porEquip) {
-  var equips = Object.keys(porEquip);
-  equips.sort(function(a,b){
-    return parseFloat(porEquip[b].litros) - parseFloat(porEquip[a].litros);
-  });
-
-  // Gráfico horizontal L/h médio
-  var equipsC = equips.filter(function(e){ return parseFloat(porEquip[e].consumoMedio)>0; });
-  var canvas  = document.getElementById('dash-eq-chart');
-  var wrap    = document.getElementById('dash-eq-chart-wrap');
-  if (canvas && wrap) {
-    var h = equipsC.length ? Math.max(120, equipsC.length*48+50) : 50;
-    wrap.style.height = h+'px';
-    if (_dashEqChart) { _dashEqChart.destroy(); _dashEqChart=null; }
-    if (equipsC.length) {
-      _dashEqChart = new Chart(canvas, {
-        type: 'bar',
-        data: {
-          labels: equipsC,
-          datasets: [{
-            label: 'L/h médio',
-            data: equipsC.map(function(e){ return parseFloat(porEquip[e].consumoMedio)||0; }),
-            backgroundColor: '#0ea5e9',
-            borderRadius: 6,
-            borderSkipped: false
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display:false },
-            tooltip: {
-              callbacks: {
-                label: function(ctx){
-                  return ' '+ctx.parsed.x.toFixed(2).replace('.',',')+' L/h';
-                }
-              }
-            }
-          },
-          scales: {
-            x: {
-              beginAtZero: true,
-              grid: { color:'rgba(0,0,0,.06)' },
-              ticks: { font:{size:10}, callback:function(v){ return v.toFixed(1).replace('.',','); } }
-            },
-            y: { grid:{display:false}, ticks:{font:{size:11}} }
-          }
-        }
-      });
+function renderMediaEquip(porEquip){
+  var equips=Object.keys(porEquip);
+  equips.sort(function(a,b){ return parseFloat(porEquip[b].litros)-parseFloat(porEquip[a].litros); });
+  var equipsC=equips.filter(function(e){ return parseFloat(porEquip[e].consumoMedio)>0; });
+  var canvas=document.getElementById('dash-eq-chart'), wrap=document.getElementById('dash-eq-chart-wrap');
+  if(canvas&&wrap){
+    var h=equipsC.length?Math.max(120,equipsC.length*48+50):50; wrap.style.height=h+'px';
+    if(_dashEqChart){ _dashEqChart.destroy(); _dashEqChart=null; }
+    if(equipsC.length){
+      _dashEqChart=new Chart(canvas,{type:'bar',data:{labels:equipsC,datasets:[{label:'L/h médio',data:equipsC.map(function(e){ return parseFloat(porEquip[e].consumoMedio)||0; }),backgroundColor:'#0ea5e9',borderRadius:6,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){ return ' '+ctx.parsed.x.toFixed(2).replace('.',',')+' L/h'; }}}},scales:{x:{beginAtZero:true,grid:{color:'rgba(0,0,0,.06)'},ticks:{font:{size:10},callback:function(v){ return v.toFixed(1).replace('.',','); }}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
     }
   }
-
-  // Ranking list
-  var list = document.getElementById('dash-eq-list');
-  if (!list) return;
-  if (!equips.length) {
-    list.innerHTML = '<div class="empty" style="padding:18px 20px"><p>Sem dados no período</p></div>';
-    return;
-  }
-  var rankCls = ['gold','silver','bronze'];
-  list.innerHTML = equips.map(function(eq, i){
-    var d    = porEquip[eq];
-    var fmtL = (parseFloat(d.litros)||0).toLocaleString('pt-BR',{minimumFractionDigits:1});
-    var cons = parseFloat(d.consumoMedio)||0;
-    var consTxt = cons > 0 ? cons.toFixed(2).replace('.',',') : null;
-    var cnt  = d.abast || '—';
-    return '<div class="eq-stat-card">'+
-      '<div class="eq-rank '+(rankCls[i]||'')+'">'+( i+1 )+'</div>'+
-      '<div class="eq-info">'+
-        '<div class="en">'+eq+'</div>'+
-        '<div class="es">'+cnt+' abastecimento'+(cnt!==1?'s':'')+'</div>'+
-      '</div>'+
-      (consTxt?'<div class="eq-cons">⚡ '+consTxt+' L/h</div>':'')+
-      '<div class="eq-nums"><div class="evl">'+fmtL+'</div><div class="evu">Litros</div></div>'+
-    '</div>';
+  var list=document.getElementById('dash-eq-list'); if(!list) return;
+  if(!equips.length){ list.innerHTML='<div class="empty" style="padding:18px 20px"><p>Sem dados no período</p></div>'; return; }
+  var rankCls=['gold','silver','bronze'];
+  list.innerHTML=equips.map(function(eq,i){
+    var d=porEquip[eq], fmtL=(parseFloat(d.litros)||0).toLocaleString('pt-BR',{minimumFractionDigits:1});
+    var cons=parseFloat(d.consumoMedio)||0, consTxt=cons>0?cons.toFixed(2).replace('.',','):null, cnt=d.abast||'—';
+    return '<div class="eq-stat-card"><div class="eq-rank '+(rankCls[i]||'')+'">'+( i+1 )+'</div><div class="eq-info"><div class="en">'+eq+'</div><div class="es">'+cnt+' abastecimento'+(cnt!==1?'s':'')+'</div></div>'+(consTxt?'<div class="eq-cons">⚡ '+consTxt+' L/h</div>':'')+' <div class="eq-nums"><div class="evl">'+fmtL+'</div><div class="evu">Litros</div></div></div>';
   }).join('');
 }
 
 // ══ HISTÓRICO ═════════════════════════════════════════════════════
-function buscarHistorico() {
-  var eq  = document.getElementById('hist-eq').value;
-  var mes = document.getElementById('hist-mes').value;
-  var params = {acao:'historico'};
-  if (eq)  params.eqCode = eq;
-  if (mes) params.mes    = mes;
-
-  document.getElementById('hist-list').innerHTML =
-    '<div class="empty"><span class="ei">⏳</span><p>Buscando registros...</p></div>';
+function buscarHistorico(){
+  var eq=document.getElementById('hist-eq').value, mes=document.getElementById('hist-mes').value;
+  var params={acao:'historico'}; if(eq) params.eqCode=eq; if(mes) params.mes=mes;
+  document.getElementById('hist-list').innerHTML='<div class="empty"><span class="ei">⏳</span><p>Buscando registros...</p></div>';
   document.getElementById('hist-stats').style.display='none';
+  gs(params).then(function(r){return r.json();}).then(function(d){
+    var tl=parseFloat(d.totalLitros)||0;
+    document.getElementById('hs-litros').textContent=tl.toLocaleString('pt-BR',{minimumFractionDigits:1});
+    document.getElementById('hs-abast').textContent=d.totalAbast||0;
+    document.getElementById('hs-cons').textContent=d.consumoMedio||'—';
+    document.getElementById('hist-stats').style.display='block';
+    if(!d.registros||!d.registros.length){ document.getElementById('hist-list').innerHTML='<div class="empty"><span class="ei">🔍</span><p>Nenhum registro encontrado<br>para este filtro.</p></div>'; return; }
+    document.getElementById('hist-list').innerHTML=d.registros.map(function(r){
+      var litros=parseFloat(r.litros)||0, fmtL=litros.toLocaleString('pt-BR',{minimumFractionDigits:1});
+      return '<div class="hist-item"><div class="hi-row"><div><div class="hi-date">'+r.data+(r.hora?' &nbsp;'+r.hora:'')+'</div><div class="hi-eq">'+r.eqCode+(r.fazenda?' · '+r.fazenda:'')+'</div></div><div class="hi-litros">'+fmtL+'<small> L</small></div></div><div class="hi-tags">'+(r.tanque?'<span class="tag blue">🛢 '+r.tanque+'</span>':'')+(r.bomba?'<span class="tag orange">'+r.bomba+'</span>':'')+(r.consumo?'<span class="tag green">'+r.consumo+' L/h</span>':'')+(r.op?'<span class="tag purple">'+r.op+'</span>':'')+'</div>'+(r.obs?'<div style="font-size:11px;color:var(--muted);margin-top:5px;font-style:italic">'+r.obs+'</div>':'')+'</div>';
+    }).join('');
+  }).catch(function(){ document.getElementById('hist-list').innerHTML='<div class="empty"><span class="ei">⚠️</span><p>Erro ao buscar histórico.<br>Verifique a conexão.</p></div>'; });
+}
 
-  gs(params)
-    .then(function(r){return r.json()})
-    .then(function(d){
-      var tl = parseFloat(d.totalLitros)||0;
-      document.getElementById('hs-litros').textContent = tl.toLocaleString('pt-BR',{minimumFractionDigits:1});
-      document.getElementById('hs-abast').textContent  = d.totalAbast||0;
-      document.getElementById('hs-cons').textContent   = d.consumoMedio||'—';
-      document.getElementById('hist-stats').style.display='block';
+// ══ PREVENTIVAS ═══════════════════════════════════════════════════
+function carregarPreventivas(){
+  document.getElementById('prev-list').innerHTML='<div class="empty"><span class="ei">⏳</span><p>Carregando...</p></div>';
+  gs({acao:'preventivas'}).then(function(r){return r.json();}).then(function(d){
+    _prevData=d.itens||[];
+    document.getElementById('prev-nvencidas').textContent=d.vencidas||0;
+    document.getElementById('prev-nproximas').textContent=d.proximas||0;
+    document.getElementById('prev-nok').textContent=(d.total||0)-(d.vencidas||0)-(d.proximas||0);
+    renderPreventivas(_prevFiltro);
+  }).catch(function(){ document.getElementById('prev-list').innerHTML='<div class="empty"><span class="ei">⚠️</span><p>Erro ao carregar preventivas.</p></div>'; });
+}
 
-      if (!d.registros||!d.registros.length) {
-        document.getElementById('hist-list').innerHTML =
-          '<div class="empty"><span class="ei">🔍</span><p>Nenhum registro encontrado<br>para este filtro.</p></div>';
-        return;
-      }
-      document.getElementById('hist-list').innerHTML = d.registros.map(function(r){
-        var litros = parseFloat(r.litros)||0;
-        var fmtL = litros.toLocaleString('pt-BR',{minimumFractionDigits:1});
-        return '<div class="hist-item">'+
-          '<div class="hi-row">'+
-            '<div>'+
-              '<div class="hi-date">'+r.data+(r.hora?' &nbsp;'+r.hora:'')+'</div>'+
-              '<div class="hi-eq">'+r.eqCode+(r.fazenda?' · '+r.fazenda:'')+'</div>'+
-            '</div>'+
-            '<div class="hi-litros">'+fmtL+'<small> L</small></div>'+
-          '</div>'+
-          '<div class="hi-tags">'+
-            (r.tanque  ?'<span class="tag blue">🛢 '+r.tanque+'</span>':'') +
-            (r.bomba   ?'<span class="tag orange">'+r.bomba+'</span>':'') +
-            (r.consumo ?'<span class="tag green">'+r.consumo+' L/h</span>':'') +
-            (r.op      ?'<span class="tag purple">'+r.op+'</span>':'') +
-          '</div>'+
-          (r.obs?'<div style="font-size:11px;color:var(--muted);margin-top:5px;font-style:italic">'+r.obs+'</div>':'')+
-        '</div>';
-      }).join('');
-    })
-    .catch(function(){
-      document.getElementById('hist-list').innerHTML =
-        '<div class="empty"><span class="ei">⚠️</span><p>Erro ao buscar histórico.<br>Verifique a conexão.</p></div>';
-    });
+function filtrarPrev(status){
+  _prevFiltro=status;
+  var labels={vencida:'🔴 Vencidas',proxima:'⚠️ Próximas (7 dias)',ok:'✅ Em dia',null:'Todas'};
+  document.getElementById('prev-filter-label').textContent=labels[status]||'Todas';
+  renderPreventivas(status);
+}
+
+function renderPreventivas(filtro){
+  var list=document.getElementById('prev-list');
+  var itens=filtro?_prevData.filter(function(i){ return i.status===filtro; }):_prevData;
+  if(!itens.length){
+    list.innerHTML='<div class="empty"><span class="ei">🔧</span><p>'+(filtro?'Nenhuma preventiva nesta categoria.':'Nenhuma preventiva cadastrada.<br>Clique em + Nova Preventiva para começar.')+'</p></div>'; return;
+  }
+  var badges={vencida:'🔴 VENCIDA',proxima:'⚠️ PRÓXIMA',ok:'✅ EM DIA'};
+  list.innerHTML=itens.map(function(it){
+    var badge='<span class="prev-badge '+it.status+'">'+badges[it.status]+'</span>';
+    var detalhe='';
+    if(it.status==='vencida'&&it.diasRestantes!==null) detalhe=' · há '+Math.abs(it.diasRestantes)+' dia(s)';
+    else if(it.status==='proxima'&&it.diasRestantes!==null) detalhe=' · em '+it.diasRestantes+' dia(s)';
+    var meta='';
+    if(it.data) meta+='<div>Último: <span>'+it.data+(it.horim?' · Hm '+it.horim+'h':'')+'</span></div>';
+    if(it.proxData) meta+='<div>Próxima: <span>'+it.proxData+detalhe+'</span></div>';
+    if(it.proxHorim) meta+='<div>Próximo Hm: <span>'+it.proxHorim+'h'+(it.horimAtual?' (atual '+it.horimAtual+'h)':'')+(it.horimRestantes!==null?' · faltam '+it.horimRestantes+'h':'')+'</span></div>';
+    if(it.obs) meta+='<div>Obs: <span>'+it.obs+'</span></div>';
+    return '<div class="prev-item '+it.status+'">'+badge+
+      '<div class="prev-eq">'+it.eq+'</div>'+
+      '<div class="prev-tipo">'+it.tipo+'</div>'+
+      '<div class="prev-meta">'+meta+'</div>'+
+      '<button class="btn-reg" onclick="abrirFormPreventiva('+JSON.stringify(it)+')">✏️ Registrar</button>'+
+      '</div>';
+  }).join('');
+}
+
+function abrirFormPreventiva(item){
+  var wrap=document.getElementById('prev-form-wrap'); wrap.style.display='block';
+  document.getElementById('prev-form-titulo').textContent=item?'Registrar: '+item.tipo:'Nova Preventiva';
+  if(item){
+    setVal('pf-eq',item.eq); setVal('pf-tipo',item.tipo);
+    if(item.horimAtual) setVal('pf-horim',item.horimAtual);
+  }
+  wrap.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function fecharFormPreventiva(){
+  document.getElementById('prev-form-wrap').style.display='none';
+  ['pf-eq','pf-tipo','pf-horim','pf-prox-data','pf-prox-horim','pf-obs'].forEach(function(id){ setVal(id,''); });
+}
+
+function salvarPreventiva(){
+  var eq=document.getElementById('pf-eq').value;
+  var tipo=document.getElementById('pf-tipo').value;
+  if(!eq){ toast('⚠️ Selecione o equipamento','err'); return; }
+  if(!tipo){ toast('⚠️ Selecione o tipo de revisão','err'); return; }
+  var btn=document.getElementById('btn-salvar-prev'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Salvando...';
+  gs({acao:'salvarPreventiva',
+    data:  document.getElementById('pf-data').value,
+    hora:  document.getElementById('pf-hora').value,
+    eq:    eq, tipo: tipo,
+    horim: document.getElementById('pf-horim').value,
+    proxData:  document.getElementById('pf-prox-data').value,
+    proxHorim: document.getElementById('pf-prox-horim').value,
+    obs:   document.getElementById('pf-obs').value
+  }).then(function(r){return r.json();}).then(function(d){
+    btn.disabled=false; btn.innerHTML='💾 &nbsp;Salvar Manutenção';
+    if(d.ok){ toast('✅ Preventiva registrada!','ok'); fecharFormPreventiva(); carregarPreventivas(); }
+    else     { toast('⚠️ Erro ao salvar','err'); }
+  }).catch(function(){ btn.disabled=false; btn.innerHTML='💾 &nbsp;Salvar Manutenção'; toast('⚠️ Erro de conexão','err'); });
 }
 </script>
 </body>
