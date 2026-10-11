@@ -186,7 +186,7 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
   font-weight:normal;text-transform:none;letter-spacing:0}
 /* PREVENTIVAS */
 .prev-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
-.ps-box{border-radius:11px;padding:11px 8px;text-align:center;box-shadow:0 1px 5px rgba(0,0,0,.07)}
+.ps-box{border-radius:11px;padding:11px 8px;text-align:center;box-shadow:0 1px 5px rgba(0,0,0,.07);cursor:pointer}
 .ps-box.red   {background:linear-gradient(135deg,#fef2f2,#fee2e2);border:1px solid #fca5a5}
 .ps-box.yellow{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid #fcd34d}
 .ps-box.green {background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac}
@@ -195,29 +195,23 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 .ps-box.yellow .psn{color:#d97706}
 .ps-box.green  .psn{color:#16a34a}
 .ps-box .psl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-top:2px}
-.prev-item{background:var(--card);border-radius:12px;padding:13px 14px;margin-bottom:9px;
-  box-shadow:0 1px 4px rgba(0,0,0,.07);border-left:4px solid var(--border)}
-.prev-item.vencida{border-left-color:var(--red)}
-.prev-item.proxima{border-left-color:var(--amber)}
-.prev-item.ok     {border-left-color:var(--green)}
-.prev-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.4px;padding:2px 9px;border-radius:20px;margin-bottom:5px}
-.prev-badge.vencida{background:#fee2e2;color:#dc2626}
-.prev-badge.proxima{background:#fef3c7;color:#d97706}
-.prev-badge.ok     {background:#dcfce7;color:#16a34a}
-.prev-eq  {font-size:11px;font-weight:700;color:var(--navy2);margin-bottom:1px}
-.prev-tipo{font-size:14px;font-weight:800;color:var(--text);margin-bottom:6px}
-.prev-meta{font-size:11px;color:var(--muted);line-height:1.7}
-.prev-meta span{color:var(--text);font-weight:600}
-.btn-reg{background:var(--navy);color:#fff;border:none;border-radius:8px;
-  padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;margin-top:10px;
-  -webkit-tap-highlight-color:transparent}
-.btn-reg:active{background:var(--navy2)}
-.prev-form-wrap{background:var(--card);border-radius:14px;padding:16px 14px;
-  margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.12);
-  border:2px solid var(--amber)}
-.prev-form-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:14px;
-  display:flex;align-items:center;gap:8px}
+/* Tabela de revisões */
+.prev-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:10px;border-radius:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,.10)}
+.prev-table{width:100%;border-collapse:collapse;font-size:11px;min-width:500px}
+.prev-table thead tr{background:#1e3a5f;color:#fff}
+.prev-table thead th{padding:7px 8px;text-align:center;font-weight:700;font-size:10px;
+  text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.prev-table thead th:first-child{text-align:left}
+.prev-table tbody tr{border-bottom:1px solid rgba(0,0,0,.08)}
+.prev-table tbody td{padding:7px 8px;text-align:center;vertical-align:middle;font-weight:600}
+.prev-table tbody td:first-child{text-align:left}
+.prev-table tbody tr.st-Vencido  td{background:#ffb3b3;color:#7f1d1d}
+.prev-table tbody tr.st-Programar td{background:#fff176;color:#78350f}
+.prev-table tbody tr.st-NoPrazo  td{background:#b9f6ca;color:#14532d}
+.prev-table .eq-cell{font-size:12px;font-weight:800;line-height:1.2}
+.prev-table .tipo-cell{font-size:9.5px;font-weight:600;opacity:.75;margin-top:1px}
+.prev-table .hrs-neg{font-weight:900}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
@@ -370,17 +364,17 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 
     <!-- Resumo -->
     <div class="prev-summary">
-      <div class="ps-box red" onclick="filtrarPrev('vencida')">
+      <div class="ps-box red" onclick="filtrarPrev('Vencido')">
         <div class="psn" id="prev-nvencidas">—</div>
-        <div class="psl">Vencidas</div>
+        <div class="psl">Vencidos</div>
       </div>
-      <div class="ps-box yellow" onclick="filtrarPrev('proxima')">
+      <div class="ps-box yellow" onclick="filtrarPrev('Programar')">
         <div class="psn" id="prev-nproximas">—</div>
-        <div class="psl">Próximas</div>
+        <div class="psl">Programar</div>
       </div>
-      <div class="ps-box green" onclick="filtrarPrev('ok')">
+      <div class="ps-box green" onclick="filtrarPrev('No Prazo')">
         <div class="psn" id="prev-nok">—</div>
-        <div class="psl">Em dia</div>
+        <div class="psl">No Prazo</div>
       </div>
     </div>
 
@@ -393,51 +387,6 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
       <div class="empty"><span class="ei">🔧</span><p>Carregando preventivas...</p></div>
     </div>
 
-    <!-- Formulário registro -->
-    <div class="prev-form-wrap" id="prev-form-wrap" style="display:none">
-      <div class="prev-form-title">🔧 <span id="prev-form-titulo">Registrar Manutenção</span></div>
-      <div class="row2">
-        <div class="field"><label>Data Realizado</label><input type="date" id="pf-data"></div>
-        <div class="field"><label>Hora</label><input type="time" id="pf-hora"></div>
-      </div>
-      <div class="field">
-        <label>Equipamento</label>
-        <select id="pf-eq"><option value="">Selecione...</option></select>
-      </div>
-      <div class="field">
-        <label>Tipo de Revisão</label>
-        <select id="pf-tipo">
-          <option value="">Selecione...</option>
-          <option>Troca de Óleo Motor</option>
-          <option>Troca de Filtro de Óleo</option>
-          <option>Troca de Filtro de Combustível</option>
-          <option>Troca de Filtro de Ar</option>
-          <option>Lubrificação (Graxagem)</option>
-          <option>Troca de Correia</option>
-          <option>Fluido Hidráulico</option>
-          <option>Regulagem de Válvulas</option>
-          <option>Inspeção Geral</option>
-          <option>Revisão Elétrica</option>
-          <option>Outro</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Horímetro Atual</label>
-        <input type="number" id="pf-horim" placeholder="Ex: 4520" step="0.1">
-      </div>
-      <div class="card-title" style="margin:14px 0 10px;font-size:10px">📅 Próxima Revisão</div>
-      <div class="row2">
-        <div class="field"><label>Data</label><input type="date" id="pf-prox-data"></div>
-        <div class="field"><label>Horímetro</label><input type="number" id="pf-prox-horim" placeholder="Ex: 4720" step="1"></div>
-      </div>
-      <div class="field" style="margin-bottom:0"><label>Observações</label><textarea id="pf-obs" placeholder="Peças trocadas, oficina..."></textarea></div>
-      <button class="btn-primary" id="btn-salvar-prev" onclick="salvarPreventiva()" style="margin-top:12px">💾 &nbsp;Salvar Manutenção</button>
-      <button class="btn-outline" onclick="fecharFormPreventiva()" style="margin-top:6px">Cancelar</button>
-    </div>
-
-    <button class="btn-green" onclick="abrirFormPreventiva(null)" style="margin-top:4px">
-      🔧 &nbsp;+ Nova Preventiva
-    </button>
   </div>
 
 </main>
@@ -775,7 +724,7 @@ function carregarPreventivas(){
 
 function filtrarPrev(status){
   _prevFiltro=status;
-  var labels={vencida:'🔴 Vencidas',proxima:'⚠️ Próximas (7 dias)',ok:'✅ Em dia',null:'Todas'};
+  var labels={'Vencido':'🔴 Vencidos','Programar':'⚠️ Programar','No Prazo':'✅ No Prazo',null:'Todas'};
   document.getElementById('prev-filter-label').textContent=labels[status]||'Todas';
   renderPreventivas(status);
 }
@@ -784,61 +733,33 @@ function renderPreventivas(filtro){
   var list=document.getElementById('prev-list');
   var itens=filtro?_prevData.filter(function(i){ return i.status===filtro; }):_prevData;
   if(!itens.length){
-    list.innerHTML='<div class="empty"><span class="ei">🔧</span><p>'+(filtro?'Nenhuma preventiva nesta categoria.':'Nenhuma preventiva cadastrada.<br>Clique em + Nova Preventiva para começar.')+'</p></div>'; return;
+    list.innerHTML='<div class="empty"><span class="ei">🔧</span><p>'+(filtro?'Nenhuma nesta categoria.':'Nenhuma preventiva cadastrada.<br>Preencha a planilha PREVENTIVAS no Google Sheets.')+'</p></div>'; return;
   }
-  var badges={vencida:'🔴 VENCIDA',proxima:'⚠️ PRÓXIMA',ok:'✅ EM DIA'};
-  list.innerHTML=itens.map(function(it){
-    var badge='<span class="prev-badge '+it.status+'">'+badges[it.status]+'</span>';
-    var detalhe='';
-    if(it.status==='vencida'&&it.diasRestantes!==null) detalhe=' · há '+Math.abs(it.diasRestantes)+' dia(s)';
-    else if(it.status==='proxima'&&it.diasRestantes!==null) detalhe=' · em '+it.diasRestantes+' dia(s)';
-    var meta='';
-    if(it.data) meta+='<div>Último: <span>'+it.data+(it.horim?' · Hm '+it.horim+'h':'')+'</span></div>';
-    if(it.proxData) meta+='<div>Próxima: <span>'+it.proxData+detalhe+'</span></div>';
-    if(it.proxHorim) meta+='<div>Próximo Hm: <span>'+it.proxHorim+'h'+(it.horimAtual?' (atual '+it.horimAtual+'h)':'')+(it.horimRestantes!==null?' · faltam '+it.horimRestantes+'h':'')+'</span></div>';
-    if(it.obs) meta+='<div>Obs: <span>'+it.obs+'</span></div>';
-    return '<div class="prev-item '+it.status+'">'+badge+
-      '<div class="prev-eq">'+it.eq+'</div>'+
-      '<div class="prev-tipo">'+it.tipo+'</div>'+
-      '<div class="prev-meta">'+meta+'</div>'+
-      '<button class="btn-reg" onclick="abrirFormPreventiva('+JSON.stringify(it)+')">✏️ Registrar</button>'+
-      '</div>';
+  var rows=itens.map(function(it){
+    var cls='st-'+it.status.replace(' ','');
+    var hrsCell=it.horimRestantes!==null
+      ? '<span class="hrs-neg">'+it.horimRestantes+'</span>'
+      : '—';
+    var proxHmCell=it.proxHorim||'—';
+    var ultimHmCell=it.horim||'—';
+    var atualCell=it.horimAtual||'—';
+    return '<tr class="'+cls+'">'
+      +'<td><div class="eq-cell">'+it.eq+'</div>'
+      +'<div class="tipo-cell">'+it.tipo+'</div></td>'
+      +'<td>'+(it.marca||'—')+'</td>'
+      +'<td>'+ultimHmCell+'</td>'
+      +'<td>'+proxHmCell+'</td>'
+      +'<td>'+atualCell+'</td>'
+      +'<td><strong>'+it.status+'</strong></td>'
+      +'<td>'+hrsCell+'</td>'
+      +'</tr>';
   }).join('');
-}
-
-function abrirFormPreventiva(item){
-  var wrap=document.getElementById('prev-form-wrap'); wrap.style.display='block';
-  document.getElementById('prev-form-titulo').textContent=item?'Registrar: '+item.tipo:'Nova Preventiva';
-  if(item){
-    setVal('pf-eq',item.eq); setVal('pf-tipo',item.tipo);
-    if(item.horimAtual) setVal('pf-horim',item.horimAtual);
-  }
-  wrap.scrollIntoView({behavior:'smooth',block:'start'});
-}
-function fecharFormPreventiva(){
-  document.getElementById('prev-form-wrap').style.display='none';
-  ['pf-eq','pf-tipo','pf-horim','pf-prox-data','pf-prox-horim','pf-obs'].forEach(function(id){ setVal(id,''); });
-}
-
-function salvarPreventiva(){
-  var eq=document.getElementById('pf-eq').value;
-  var tipo=document.getElementById('pf-tipo').value;
-  if(!eq){ toast('⚠️ Selecione o equipamento','err'); return; }
-  if(!tipo){ toast('⚠️ Selecione o tipo de revisão','err'); return; }
-  var btn=document.getElementById('btn-salvar-prev'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Salvando...';
-  gs({acao:'salvarPreventiva',
-    data:  document.getElementById('pf-data').value,
-    hora:  document.getElementById('pf-hora').value,
-    eq:    eq, tipo: tipo,
-    horim: document.getElementById('pf-horim').value,
-    proxData:  document.getElementById('pf-prox-data').value,
-    proxHorim: document.getElementById('pf-prox-horim').value,
-    obs:   document.getElementById('pf-obs').value
-  }).then(function(r){return r.json();}).then(function(d){
-    btn.disabled=false; btn.innerHTML='💾 &nbsp;Salvar Manutenção';
-    if(d.ok){ toast('✅ Preventiva registrada!','ok'); fecharFormPreventiva(); carregarPreventivas(); }
-    else     { toast('⚠️ Erro ao salvar','err'); }
-  }).catch(function(){ btn.disabled=false; btn.innerHTML='💾 &nbsp;Salvar Manutenção'; toast('⚠️ Erro de conexão','err'); });
+  list.innerHTML='<div class="prev-table-wrap"><table class="prev-table">'
+    +'<thead><tr>'
+    +'<th>Equip.</th><th>Marca</th><th>Última</th><th>Próxima</th>'
+    +'<th>Atual</th><th>Status</th><th>Hrs a Vencer</th>'
+    +'</tr></thead>'
+    +'<tbody>'+rows+'</tbody></table></div>';
 }
 </script>
 </body>
