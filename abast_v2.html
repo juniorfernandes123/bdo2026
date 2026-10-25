@@ -405,12 +405,14 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
   <!-- ════ LOGÍSTICA ════════════════════════════════════════════════ -->
   <div id="page-logistica" class="page">
 
-    <!-- Filtro de mês -->
+    <!-- Seletor de aba -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <div class="section-title" style="margin:0">🚛 Despacho Mensal</div>
-      <input type="month" id="log-mes" style="border:1.5px solid var(--border);border-radius:7px;
-        padding:5px 9px;font-size:12px;background:#fff;color:var(--text);outline:none;cursor:pointer"
+      <div class="section-title" style="margin:0">🚛 Produtividade</div>
+      <select id="log-aba" style="border:1.5px solid var(--border);border-radius:7px;
+        padding:5px 9px;font-size:12px;background:#fff;color:var(--text);outline:none;cursor:pointer;font-family:inherit"
         onchange="carregarLogistica()">
+        <option value="">Carregando...</option>
+      </select>
     </div>
 
     <!-- Resumo -->
@@ -420,45 +422,15 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
     </div>
 
     <!-- Metas por cliente -->
-    <div class="section-title">📊 Meta por Cliente</div>
+    <div class="section-title">📊 Entrega por Cliente</div>
     <div id="log-metas-list">
       <div class="empty"><span class="ei">⏳</span><p>Carregando...</p></div>
     </div>
 
-    <!-- Formulário de lançamento -->
-    <div class="section-title" style="margin-top:16px">➕ Registrar Viagem</div>
-    <div class="card">
-      <div class="row2">
-        <div class="field">
-          <label>Data *</label>
-          <input type="date" id="log-data">
-        </div>
-        <div class="field">
-          <label>Motorista *</label>
-          <input type="text" id="log-motorista" placeholder="Nome">
-        </div>
-      </div>
-      <div class="row2">
-        <div class="field">
-          <label>Origem</label>
-          <input type="text" id="log-origem" placeholder="Fazenda / local">
-        </div>
-        <div class="field">
-          <label>Destino</label>
-          <input type="text" id="log-destino" placeholder="Planta / local">
-        </div>
-      </div>
-      <div class="row2">
-        <div class="field">
-          <label>Cliente *</label>
-          <input type="text" id="log-cliente" placeholder="Nome do cliente">
-        </div>
-        <div class="field">
-          <label>Volume (t) *</label>
-          <input type="number" id="log-volume" placeholder="0" step="0.1" min="0">
-        </div>
-      </div>
-      <button class="btn-primary" id="log-btn-save" onclick="salvarDespacho()">💾 Registrar Viagem</button>
+    <!-- Top motoristas -->
+    <div class="section-title" style="margin-top:4px">🧑‍✈️ Top Motoristas</div>
+    <div id="log-mot-list">
+      <div class="empty"><span class="ei">⏳</span><p>Carregando...</p></div>
     </div>
 
   </div>
@@ -488,7 +460,7 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 <div id="toast"></div>
 
 <script>
-var URL_GS = 'https://script.google.com/macros/s/AKfycbwJX4wkpIBt63BxoG7C8H756Q2zTBxvx7naWKAOPSHtcAOaCeuC_rWCFfmAUBN4KWY8fQ/exec';
+var URL_GS = 'https://script.google.com/macros/s/AKfycbxZzDe-y4htWrRTELJqWzgqDTbmLHW2N1BJgfalOHRWECuiMTxGbiLRKslRaozsbzlrnw/exec';
 var LOW_THRESHOLD = 150;
 var cadastros={}, saldosTanques={}, offlineQueue=[];
 try{ offlineQueue=JSON.parse(localStorage.getItem('_fila')||'[]'); }catch(e){}
@@ -506,8 +478,6 @@ function initDates(){
   var ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   setVal('f-data',ymd); setVal('f-hora',hm); setVal('est-data',ymd); setVal('est-hora',hm); setVal('hist-mes',ym);
   setVal('pf-data',ymd); setVal('pf-hora',hm);
-  setVal('log-data',ymd);
-  var logMes=document.getElementById('log-mes'); if(logMes) logMes.value=ym;
 }
 function setVal(id,v){ var e=document.getElementById(id); if(e) e.value=v; }
 
@@ -843,65 +813,70 @@ function renderPreventivas(filtro){
 }
 
 // ══ LOGÍSTICA ══════════════════════════════════════════════════════
+var _logAbasCarregadas=false;
+
 function carregarLogistica(){
-  var mes=document.getElementById('log-mes')?document.getElementById('log-mes').value:'';
+  if(!_logAbasCarregadas){
+    _logAbasCarregadas=true;
+    gs({acao:'listarAbas'}).then(function(r){return r.json();}).then(function(d){
+      var sel=document.getElementById('log-aba');
+      sel.innerHTML='';
+      (d.abas||[]).forEach(function(a){ var o=document.createElement('option'); o.value=a; o.textContent=a; sel.appendChild(o); });
+      _buscarDespacho();
+    }).catch(function(){ _buscarDespacho(); });
+  } else {
+    _buscarDespacho();
+  }
+}
+
+function _buscarDespacho(){
+  var aba=document.getElementById('log-aba')?document.getElementById('log-aba').value:'';
   document.getElementById('log-metas-list').innerHTML='<div class="empty"><span class="ei">⏳</span><p>Carregando...</p></div>';
-  gs({acao:'despacho',mes:mes}).then(function(r){return r.json();}).then(function(d){
+  document.getElementById('log-mot-list').innerHTML='';
+  gs({acao:'despacho',aba:aba}).then(function(r){return r.json();}).then(function(d){
     document.getElementById('log-ntotal').textContent=d.totalViagens||0;
-    document.getElementById('log-nvol').textContent=(d.totalVolume||0).toLocaleString('pt-BR',{minimumFractionDigits:0});
+    document.getElementById('log-nvol').textContent=(d.totalVolume||0).toLocaleString('pt-BR',{minimumFractionDigits:2});
     renderMetasCliente(d.metas||[]);
+    renderMotoristas(d.motoristas||[]);
   }).catch(function(){
-    document.getElementById('log-metas-list').innerHTML='<div class="empty"><span class="ei">⚠️</span><p>Erro ao carregar logística.</p></div>';
+    document.getElementById('log-metas-list').innerHTML='<div class="empty"><span class="ei">⚠️</span><p>Erro ao carregar dados.</p></div>';
   });
 }
 
 function renderMetasCliente(metas){
   var el=document.getElementById('log-metas-list');
   if(!metas.length){
-    el.innerHTML='<div class="empty"><span class="ei">🚛</span><p>Nenhum despacho no período.<br>Registre viagens abaixo.</p></div>'; return;
+    el.innerHTML='<div class="empty"><span class="ei">🚛</span><p>Nenhum dado encontrado nesta aba.</p></div>'; return;
   }
   el.innerHTML=metas.map(function(m){
-    var pct=m.meta>0?Math.min(Math.round((m.realizado/m.meta)*100),100):0;
-    var cor=pct>=100?'#16a34a':pct>=60?'#d97706':'#dc2626';
+    var temMeta=m.meta>0;
+    var pct=temMeta?Math.min(Math.round((m.realizado/m.meta)*100),100):0;
+    var cor=!temMeta?'#3b82f6':pct>=100?'#16a34a':pct>=60?'#d97706':'#dc2626';
     return '<div class="log-meta-card">'
       +'<div class="log-meta-header">'
-      +'<span class="log-meta-name">🏢 '+m.cliente+'</span>'
-      +'<span class="log-meta-pct" style="color:'+cor+'">'+pct+'%</span>'
+      +'<span class="log-meta-name">🏢 '+m.cliente+' <small style="font-weight:500;color:var(--muted)">('+m.viagens+' NFs)</small></span>'
+      +(temMeta?'<span class="log-meta-pct" style="color:'+cor+'">'+pct+'%</span>':'')
       +'</div>'
-      +'<div class="log-prog-bar-wrap">'
-      +'<div class="log-prog-bar" style="width:'+pct+'%;background:'+cor+'"></div>'
-      +'</div>'
+      +(temMeta?'<div class="log-prog-bar-wrap"><div class="log-prog-bar" style="width:'+pct+'%;background:'+cor+'"></div></div>':'')
       +'<div class="log-meta-foot">'
-      +'<span>Realizado: <strong>'+m.realizado.toLocaleString('pt-BR',{minimumFractionDigits:1})+' t</strong></span>'
-      +'<span>Meta: <strong>'+m.meta.toLocaleString('pt-BR',{minimumFractionDigits:1})+' t</strong></span>'
+      +'<span>Realizado: <strong>'+m.realizado.toLocaleString('pt-BR',{minimumFractionDigits:2})+' t</strong></span>'
+      +(temMeta?'<span>Meta: <strong>'+m.meta.toLocaleString('pt-BR',{minimumFractionDigits:0})+' t</strong></span>':'')
       +'</div></div>';
   }).join('');
 }
 
-function salvarDespacho(){
-  var btn=document.getElementById('log-btn-save');
-  var data=document.getElementById('log-data').value;
-  var motorista=document.getElementById('log-motorista').value.trim();
-  var origem=document.getElementById('log-origem').value.trim();
-  var destino=document.getElementById('log-destino').value.trim();
-  var cliente=document.getElementById('log-cliente').value.trim();
-  var volume=document.getElementById('log-volume').value;
-  if(!data||!motorista||!cliente||!volume){ toast('Preencha os campos obrigatórios','err'); return; }
-  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Salvando...';
-  var hora=new Date().toTimeString().substring(0,5);
-  gs({acao:'salvarDespacho',data:data,hora:hora,motorista:motorista,origem:origem,destino:destino,cliente:cliente,volume:volume})
-    .then(function(r){return r.json();}).then(function(d){
-      if(d.ok){
-        toast('✅ Viagem registrada!','ok');
-        document.getElementById('log-motorista').value='';
-        document.getElementById('log-origem').value='';
-        document.getElementById('log-destino').value='';
-        document.getElementById('log-cliente').value='';
-        document.getElementById('log-volume').value='';
-        carregarLogistica();
-      } else toast('❌ Erro ao salvar','err');
-    }).catch(function(){ toast('❌ Erro de conexão','err'); })
-    .finally(function(){ btn.disabled=false; btn.textContent='💾 Registrar Viagem'; });
+function renderMotoristas(mots){
+  var el=document.getElementById('log-mot-list');
+  if(!mots.length){ el.innerHTML=''; return; }
+  el.innerHTML=mots.map(function(m,i){
+    var rankCls=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    return '<div class="eq-stat-card">'
+      +'<div class="eq-rank '+rankCls+'">'+(i+1)+'</div>'
+      +'<div class="eq-info"><div class="en">'+m.motorista+'</div>'
+      +'<div class="es">'+m.viagens+' viagens</div></div>'
+      +'<div class="eq-nums"><div class="evl">'+m.volume.toLocaleString('pt-BR',{minimumFractionDigits:1})+'</div>'
+      +'<div class="evu">ton</div></div></div>';
+  }).join('');
 }
 </script>
 </body>
