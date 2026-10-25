@@ -38,7 +38,7 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
   padding-bottom:env(safe-area-inset-bottom,0px);background:var(--navy);
   display:flex;border-top:1px solid #1e3a5f;box-shadow:0 -2px 12px rgba(0,0,0,.3)}
 .tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:none;border:none;cursor:pointer;color:#475569;font-size:8.5px;font-weight:700;
+  background:none;border:none;cursor:pointer;color:#475569;font-size:7.5px;font-weight:700;
   text-transform:uppercase;letter-spacing:.4px;gap:3px;padding:0;
   transition:color .2s;-webkit-tap-highlight-color:transparent}
 .tab-btn .ti{font-size:20px;line-height:1}
@@ -212,6 +212,19 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 .prev-table .eq-cell{font-size:12px;font-weight:800;line-height:1.2}
 .prev-table .tipo-cell{font-size:9.5px;font-weight:600;opacity:.75;margin-top:1px}
 .prev-table .hrs-neg{font-weight:900}
+/* LOGÍSTICA */
+.log-prog-bar-wrap{background:#e2e8f0;border-radius:6px;height:10px;overflow:hidden;margin:6px 0}
+.log-prog-bar{height:100%;border-radius:6px;transition:width .4s}
+.log-meta-card{background:var(--card);border-radius:12px;padding:13px 14px;margin-bottom:9px;
+  box-shadow:0 1px 5px rgba(0,0,0,.07)}
+.log-meta-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.log-meta-name{font-size:13px;font-weight:700;color:var(--text)}
+.log-meta-pct{font-size:13px;font-weight:800}
+.log-meta-foot{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-top:4px}
+.log-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.log-stat{background:var(--card);border-radius:11px;padding:11px 8px;text-align:center;box-shadow:0 1px 5px rgba(0,0,0,.07)}
+.log-stat .lsn{font-size:22px;font-weight:900;color:var(--navy2)}
+.log-stat .lsl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-top:2px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
@@ -389,6 +402,67 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 
   </div>
 
+  <!-- ════ LOGÍSTICA ════════════════════════════════════════════════ -->
+  <div id="page-logistica" class="page">
+
+    <!-- Filtro de mês -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="section-title" style="margin:0">🚛 Despacho Mensal</div>
+      <input type="month" id="log-mes" style="border:1.5px solid var(--border);border-radius:7px;
+        padding:5px 9px;font-size:12px;background:#fff;color:var(--text);outline:none;cursor:pointer"
+        onchange="carregarLogistica()">
+    </div>
+
+    <!-- Resumo -->
+    <div class="log-stats">
+      <div class="log-stat"><div class="lsn" id="log-ntotal">—</div><div class="lsl">Viagens</div></div>
+      <div class="log-stat"><div class="lsn" id="log-nvol">—</div><div class="lsl">Total (t)</div></div>
+    </div>
+
+    <!-- Metas por cliente -->
+    <div class="section-title">📊 Meta por Cliente</div>
+    <div id="log-metas-list">
+      <div class="empty"><span class="ei">⏳</span><p>Carregando...</p></div>
+    </div>
+
+    <!-- Formulário de lançamento -->
+    <div class="section-title" style="margin-top:16px">➕ Registrar Viagem</div>
+    <div class="card">
+      <div class="row2">
+        <div class="field">
+          <label>Data *</label>
+          <input type="date" id="log-data">
+        </div>
+        <div class="field">
+          <label>Motorista *</label>
+          <input type="text" id="log-motorista" placeholder="Nome">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Origem</label>
+          <input type="text" id="log-origem" placeholder="Fazenda / local">
+        </div>
+        <div class="field">
+          <label>Destino</label>
+          <input type="text" id="log-destino" placeholder="Planta / local">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Cliente *</label>
+          <input type="text" id="log-cliente" placeholder="Nome do cliente">
+        </div>
+        <div class="field">
+          <label>Volume (t) *</label>
+          <input type="number" id="log-volume" placeholder="0" step="0.1" min="0">
+        </div>
+      </div>
+      <button class="btn-primary" id="log-btn-save" onclick="salvarDespacho()">💾 Registrar Viagem</button>
+    </div>
+
+  </div>
+
 </main>
 
 <nav id="tabs">
@@ -406,6 +480,9 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
   </button>
   <button class="tab-btn" data-page="prev" onclick="switchTab('prev')">
     <span class="ti">🔧</span><span>Preventivas</span><div class="tab-bar"></div>
+  </button>
+  <button class="tab-btn" data-page="logistica" onclick="switchTab('logistica')">
+    <span class="ti">🚛</span><span>Logística</span><div class="tab-bar"></div>
   </button>
 </nav>
 <div id="toast"></div>
@@ -429,6 +506,8 @@ function initDates(){
   var ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   setVal('f-data',ymd); setVal('f-hora',hm); setVal('est-data',ymd); setVal('est-hora',hm); setVal('hist-mes',ym);
   setVal('pf-data',ymd); setVal('pf-hora',hm);
+  setVal('log-data',ymd);
+  var logMes=document.getElementById('log-mes'); if(logMes) logMes.value=ym;
 }
 function setVal(id,v){ var e=document.getElementById(id); if(e) e.value=v; }
 
@@ -440,7 +519,8 @@ function switchTab(page){
   btn.classList.add('active'); btn.querySelector('.tab-bar').style.background='var(--orange)';
   if(page==='estoque') carregarEstoques();
   if(page==='dash')   { carregarEstoques(); carregarMediaEquip(); }
-  if(page==='prev')   carregarPreventivas();
+  if(page==='prev')      carregarPreventivas();
+  if(page==='logistica') carregarLogistica();
 }
 
 var _tt;
@@ -760,6 +840,68 @@ function renderPreventivas(filtro){
     +'<th>Atual</th><th>Status</th><th>Hrs a Vencer</th>'
     +'</tr></thead>'
     +'<tbody>'+rows+'</tbody></table></div>';
+}
+
+// ══ LOGÍSTICA ══════════════════════════════════════════════════════
+function carregarLogistica(){
+  var mes=document.getElementById('log-mes')?document.getElementById('log-mes').value:'';
+  document.getElementById('log-metas-list').innerHTML='<div class="empty"><span class="ei">⏳</span><p>Carregando...</p></div>';
+  gs({acao:'despacho',mes:mes}).then(function(r){return r.json();}).then(function(d){
+    document.getElementById('log-ntotal').textContent=d.totalViagens||0;
+    document.getElementById('log-nvol').textContent=(d.totalVolume||0).toLocaleString('pt-BR',{minimumFractionDigits:0});
+    renderMetasCliente(d.metas||[]);
+  }).catch(function(){
+    document.getElementById('log-metas-list').innerHTML='<div class="empty"><span class="ei">⚠️</span><p>Erro ao carregar logística.</p></div>';
+  });
+}
+
+function renderMetasCliente(metas){
+  var el=document.getElementById('log-metas-list');
+  if(!metas.length){
+    el.innerHTML='<div class="empty"><span class="ei">🚛</span><p>Nenhum despacho no período.<br>Registre viagens abaixo.</p></div>'; return;
+  }
+  el.innerHTML=metas.map(function(m){
+    var pct=m.meta>0?Math.min(Math.round((m.realizado/m.meta)*100),100):0;
+    var cor=pct>=100?'#16a34a':pct>=60?'#d97706':'#dc2626';
+    return '<div class="log-meta-card">'
+      +'<div class="log-meta-header">'
+      +'<span class="log-meta-name">🏢 '+m.cliente+'</span>'
+      +'<span class="log-meta-pct" style="color:'+cor+'">'+pct+'%</span>'
+      +'</div>'
+      +'<div class="log-prog-bar-wrap">'
+      +'<div class="log-prog-bar" style="width:'+pct+'%;background:'+cor+'"></div>'
+      +'</div>'
+      +'<div class="log-meta-foot">'
+      +'<span>Realizado: <strong>'+m.realizado.toLocaleString('pt-BR',{minimumFractionDigits:1})+' t</strong></span>'
+      +'<span>Meta: <strong>'+m.meta.toLocaleString('pt-BR',{minimumFractionDigits:1})+' t</strong></span>'
+      +'</div></div>';
+  }).join('');
+}
+
+function salvarDespacho(){
+  var btn=document.getElementById('log-btn-save');
+  var data=document.getElementById('log-data').value;
+  var motorista=document.getElementById('log-motorista').value.trim();
+  var origem=document.getElementById('log-origem').value.trim();
+  var destino=document.getElementById('log-destino').value.trim();
+  var cliente=document.getElementById('log-cliente').value.trim();
+  var volume=document.getElementById('log-volume').value;
+  if(!data||!motorista||!cliente||!volume){ toast('Preencha os campos obrigatórios','err'); return; }
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Salvando...';
+  var hora=new Date().toTimeString().substring(0,5);
+  gs({acao:'salvarDespacho',data:data,hora:hora,motorista:motorista,origem:origem,destino:destino,cliente:cliente,volume:volume})
+    .then(function(r){return r.json();}).then(function(d){
+      if(d.ok){
+        toast('✅ Viagem registrada!','ok');
+        document.getElementById('log-motorista').value='';
+        document.getElementById('log-origem').value='';
+        document.getElementById('log-destino').value='';
+        document.getElementById('log-cliente').value='';
+        document.getElementById('log-volume').value='';
+        carregarLogistica();
+      } else toast('❌ Erro ao salvar','err');
+    }).catch(function(){ toast('❌ Erro de conexão','err'); })
+    .finally(function(){ btn.disabled=false; btn.textContent='💾 Registrar Viagem'; });
 }
 </script>
 </body>
