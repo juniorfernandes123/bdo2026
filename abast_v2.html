@@ -1139,34 +1139,49 @@ function renderViagens(viagens){
 function fmtBRL(v){ return 'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
 function atualizarStatsHoras(lista){
-  var totProd=0,totVol=0,totGeral=0;
-  lista.forEach(function(p){ totProd+=p.prod; totVol+=p.vol; totGeral+=p.totalGeral; });
+  var totProd=0,totVol=0,totTon=0,totGeral=0;
+  lista.forEach(function(p){ totProd+=p.prod; totVol+=p.volM3; totTon+=p.ton; totGeral+=p.totalProd; });
   document.getElementById('log-ind-trab').textContent=totProd>0?totProd.toLocaleString('pt-BR',{minimumFractionDigits:1}):'—';
-  document.getElementById('log-ind-vol').textContent=totVol>0?totVol.toLocaleString('pt-BR',{maximumFractionDigits:0})+' m³':'—';
+  document.getElementById('log-ind-vol').textContent=totVol>0?totVol.toLocaleString('pt-BR',{minimumFractionDigits:1})+' m³':'—';
   document.getElementById('log-ind-total').textContent=totGeral>0?fmtBRL(totGeral):'—';
 }
 
 function renderHistoricoHoras(resumo){
   var el=document.getElementById('log-ind-hist');
-  if(!resumo.length){ el.innerHTML='<div class="empty"><p>Nenhum dado encontrado.</p></div>'; return; }
+  if(!resumo.length){ el.innerHTML='<div class="empty"><p>Nenhum período cadastrado no INDICADORES.</p></div>'; return; }
   el.innerHTML=resumo.map(function(p){
+    var temVol=p.volM3>0||p.ton>0;
     return '<div class="log-ind-card">'
-      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
-      +'<span style="font-size:14px;font-weight:800;color:var(--text)">'+p.mes+'</span>'
-      +(p.totalGeral>0?'<span style="font-size:15px;font-weight:900;color:var(--navy2)">'+fmtBRL(p.totalGeral)+'</span>':'')
+      // Header: período + total R$
+      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px">'
+      +'<div>'
+      +'<div style="font-size:14px;font-weight:800;color:var(--text)">'+p.periodo+'</div>'
+      +'<div style="font-size:10px;color:var(--muted);margin-top:1px">📅 '+p.ini+' – '+p.fim+'</div>'
       +'</div>'
-      +'<div style="display:flex;flex-direction:column;gap:5px">'
+      +(p.totalProd>0?'<span style="font-size:15px;font-weight:900;color:var(--navy2)">'+fmtBRL(p.totalProd)+'</span>':'')
+      +'</div>'
+      +'<div style="display:flex;flex-direction:column;gap:5px;margin-top:8px">'
+      // Produtividade row
       +(p.prod>0?
-        '<div style="display:flex;align-items:center;justify-content:space-between;background:rgba(22,163,74,.07);border-radius:7px;padding:6px 9px">'
-        +'<div><span style="font-size:10px;color:#16a34a;font-weight:700;text-transform:uppercase;letter-spacing:.4px">🌲 Produtividade</span>'
-        +'<div style="font-size:12.5px;font-weight:700;color:var(--text);margin-top:2px">'+p.prod.toLocaleString('pt-BR',{minimumFractionDigits:1})+' un × '+fmtBRL(p.valorProd)+'</div></div>'
+        '<div style="display:flex;align-items:center;justify-content:space-between;'
+        +'background:rgba(22,163,74,.07);border-radius:7px;padding:6px 9px">'
+        +'<div><span style="font-size:10px;color:#16a34a;font-weight:700;text-transform:uppercase;letter-spacing:.3px">🌲 Produtividade</span>'
+        +'<div style="font-size:12px;font-weight:700;color:var(--text);margin-top:2px">'
+        +p.prod.toLocaleString('pt-BR',{minimumFractionDigits:1})+' un × '+fmtBRL(p.valorProd)+'</div></div>'
         +'<span style="font-size:13px;font-weight:800;color:#16a34a">'+fmtBRL(p.totalProd)+'</span>'
         +'</div>' : '')
-      +(p.vol>0?
-        '<div style="display:flex;align-items:center;justify-content:space-between;background:rgba(37,99,235,.07);border-radius:7px;padding:6px 9px">'
-        +'<div><span style="font-size:10px;color:#2563eb;font-weight:700;text-transform:uppercase;letter-spacing:.4px">📦 Volume Entregue</span>'
-        +'<div style="font-size:12.5px;font-weight:700;color:var(--text);margin-top:2px">'+p.vol.toLocaleString('pt-BR',{maximumFractionDigits:0})+' m³ × '+fmtBRL(p.valorVol)+'</div></div>'
-        +'<span style="font-size:13px;font-weight:800;color:#2563eb">'+fmtBRL(p.totalVol)+'</span>'
+      // Volume Entregue row (from ID_LOG, filtered by period dates)
+      +(temVol?
+        '<div style="display:flex;align-items:center;justify-content:space-between;'
+        +'background:rgba(37,99,235,.07);border-radius:7px;padding:6px 9px">'
+        +'<div><span style="font-size:10px;color:#2563eb;font-weight:700;text-transform:uppercase;letter-spacing:.3px">📦 Volume Entregue</span>'
+        +'<div style="font-size:12px;font-weight:700;color:var(--text);margin-top:2px">'
+        +(p.volM3>0?p.volM3.toLocaleString('pt-BR',{minimumFractionDigits:1})+' m³':'')
+        +(p.volM3>0&&p.ton>0?' · ':'')
+        +(p.ton>0?p.ton.toLocaleString('pt-BR',{minimumFractionDigits:2})+' t':'')
+        +(p.viagens>0?' <span style="font-size:10px;color:var(--muted);font-weight:500">('+p.viagens+' viagens)</span>':'')
+        +'</div></div>'
+        +'<span style="font-size:11px;color:#2563eb;font-weight:700">✔ real</span>'
         +'</div>' : '')
       +'</div>'
       +'</div>';
