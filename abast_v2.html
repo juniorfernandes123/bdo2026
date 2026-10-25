@@ -1170,11 +1170,11 @@ function renderHistoricoHoras(resumo){
         +p.prod.toLocaleString('pt-BR',{minimumFractionDigits:1})+' un × '+fmtBRL(p.valorProd)+'</div></div>'
         +'<span style="font-size:13px;font-weight:800;color:#16a34a">'+fmtBRL(p.totalProd)+'</span>'
         +'</div>' : '')
-      // Volume Entregue row (from ID_LOG, filtered by period dates)
+      // Volume do Período row (from ID_LOG, filtered by date range only — all motoristas)
       +(temVol?
         '<div style="display:flex;align-items:center;justify-content:space-between;'
         +'background:rgba(37,99,235,.07);border-radius:7px;padding:6px 9px">'
-        +'<div><span style="font-size:10px;color:#2563eb;font-weight:700;text-transform:uppercase;letter-spacing:.3px">📦 Volume Entregue</span>'
+        +'<div><span style="font-size:10px;color:#2563eb;font-weight:700;text-transform:uppercase;letter-spacing:.3px">📦 Volume do Período</span>'
         +'<div style="font-size:12px;font-weight:700;color:var(--text);margin-top:2px">'
         +(p.volM3>0?p.volM3.toLocaleString('pt-BR',{minimumFractionDigits:1})+' m³':'')
         +(p.volM3>0&&p.ton>0?' · ':'')
