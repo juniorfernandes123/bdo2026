@@ -225,8 +225,22 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 .log-stat{background:var(--card);border-radius:11px;padding:11px 8px;text-align:center;box-shadow:0 1px 5px rgba(0,0,0,.07)}
 .log-stat .lsn{font-size:22px;font-weight:900;color:var(--navy2)}
 .log-stat .lsl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-top:2px}
+/* LOG TOGGLE / PERSONAL */
+.log-toggle-row{display:flex;gap:0;background:#e2e8f0;border-radius:10px;padding:3px;margin-bottom:14px}
+.log-toggle-btn{flex:1;padding:9px 0;border:none;border-radius:8px;background:transparent;
+  font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.log-toggle-btn.active{background:#fff;color:var(--navy2);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.log-login-box{background:var(--card);border-radius:16px;padding:22px 18px;box-shadow:0 2px 10px rgba(0,0,0,.08);margin-top:8px}
+.log-pin-input{font-size:26px!important;text-align:center;letter-spacing:8px;font-weight:800!important}
+.log-trip-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border)}
+.log-trip-row:last-child{border-bottom:none}
+.log-aba-hist-card{background:var(--card);border-radius:11px;padding:12px 14px;margin-bottom:8px;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between;cursor:pointer;
+  border-left:3px solid var(--navy3)}
+.log-aba-hist-card:active{opacity:.75}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -405,33 +419,93 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
   <!-- ════ LOGÍSTICA ════════════════════════════════════════════════ -->
   <div id="page-logistica" class="page">
 
-    <!-- Seletor de aba -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <div class="section-title" style="margin:0">🚛 Produtividade</div>
-      <select id="log-aba" style="border:1.5px solid var(--border);border-radius:7px;
-        padding:5px 9px;font-size:12px;background:#fff;color:var(--text);outline:none;cursor:pointer;font-family:inherit"
-        onchange="carregarLogistica()">
-        <option value="">Carregando...</option>
-      </select>
+    <!-- Toggle Geral / Pessoal -->
+    <div class="log-toggle-row">
+      <button id="log-btn-geral" class="log-toggle-btn active" onclick="setLogView('geral')">📊 Geral</button>
+      <button id="log-btn-pessoal" class="log-toggle-btn" onclick="setLogView('pessoal')">👤 Pessoal</button>
     </div>
 
-    <!-- Resumo -->
-    <div class="log-stats" style="grid-template-columns:1fr 1fr 1fr">
-      <div class="log-stat"><div class="lsn" id="log-ntotal">—</div><div class="lsl">Viagens</div></div>
-      <div class="log-stat"><div class="lsn" id="log-nton" style="font-size:17px">—</div><div class="lsl">Ton (liq.)</div></div>
-      <div class="log-stat"><div class="lsn" id="log-nm3"  style="font-size:17px">—</div><div class="lsl">m³</div></div>
+    <!-- ── GERAL ── -->
+    <div id="log-view-geral">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="section-title" style="margin:0">🚛 Produtividade</div>
+        <select id="log-aba" style="border:1.5px solid var(--border);border-radius:7px;
+          padding:5px 9px;font-size:12px;background:#fff;color:var(--text);outline:none;cursor:pointer;font-family:inherit"
+          onchange="_buscarDespacho()">
+          <option value="">Carregando...</option>
+        </select>
+      </div>
+      <div class="log-stats" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="log-stat"><div class="lsn" id="log-ntotal">—</div><div class="lsl">Viagens</div></div>
+        <div class="log-stat"><div class="lsn" id="log-nton" style="font-size:17px">—</div><div class="lsl">Ton (liq.)</div></div>
+        <div class="log-stat"><div class="lsn" id="log-nm3"  style="font-size:17px">—</div><div class="lsl">m³</div></div>
+      </div>
+      <div class="section-title">📊 Entrega por Cliente</div>
+      <div id="log-metas-list"><div class="empty"><span class="ei">⏳</span><p>Carregando...</p></div></div>
+      <div class="section-title" style="margin-top:4px">🧑‍✈️ Top Motoristas</div>
+      <div id="log-mot-list"></div>
     </div>
 
-    <!-- Metas por cliente -->
-    <div class="section-title">📊 Entrega por Cliente</div>
-    <div id="log-metas-list">
-      <div class="empty"><span class="ei">⏳</span><p>Carregando...</p></div>
-    </div>
+    <!-- ── PESSOAL ── -->
+    <div id="log-view-pessoal" style="display:none">
 
-    <!-- Top motoristas -->
-    <div class="section-title" style="margin-top:4px">🧑‍✈️ Top Motoristas</div>
-    <div id="log-mot-list">
-      <div class="empty"><span class="ei">⏳</span><p>Carregando...</p></div>
+      <!-- Login box -->
+      <div id="log-login-box" class="log-login-box">
+        <div style="text-align:center;font-size:48px;margin-bottom:8px">🚛</div>
+        <div style="text-align:center;font-size:16px;font-weight:800;color:var(--text);margin-bottom:4px">Acesso Pessoal</div>
+        <div style="text-align:center;font-size:12px;color:var(--muted);margin-bottom:18px">Digite seu PIN de acesso</div>
+        <div class="field">
+          <label>PIN</label>
+          <input type="number" id="log-pin-input" class="log-pin-input" placeholder="••••"
+            onkeydown="if(event.key==='Enter') fazerLogin()">
+        </div>
+        <button class="btn-primary" onclick="fazerLogin()">🔓 Entrar</button>
+        <div id="log-login-err" style="color:var(--red);font-size:12px;text-align:center;margin-top:8px;display:none"></div>
+      </div>
+
+      <!-- Personal dashboard (shown after login) -->
+      <div id="log-personal-dash" style="display:none">
+
+        <!-- User header -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;
+          background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:14px;padding:13px 14px">
+          <div style="font-size:30px">🧑‍✈️</div>
+          <div style="flex:1;min-width:0">
+            <div id="log-mot-nome" style="font-size:15px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+            <div id="log-mot-placa" style="font-size:11px;color:#93c5fd;margin-top:1px"></div>
+          </div>
+          <button onclick="mostrarQR()" style="background:rgba(255,255,255,.15);border:none;border-radius:8px;
+            color:#fff;font-size:11px;font-weight:700;padding:7px 9px;cursor:pointer;flex-shrink:0">🔗 QR</button>
+          <button onclick="logoutMotorista()" style="background:rgba(255,255,255,.1);border:none;border-radius:8px;
+            color:#fff;font-size:11px;font-weight:700;padding:7px 9px;cursor:pointer;flex-shrink:0;margin-left:4px">Sair</button>
+        </div>
+
+        <!-- Month selector -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="section-title" style="margin:0">📅 Período</div>
+          <select id="log-mot-aba" style="border:1.5px solid var(--border);border-radius:7px;
+            padding:5px 9px;font-size:12px;background:#fff;color:var(--text);outline:none;cursor:pointer;font-family:inherit"
+            onchange="carregarViagensMot()">
+            <option value="">Todos os meses</option>
+          </select>
+        </div>
+
+        <!-- Stats -->
+        <div class="log-stats" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="log-stat"><div class="lsn" id="log-pmot-viagens">—</div><div class="lsl">Viagens</div></div>
+          <div class="log-stat"><div class="lsn" id="log-pmot-ton" style="font-size:17px">—</div><div class="lsl">Ton (liq.)</div></div>
+          <div class="log-stat"><div class="lsn" id="log-pmot-m3" style="font-size:17px">—</div><div class="lsl">m³</div></div>
+        </div>
+
+        <!-- History by month -->
+        <div class="section-title">📅 Histórico por Mês</div>
+        <div id="log-mot-hist"><div class="empty"><span class="ei">⏳</span><p>Carregando...</p></div></div>
+
+        <!-- Trips detail -->
+        <div class="section-title" id="log-mot-trips-title" style="display:none">🗒 Viagens Detalhadas</div>
+        <div id="log-mot-trips-list"></div>
+
+      </div>
     </div>
 
   </div>
@@ -460,6 +534,19 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
 </nav>
 <div id="toast"></div>
 
+<!-- QR Modal -->
+<div id="log-qr-modal" style="display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.65);align-items:center;justify-content:center" onclick="this.style.display='none'">
+  <div style="background:#fff;border-radius:20px;padding:24px 20px;max-width:300px;width:92%;text-align:center" onclick="event.stopPropagation()">
+    <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:4px">🔗 Meu Link de Acesso</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px">Compartilhe para acessar diretamente</div>
+    <div id="log-qr-canvas" style="display:flex;justify-content:center;margin-bottom:12px"></div>
+    <div id="log-qr-url" style="font-size:9px;color:var(--muted);word-break:break-all;background:#f1f5f9;
+      border-radius:8px;padding:8px;margin-bottom:12px;text-align:left"></div>
+    <button class="btn-outline" onclick="document.getElementById('log-qr-modal').style.display='none'">Fechar</button>
+  </div>
+</div>
+
 <script>
 var URL_GS = 'https://script.google.com/macros/s/AKfycbxZzDe-y4htWrRTELJqWzgqDTbmLHW2N1BJgfalOHRWECuiMTxGbiLRKslRaozsbzlrnw/exec';
 var LOW_THRESHOLD = 150;
@@ -470,6 +557,14 @@ var _prevData=[], _prevFiltro=null;
 
 window.addEventListener('load', function(){
   initDates(); preencherFiltroMes(); carregarCadastros(); carregarEstoques(); carregarMediaEquip(); atualizarBadgeFila();
+  initLogistica();
+  // Auto-navigate if URL contains ?mot= (QR code scan)
+  try{
+    var params=new URLSearchParams(window.location.search);
+    if(params.get('mot')){
+      setTimeout(function(){ switchTab('logistica'); setLogView('pessoal'); },350);
+    }
+  }catch(e){}
 });
 window.addEventListener('online',  function(){ isOnline=true;  document.getElementById('offline-badge').style.display='none'; processarFila(); });
 window.addEventListener('offline', function(){ isOnline=false; document.getElementById('offline-badge').style.display='block'; });
@@ -815,6 +910,25 @@ function renderPreventivas(filtro){
 
 // ══ LOGÍSTICA ══════════════════════════════════════════════════════
 var _logAbasCarregadas=false;
+var _logMot='', _logPin='', _logMotPlaca='';
+var _logResumoPorAba=[];
+
+function initLogistica(){
+  try{
+    _logMot=sessionStorage.getItem('logMot')||'';
+    _logPin=sessionStorage.getItem('logPin')||'';
+    _logMotPlaca=sessionStorage.getItem('logPlaca')||'';
+  }catch(e){}
+  // Also check URL params (QR code scan)
+  try{
+    var params=new URLSearchParams(window.location.search);
+    var urlMot=params.get('mot')||'', urlPin=params.get('pin')||'';
+    if(urlMot&&urlPin){
+      _logMot=decodeURIComponent(urlMot); _logPin=urlPin;
+      try{ sessionStorage.setItem('logMot',_logMot); sessionStorage.setItem('logPin',_logPin); }catch(e){}
+    }
+  }catch(e){}
+}
 
 function carregarLogistica(){
   if(!_logAbasCarregadas){
@@ -827,6 +941,159 @@ function carregarLogistica(){
     }).catch(function(){ _buscarDespacho(); });
   } else {
     _buscarDespacho();
+  }
+}
+
+function setLogView(view){
+  var isGeral=view==='geral';
+  document.getElementById('log-btn-geral').className='log-toggle-btn'+(isGeral?' active':'');
+  document.getElementById('log-btn-pessoal').className='log-toggle-btn'+(isGeral?'':' active');
+  document.getElementById('log-view-geral').style.display=isGeral?'block':'none';
+  document.getElementById('log-view-pessoal').style.display=isGeral?'none':'block';
+  if(!isGeral) mostrarPainelPessoal();
+}
+
+function mostrarPainelPessoal(){
+  if(_logMot){
+    document.getElementById('log-login-box').style.display='none';
+    document.getElementById('log-personal-dash').style.display='block';
+    document.getElementById('log-mot-nome').textContent=_logMot;
+    document.getElementById('log-mot-placa').textContent=_logMotPlaca?'Placa: '+_logMotPlaca:'';
+    if(!_logResumoPorAba.length) carregarHistoricoMotorista();
+  } else {
+    document.getElementById('log-login-box').style.display='block';
+    document.getElementById('log-personal-dash').style.display='none';
+  }
+}
+
+function fazerLogin(){
+  var pin=String(document.getElementById('log-pin-input').value||'').trim();
+  if(!pin){ toast('Digite seu PIN','err'); return; }
+  var errEl=document.getElementById('log-login-err');
+  errEl.style.display='none';
+  var btn=document.querySelector('#log-login-box .btn-primary');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Verificando...';
+  gs({acao:'loginMotorista',pin:pin}).then(function(r){return r.json();}).then(function(d){
+    btn.disabled=false; btn.innerHTML='🔓 Entrar';
+    if(d.ok){
+      _logMot=d.motorista; _logPin=pin; _logMotPlaca=d.placa||'';
+      try{ sessionStorage.setItem('logMot',_logMot); sessionStorage.setItem('logPin',_logPin); sessionStorage.setItem('logPlaca',_logMotPlaca); }catch(e){}
+      mostrarPainelPessoal();
+    } else {
+      errEl.textContent='❌ PIN inválido. Verifique com o administrador.';
+      errEl.style.display='block';
+    }
+  }).catch(function(){
+    btn.disabled=false; btn.innerHTML='🔓 Entrar';
+    errEl.textContent='⚠️ Erro de conexão. Tente novamente.';
+    errEl.style.display='block';
+  });
+}
+
+function logoutMotorista(){
+  _logMot=''; _logPin=''; _logMotPlaca=''; _logResumoPorAba=[];
+  try{ sessionStorage.removeItem('logMot'); sessionStorage.removeItem('logPin'); sessionStorage.removeItem('logPlaca'); }catch(e){}
+  mostrarPainelPessoal();
+}
+
+function carregarHistoricoMotorista(){
+  document.getElementById('log-mot-hist').innerHTML='<div class="empty"><span class="ei">⏳</span><p>Carregando...</p></div>';
+  gs({acao:'dadosMotorista',motorista:_logMot}).then(function(r){return r.json();}).then(function(d){
+    if(!d.ok){ document.getElementById('log-mot-hist').innerHTML='<div class="empty"><span class="ei">⚠️</span><p>Erro ao carregar.</p></div>'; return; }
+    _logResumoPorAba=d.resumoPorAba||[];
+    var sel=document.getElementById('log-mot-aba');
+    sel.innerHTML='<option value="">Todos os meses</option>';
+    _logResumoPorAba.forEach(function(a){ var o=document.createElement('option'); o.value=a.aba; o.textContent=a.aba; sel.appendChild(o); });
+    atualizarEstatsPessoal();
+    renderHistoricoAba(_logResumoPorAba);
+    document.getElementById('log-mot-trips-title').style.display='none';
+    document.getElementById('log-mot-trips-list').innerHTML='';
+  }).catch(function(){
+    document.getElementById('log-mot-hist').innerHTML='<div class="empty"><span class="ei">⚠️</span><p>Erro de conexão.</p></div>';
+  });
+}
+
+function atualizarEstatsPessoal(){
+  var aba=document.getElementById('log-mot-aba').value;
+  var lista=aba?_logResumoPorAba.filter(function(a){return a.aba===aba;}):_logResumoPorAba;
+  var totV=0,totT=0,totM=0;
+  lista.forEach(function(a){ totV+=a.viagens; totT+=a.ton; totM+=a.m3; });
+  document.getElementById('log-pmot-viagens').textContent=totV;
+  document.getElementById('log-pmot-ton').textContent=totT.toLocaleString('pt-BR',{minimumFractionDigits:2});
+  document.getElementById('log-pmot-m3').textContent=totM.toLocaleString('pt-BR',{minimumFractionDigits:1});
+}
+
+function renderHistoricoAba(resumo){
+  var el=document.getElementById('log-mot-hist');
+  if(!resumo.length){ el.innerHTML='<div class="empty"><p>Nenhum registro encontrado.</p></div>'; return; }
+  el.innerHTML=resumo.map(function(a){
+    return '<div class="log-aba-hist-card" onclick="selecionarMes(\''+a.aba+'\')">'
+      +'<div><div style="font-size:13px;font-weight:700;color:var(--text)">'+a.aba+'</div>'
+      +'<div style="font-size:10px;color:var(--muted);margin-top:2px">'+a.viagens+' viagens</div></div>'
+      +'<div style="text-align:right">'
+      +'<div style="font-size:15px;font-weight:800;color:var(--navy2)">'+a.ton.toLocaleString('pt-BR',{minimumFractionDigits:1})+' t</div>'
+      +'<div style="font-size:10px;color:var(--muted)">'+a.m3.toLocaleString('pt-BR',{minimumFractionDigits:0})+' m³</div>'
+      +'</div>'
+      +'<span style="font-size:18px;color:var(--muted);margin-left:4px">›</span>'
+      +'</div>';
+  }).join('');
+}
+
+function selecionarMes(aba){
+  document.getElementById('log-mot-aba').value=aba;
+  carregarViagensMot();
+  // Scroll to trips section
+  setTimeout(function(){ var el=document.getElementById('log-mot-trips-title'); if(el) el.scrollIntoView({behavior:'smooth'}); },300);
+}
+
+function carregarViagensMot(){
+  var aba=document.getElementById('log-mot-aba').value;
+  atualizarEstatsPessoal();
+  if(!aba){
+    renderHistoricoAba(_logResumoPorAba);
+    document.getElementById('log-mot-trips-title').style.display='none';
+    document.getElementById('log-mot-trips-list').innerHTML='';
+    return;
+  }
+  renderHistoricoAba(_logResumoPorAba.filter(function(a){return a.aba===aba;}));
+  document.getElementById('log-mot-trips-title').style.display='block';
+  document.getElementById('log-mot-trips-list').innerHTML='<div class="empty"><span class="ei">⏳</span><p>Carregando viagens...</p></div>';
+  gs({acao:'dadosMotorista',motorista:_logMot,aba:aba}).then(function(r){return r.json();}).then(function(d){
+    renderViagens(d.viagens||[]);
+  }).catch(function(){
+    document.getElementById('log-mot-trips-list').innerHTML='<div class="empty"><p>Erro ao carregar viagens.</p></div>';
+  });
+}
+
+function renderViagens(viagens){
+  var el=document.getElementById('log-mot-trips-list');
+  if(!viagens.length){ el.innerHTML='<div class="empty"><p>Nenhuma viagem registrada.</p></div>'; return; }
+  el.innerHTML='<div style="background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,.07);margin-bottom:16px">'
+    +viagens.map(function(v){
+      return '<div class="log-trip-row">'
+        +'<div style="font-size:10.5px;color:var(--muted);min-width:68px">'+v.data+'</div>'
+        +'<div style="flex:1;font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+v.cliente+'</div>'
+        +'<div style="text-align:right;flex-shrink:0;margin-left:8px">'
+        +'<div style="font-size:13px;font-weight:800;color:var(--navy2)">'+v.ton.toLocaleString('pt-BR',{minimumFractionDigits:1})+' t</div>'
+        +'<div style="font-size:10px;color:var(--muted)">'+v.m3.toLocaleString('pt-BR',{minimumFractionDigits:0})+' m³</div>'
+        +'</div></div>';
+    }).join('')
+    +'</div>';
+}
+
+function mostrarQR(){
+  if(!_logMot||!_logPin) return;
+  var baseUrl=window.location.href.split('?')[0];
+  var url=baseUrl+'?mot='+encodeURIComponent(_logMot)+'&pin='+encodeURIComponent(_logPin);
+  var modal=document.getElementById('log-qr-modal');
+  var canvas=document.getElementById('log-qr-canvas');
+  canvas.innerHTML='';
+  document.getElementById('log-qr-url').textContent=url;
+  modal.style.display='flex';
+  if(typeof QRCode!=='undefined'){
+    new QRCode(canvas,{text:url,width:180,height:180,colorDark:'#0f172a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+  } else {
+    canvas.innerHTML='<div style="font-size:10px;color:var(--muted);word-break:break-all;padding:10px">'+url+'</div>';
   }
 }
 
