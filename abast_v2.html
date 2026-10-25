@@ -416,9 +416,10 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
     </div>
 
     <!-- Resumo -->
-    <div class="log-stats">
+    <div class="log-stats" style="grid-template-columns:1fr 1fr 1fr">
       <div class="log-stat"><div class="lsn" id="log-ntotal">—</div><div class="lsl">Viagens</div></div>
-      <div class="log-stat"><div class="lsn" id="log-nvol">—</div><div class="lsl">Total (t)</div></div>
+      <div class="log-stat"><div class="lsn" id="log-nton" style="font-size:17px">—</div><div class="lsl">Ton (liq.)</div></div>
+      <div class="log-stat"><div class="lsn" id="log-nm3"  style="font-size:17px">—</div><div class="lsl">m³</div></div>
     </div>
 
     <!-- Metas por cliente -->
@@ -835,7 +836,8 @@ function _buscarDespacho(){
   document.getElementById('log-mot-list').innerHTML='';
   gs({acao:'despacho',aba:aba}).then(function(r){return r.json();}).then(function(d){
     document.getElementById('log-ntotal').textContent=d.totalViagens||0;
-    document.getElementById('log-nvol').textContent=(d.totalVolume||0).toLocaleString('pt-BR',{minimumFractionDigits:2});
+    document.getElementById('log-nton').textContent=(d.totalTon||0).toLocaleString('pt-BR',{minimumFractionDigits:2});
+    document.getElementById('log-nm3').textContent=(d.totalM3||0).toLocaleString('pt-BR',{minimumFractionDigits:1});
     renderMetasCliente(d.metas||[]);
     renderMotoristas(d.motoristas||[]);
   }).catch(function(){
@@ -850,7 +852,7 @@ function renderMetasCliente(metas){
   }
   el.innerHTML=metas.map(function(m){
     var temMeta=m.meta>0;
-    var pct=temMeta?Math.min(Math.round((m.realizado/m.meta)*100),100):0;
+    var pct=temMeta?Math.min(Math.round((m.ton/m.meta)*100),100):0;
     var cor=!temMeta?'#3b82f6':pct>=100?'#16a34a':pct>=60?'#d97706':'#dc2626';
     return '<div class="log-meta-card">'
       +'<div class="log-meta-header">'
@@ -859,7 +861,8 @@ function renderMetasCliente(metas){
       +'</div>'
       +(temMeta?'<div class="log-prog-bar-wrap"><div class="log-prog-bar" style="width:'+pct+'%;background:'+cor+'"></div></div>':'')
       +'<div class="log-meta-foot">'
-      +'<span>Realizado: <strong>'+m.realizado.toLocaleString('pt-BR',{minimumFractionDigits:2})+' t</strong></span>'
+      +'<span>🏋 <strong>'+m.ton.toLocaleString('pt-BR',{minimumFractionDigits:2})+' t</strong></span>'
+      +'<span>📦 <strong>'+m.m3.toLocaleString('pt-BR',{minimumFractionDigits:1})+' m³</strong></span>'
       +(temMeta?'<span>Meta: <strong>'+m.meta.toLocaleString('pt-BR',{minimumFractionDigits:0})+' t</strong></span>':'')
       +'</div></div>';
   }).join('');
@@ -873,8 +876,8 @@ function renderMotoristas(mots){
     return '<div class="eq-stat-card">'
       +'<div class="eq-rank '+rankCls+'">'+(i+1)+'</div>'
       +'<div class="eq-info"><div class="en">'+m.motorista+'</div>'
-      +'<div class="es">'+m.viagens+' viagens</div></div>'
-      +'<div class="eq-nums"><div class="evl">'+m.volume.toLocaleString('pt-BR',{minimumFractionDigits:1})+'</div>'
+      +'<div class="es">'+m.viagens+' viagens · '+m.m3.toLocaleString('pt-BR',{minimumFractionDigits:0})+' m³</div></div>'
+      +'<div class="eq-nums"><div class="evl">'+m.ton.toLocaleString('pt-BR',{minimumFractionDigits:1})+'</div>'
       +'<div class="evu">ton</div></div></div>';
   }).join('');
 }
