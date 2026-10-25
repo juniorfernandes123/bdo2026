@@ -1139,8 +1139,8 @@ function renderViagens(viagens){
 function fmtBRL(v){ return 'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
 function atualizarStatsHoras(lista){
-  var totProd=0,totVol=0,totTon=0,totGeral=0;
-  lista.forEach(function(p){ totProd+=p.prod; totVol+=p.volM3; totTon+=p.ton; totGeral+=p.totalProd; });
+  var totProd=0,totVol=0,totGeral=0;
+  lista.forEach(function(p){ totProd+=p.prod; totVol+=p.volM3; totGeral+=(p.totalGeral||p.totalProd||0); });
   document.getElementById('log-ind-trab').textContent=totProd>0?totProd.toLocaleString('pt-BR',{minimumFractionDigits:1}):'—';
   document.getElementById('log-ind-vol').textContent=totVol>0?totVol.toLocaleString('pt-BR',{minimumFractionDigits:1})+' m³':'—';
   document.getElementById('log-ind-total').textContent=totGeral>0?fmtBRL(totGeral):'—';
@@ -1158,7 +1158,7 @@ function renderHistoricoHoras(resumo){
       +'<div style="font-size:14px;font-weight:800;color:var(--text)">'+p.periodo+'</div>'
       +'<div style="font-size:10px;color:var(--muted);margin-top:1px">📅 '+p.ini+' – '+p.fim+'</div>'
       +'</div>'
-      +(p.totalProd>0?'<span style="font-size:15px;font-weight:900;color:var(--navy2)">'+fmtBRL(p.totalProd)+'</span>':'')
+      +((p.totalGeral||p.totalProd)>0?'<span style="font-size:15px;font-weight:900;color:var(--navy2)">'+fmtBRL(p.totalGeral||p.totalProd)+'</span>':'')
       +'</div>'
       +'<div style="display:flex;flex-direction:column;gap:5px;margin-top:8px">'
       // Produtividade row
@@ -1177,11 +1177,12 @@ function renderHistoricoHoras(resumo){
         +'<div><span style="font-size:10px;color:#2563eb;font-weight:700;text-transform:uppercase;letter-spacing:.3px">📦 Volume do Período</span>'
         +'<div style="font-size:12px;font-weight:700;color:var(--text);margin-top:2px">'
         +(p.volM3>0?p.volM3.toLocaleString('pt-BR',{minimumFractionDigits:1})+' m³':'')
+        +(p.valorM3>0?' × '+fmtBRL(p.valorM3)+'/m³':'')
         +(p.volM3>0&&p.ton>0?' · ':'')
         +(p.ton>0?p.ton.toLocaleString('pt-BR',{minimumFractionDigits:2})+' t':'')
         +(p.viagens>0?' <span style="font-size:10px;color:var(--muted);font-weight:500">('+p.viagens+' viagens)</span>':'')
         +'</div></div>'
-        +'<span style="font-size:11px;color:#2563eb;font-weight:700">✔ real</span>'
+        +(p.totalVol>0?'<span style="font-size:13px;font-weight:800;color:#2563eb">'+fmtBRL(p.totalVol)+'</span>':'<span style="font-size:11px;color:#2563eb;font-weight:700">✔ real</span>')
         +'</div>' : '')
       +'</div>'
       +'</div>';
