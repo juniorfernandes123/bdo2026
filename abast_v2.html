@@ -343,7 +343,10 @@ html,body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
       <div class="field" style="margin-bottom:0"><textarea id="f-obs" placeholder="Opcional..."></textarea></div>
     </div>
     <button class="btn-primary" id="btn-salvar" onclick="salvar()">💾 &nbsp;Salvar Abastecimento</button>
-    <div id="fila-badge" style="text-align:center;font-size:11px;color:var(--muted);margin-top:8px;display:none"></div>
+    <div id="fila-badge" style="display:none;margin-top:10px;border-radius:10px;padding:10px 12px;background:#fef3c7;border:1.5px solid #f59e0b">
+      <div style="font-size:11px;font-weight:700;color:#92400e" id="fila-badge-txt"></div>
+      <button onclick="processarFila()" style="margin-top:7px;width:100%;padding:9px;border:none;border-radius:8px;background:#f59e0b;color:#fff;font-size:13px;font-weight:700;cursor:pointer">🔄 Reenviar agora</button>
+    </div>
   </div>
 
   <!-- ════ ESTOQUE ══════════════════════════════════════════════════ -->
@@ -584,6 +587,8 @@ var _prevData=[], _prevFiltro=null;
 window.addEventListener('load', function(){
   initDates(); preencherFiltroMes(); carregarCadastros(); carregarEstoques(); carregarMediaEquip(); atualizarBadgeFila();
   initLogistica();
+  // Processa fila ao carregar (caso haja registros pendentes de sessão anterior)
+  if(isOnline && offlineQueue.length) setTimeout(processarFila, 2000);
   // Auto-navigate if URL contains ?mot= (QR code scan)
   try{
     var params=new URLSearchParams(window.location.search);
@@ -761,17 +766,44 @@ function enviarRegistro(reg,cb){
   gs(params).then(function(r){return r.text();}).then(function(t){ cb(t.trim()==='OK'); }).catch(function(){ cb(false); });
 }
 function salvarNaFila(reg){ offlineQueue.push(reg); try{ localStorage.setItem('_fila',JSON.stringify(offlineQueue)); }catch(e){} atualizarBadgeFila(); }
+var _filaRetry=0;
 function processarFila(){
-  if(!isOnline||!offlineQueue.length) return;
+  if(!isOnline||!offlineQueue.length){ _filaRetry=0; return; }
   var reg=offlineQueue[0];
+  atualizarBadgeFila('enviando');
   enviarRegistro(reg,function(ok){
-    if(ok){ offlineQueue.shift(); try{ localStorage.setItem('_fila',JSON.stringify(offlineQueue)); }catch(e){} atualizarBadgeFila(); toast('✅ Registro offline enviado ('+offlineQueue.length+' restantes)','ok'); carregarEstoques(); if(offlineQueue.length) setTimeout(processarFila,800); }
+    if(ok){
+      offlineQueue.shift();
+      try{ localStorage.setItem('_fila',JSON.stringify(offlineQueue)); }catch(e){}
+      _filaRetry=0;
+      atualizarBadgeFila();
+      carregarEstoques();
+      toast('✅ Registro offline enviado'+(offlineQueue.length?' ('+offlineQueue.length+' restantes)':''),'ok');
+      if(offlineQueue.length) setTimeout(processarFila,800);
+    } else {
+      // Falha de rede: retry com backoff (5s, 15s, 30s, depois para)
+      _filaRetry++;
+      atualizarBadgeFila();
+      if(_filaRetry<=3){
+        var delay=_filaRetry===1?5000:_filaRetry===2?15000:30000;
+        toast('⚠️ Falha ao enviar fila — tentando em '+(delay/1000)+'s','warn');
+        setTimeout(processarFila,delay);
+      } else {
+        _filaRetry=0;
+        toast('❌ Não foi possível enviar a fila. Tente manualmente.','err');
+      }
+    }
   });
 }
-function atualizarBadgeFila(){
-  var badge=document.getElementById('fila-badge');
-  if(offlineQueue.length>0){ badge.style.display='block'; badge.textContent='📵 '+offlineQueue.length+' registro(s) na fila offline'; }
-  else badge.style.display='none';
+function atualizarBadgeFila(estado){
+  var badge=document.getElementById('fila-badge'), txt=document.getElementById('fila-badge-txt');
+  if(offlineQueue.length>0){
+    badge.style.display='block';
+    if(estado==='enviando') txt.textContent='🔄 Enviando '+offlineQueue.length+' registro(s) offline...';
+    else txt.textContent='📵 '+offlineQueue.length+' registro(s) na fila offline (sem envio)';
+  } else {
+    badge.style.display='none';
+  }
 }
 function limpar(){
   initDates(); ['f-op','f-faz','f-eq','f-tanque','f-bomba'].forEach(function(id){ setVal(id,''); });
